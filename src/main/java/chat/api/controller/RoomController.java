@@ -18,6 +18,6 @@ public class RoomController {
 
     @GetMapping
     public List<ChatRoomDto> getRooms() {
-        return roomService.getAllRoom();
+        return roomService.getAllRoom(1L);
     }
 }

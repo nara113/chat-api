@@ -1,16 +1,18 @@
 package chat.api.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.apache.ibatis.type.Alias;
 
 import java.util.List;
 
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Getter
 @Setter
+@Alias("chatRoom")
 public class ChatRoomDto {
-
     private Long roomId;
     private String roomName;
     private List<UserDto> users;

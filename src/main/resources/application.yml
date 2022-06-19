@@ -21,3 +21,7 @@ logging:
   level:
     org.hibernate.SQL: debug
     reactor.netty.http.client: DEBUG
+    chat.api.mapper: debug
+
+mybatis:
+  type-aliases-package: chat.api.model
