@@ -1,39 +1,34 @@
 package chat.api.service;
 
-import chat.api.model.ChatRoom;
+import chat.api.entity.ChatGroup;
+import chat.api.model.ChatRoomDto;
+import chat.api.model.UserDto;
+import chat.api.repository.ChatGroupRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class RoomService {
-    private Map<String, ChatRoom> chatRooms;
 
-    @PostConstruct
-    //의존관게 주입완료되면 실행되는 코드
-    private void init() {
-        chatRooms = new LinkedHashMap<>();
-    }
+    private final ChatGroupRepository chatGroupRepository;
 
-    //채팅방 불러오기
-    public List<ChatRoom> getAllRoom() {
-        //채팅방 최근 생성 순으로 반환
-        List<ChatRoom> result = new ArrayList<>(chatRooms.values());
-        Collections.reverse(result);
+    public List<ChatRoomDto> getAllRoom() {
+        List<ChatGroup> groups = chatGroupRepository.findAllByUserId(1L)
+                .orElseThrow(() -> new IllegalArgumentException());
 
-        return result;
-    }
-
-    //채팅방 하나 불러오기
-    public ChatRoom getRoom(String roomId) {
-        return chatRooms.get(roomId);
-    }
-
-    //채팅방 생성
-    public ChatRoom createRoom(String name) {
-        ChatRoom chatRoom = ChatRoom.create(name);
-        chatRooms.put(chatRoom.getRoomId(), chatRoom);
-        return chatRoom;
+        return groups.stream()
+                .map(ChatGroup::getChatRoom)
+                .map(room -> ChatRoomDto.builder()
+                        .roomId(room.getId())
+                        .users(room.getUsers()
+                                .stream()
+                                .map(user -> UserDto.builder().name(user.getUser().getName()).build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
     }
 }

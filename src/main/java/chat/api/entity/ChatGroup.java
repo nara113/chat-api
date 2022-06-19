@@ -5,25 +5,23 @@ import lombok.*;
 import javax.persistence.*;
 
 @ToString
-@Entity
-@Getter
-@Setter
+@Getter @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "groups")
-public class Group extends BaseEntity {
+@Entity
+public class ChatGroup extends BaseEntity {
 
     @Id
     @GeneratedValue
     @Column(name = "group_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
-    private Room room;
+    private ChatRoom chatRoom;
 }
