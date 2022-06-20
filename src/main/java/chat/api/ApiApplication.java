@@ -1,11 +1,11 @@
 package chat.api;
 
-import chat.api.entity.ChatGroup;
-import chat.api.entity.ChatRoom;
-import chat.api.entity.User;
-import chat.api.repository.ChatGroupRepository;
-import chat.api.repository.ChatRoomRepository;
-import chat.api.repository.UserRepository;
+import chat.api.chat.entity.ChatGroup;
+import chat.api.chat.entity.ChatRoom;
+import chat.api.chat.repository.ChatGroupRepository;
+import chat.api.chat.repository.ChatRoomRepository;
+import chat.api.user.entity.User;
+import chat.api.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;

@@ -8,7 +8,7 @@ import * as StompJs from "@stomp/stompjs";
 import * as SockJS from "sockjs-client";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
-const MyChatContainer = ({room}) => {
+const MyChatContainer = ({room, getUserName}) => {
     const img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAAAXNSR0IArs4c6QAAATpJREFUWEdjvPm+8T/DEACMow6lciyNhiiVA5RhNERHQ5TaIUBt80bT6GiIUjsEqG0e0WlUhb+SgYmRFWz/i2/rGT79uoziFkW+PAZWJgGw2Pufxxlef9+N1a3CHA4Mwhx2YLk//z4z3PvUT5SfiHaoqkA1AyMDM9jQl982MXz8dQHFAiW+IgYWJh6w2IefZxhefd+G1QGinC4MguxWYLm//78x3P3YM+rQ0RDFlwaGdxqF+By9B8MID5BBk5kIZdNRhxIKIZA8cjkKKuy//rmNok2c04uBiZFjtBwd3rl+tArFk1mGd9Rja+Yp8RUysDDxQnP9KYZX33dgDR8RDkcGIQ5baOvpK8Pdj73EFDqj/XqiQokURUSnUVIMpYXaUYdSO1RHQ3Q0RKkdAtQ2bzSNjoYotUOA2uYBAI6umQqSmDikAAAAAElFTkSuQmCC";
 
 
@@ -76,7 +76,7 @@ const MyChatContainer = ({room}) => {
             <ConversationHeader>
                 <ConversationHeader.Back/>
                 <Avatar src={img} name="Zoe"/>
-                <ConversationHeader.Content userName={room.users.map(_user => _user.name).join(', ')} />
+                <ConversationHeader.Content userName={getUserName(room)} />
             </ConversationHeader>
             <MessageList>
                 {chatMessages && chatMessages.length > 0 &&
@@ -101,7 +101,8 @@ const MyChatContainer = ({room}) => {
                 ))
                 }
             </MessageList>
-            <MessageInput placeholder="Type message here" value={message}
+            <MessageInput placeholder="Type message here"
+                          value={message}
                           onSend={() => publish(message)}
                           onChange={val => setMessage(val)}/>
         </ChatContainer>
