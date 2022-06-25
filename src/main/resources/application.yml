@@ -17,6 +17,11 @@ spring:
       hibernate:
         format_sql: true
 
+springdoc:
+  swagger-ui:
+    path: swagger.html
+  version: v1
+
 logging:
   level:
     org.hibernate.SQL: debug

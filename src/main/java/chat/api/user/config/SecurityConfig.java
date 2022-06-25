@@ -46,6 +46,11 @@ public class SecurityConfig {
                                 .antMatchers("/h2-console/**").permitAll()
                                 .antMatchers("/api/v1/users/login").permitAll()
                                 .antMatchers("/api/v1/users/signup").permitAll()
+                                .antMatchers("/swagger.html").permitAll()
+                                .antMatchers("/v3/api-docs/**").permitAll()
+                                .antMatchers("/swagger-resources/**").permitAll()
+                                .antMatchers("/swagger-ui/**").permitAll()
+                                .antMatchers("/configuration/ui").permitAll()
                                 .anyRequest().authenticated())
                 .apply(new JwtSecurityConfig(tokenProvider));
 
