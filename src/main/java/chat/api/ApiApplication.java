@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @EnableJpaAuditing
@@ -26,6 +27,9 @@ public class ApiApplication {
     @Autowired
     ChatGroupRepository chatGroupRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     public static void main(String[] args) {
         SpringApplication.run(ApiApplication.class, args);
     }
@@ -36,31 +40,31 @@ public class ApiApplication {
         return args -> {
             User user1 = User.builder()
                     .email("email1")
-                    .password("pass1")
+                    .password(passwordEncoder.encode("pass1"))
                     .name("Lilly")
                     .build();
 
             User user2 = User.builder()
                     .email("email2")
-                    .password("pass2")
+                    .password(passwordEncoder.encode("pass2"))
                     .name("Joe")
                     .build();
 
             User user3 = User.builder()
                     .email("email3")
-                    .password("pass2")
+                    .password(passwordEncoder.encode("pass2"))
                     .name("Emily")
                     .build();
 
             User user4 = User.builder()
                     .email("email4")
-                    .password("pass2")
+                    .password(passwordEncoder.encode("pass2"))
                     .name("Kai")
                     .build();
 
             User user5 = User.builder()
                     .email("email5")
-                    .password("pass2")
+                    .password(passwordEncoder.encode("pass2"))
                     .name("Eliot")
                     .build();
 

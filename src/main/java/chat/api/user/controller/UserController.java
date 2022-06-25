@@ -1,26 +1,22 @@
 package chat.api.user.controller;
 
-import chat.api.user.jwt.TokenProvider;
 import chat.api.user.model.Login;
-import chat.api.user.model.Response;
+import chat.api.user.model.response.Response;
 import chat.api.user.model.SignupUser;
+import chat.api.user.model.UserDto;
+import chat.api.user.model.response.LoginResponseData;
 import chat.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @RestController
 public class UserController {
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
-    private final TokenProvider tokenProvider;
 
     private final UserService userService;
 
@@ -34,15 +30,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Response<Object> login(@RequestBody Login login) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-                = new UsernamePasswordAuthenticationToken(login.getUserId(), login.getPassword());
-
-        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
-
+    public Response login(@RequestBody Login login) {
         return Response.builder()
                 .status(HttpStatus.OK.value())
-                .data(tokenProvider.createToken(authenticate))
+                .data(LoginResponseData.builder()
+                        .token(userService.getToken(login))
+                        .user(new UserDto(userService.getUser(login.getEmail())))
+                        .build())
                 .build();
     }
 

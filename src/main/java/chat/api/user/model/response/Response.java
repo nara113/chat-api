@@ -1,4 +1,4 @@
-package chat.api.user.model;
+package chat.api.user.model.response;
 
 import lombok.Builder;
 import lombok.Getter;

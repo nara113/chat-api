@@ -14,7 +14,6 @@ public class MessageController {
 
     @MessageMapping("/chat/message")
     public void send(ChatMessageDto messageDto) {
-
         template.convertAndSend("/topic/chat/room/" + messageDto.getRoomId(), messageDto);
     }
 }

@@ -16,11 +16,11 @@ public final class SecurityUtil {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
-            log.debug("security context에 인증 정보가 없습니다.");
+            log.debug("No credentials found.");
             return Optional.empty();
         }
 
-        String username = null;
+        String username;
 
         if (authentication.getPrincipal() instanceof UserDetails) {
             username = ((UserDetails) authentication.getPrincipal()).getUsername();

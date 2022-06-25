@@ -42,9 +42,10 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests(request ->
                         request
+                                .antMatchers("/ws/chat/**").permitAll()
                                 .antMatchers("/h2-console/**").permitAll()
-                                .antMatchers("/login").permitAll()
-                                .antMatchers("/signup").permitAll()
+                                .antMatchers("/api/v1/users/login").permitAll()
+                                .antMatchers("/api/v1/users/signup").permitAll()
                                 .anyRequest().authenticated())
                 .apply(new JwtSecurityConfig(tokenProvider));
 
