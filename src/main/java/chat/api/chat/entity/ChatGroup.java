@@ -25,4 +25,6 @@ public class ChatGroup extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
+
+    private Long lastReadMessageId;
 }

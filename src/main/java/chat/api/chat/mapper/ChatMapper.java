@@ -1,5 +1,6 @@
 package chat.api.chat.mapper;
 
+import chat.api.chat.model.ChatMessageDto;
 import chat.api.chat.model.ChatRoomDto;
 import org.apache.ibatis.annotations.Mapper;
 

@@ -9,8 +9,8 @@
     </resultMap>
 
     <select id="selectAllRoomsByUserId" parameterType="Long" resultMap="chatRoomMap">
-        SELECT room.room_id AS roomId,
-               room.name AS roomName
+        SELECT room.room_id AS roomId
+               , room.name AS roomName
           FROM chat_group g
          INNER JOIN chat_room room
             ON g.room_id = room.room_id
@@ -18,8 +18,8 @@
     </select>
 
     <select id="selectUsers" parameterType="Long" resultType="userDto">
-        SELECT u.email AS email,
-               u.name AS name
+        SELECT u.email AS email
+               , u.name AS name
           FROM chat_group g
          INNER JOIN users u
             ON g.user_id = u.user_id

@@ -7,6 +7,7 @@ import React, {useEffect, useRef, useState} from "react";
 import * as StompJs from "@stomp/stompjs";
 import * as SockJS from "sockjs-client";
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import axios from "axios";
 
 const MyChatContainer = ({room, roomUsers, currentUser}) => {
     const img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAAAXNSR0IArs4c6QAAATpJREFUWEdjvPm+8T/DEACMow6lciyNhiiVA5RhNERHQ5TaIUBt80bT6GiIUjsEqG0e0WlUhb+SgYmRFWz/i2/rGT79uoziFkW+PAZWJgGw2Pufxxlef9+N1a3CHA4Mwhx2YLk//z4z3PvUT5SfiHaoqkA1AyMDM9jQl982MXz8dQHFAiW+IgYWJh6w2IefZxhefd+G1QGinC4MguxWYLm//78x3P3YM+rQ0RDFlwaGdxqF+By9B8MID5BBk5kIZdNRhxIKIZA8cjkKKuy//rmNok2c04uBiZFjtBwd3rl+tArFk1mGd9Rja+Yp8RUysDDxQnP9KYZX33dgDR8RDkcGIQ5baOvpK8Pdj73EFDqj/XqiQokURUSnUVIMpYXaUYdSO1RHQ3Q0RKkdAtQ2bzSNjoYotUOA2uYBAI6umQqSmDikAAAAAElFTkSuQmCC";
@@ -15,12 +16,13 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
     const client = useRef({});
     const [chatMessages, setChatMessages] = useState([]);
     const [message, setMessage] = useState("");
+    const [lastMessageId, setLastMessageId] = useState();
     const [senderId] = useState(currentUser.userId);
 
     useEffect(() => {
         connect();
 
-        return () => disconnect();
+        return () => disconnect(lastMessageId);
     }, [room]);
 
     const connect = () => {
@@ -46,15 +48,28 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
         client.current.activate();
     };
 
-    const disconnect = () => {
+    const disconnect = (lastMessageId) => {
         client.current.deactivate();
+
+        if (!chatMessages) return;
+
+        console.log('lastMessageId', lastMessageId)
+
+        axios.put(`/api/v1/rooms/${room.roomId}/users/${senderId}/last-message-id/${lastMessageId}`)
     };
 
     const subscribe = () => {
         client.current.subscribe(`/topic/chat/room/${room.roomId}`, ({body}) => {
-            setChatMessages((_chatMessages) => [..._chatMessages, JSON.parse(body)]);
-            console.log('body', body);
+            const message = JSON.parse(body);
+            setChatMessages((_chatMessages) => [..._chatMessages, message]);
+            setLastMessageId(message.messageId)
+            console.log(body)
         });
+
+        axios.get(`/api/v1/rooms/${room.roomId}/messages`)
+            .then((res) => {
+                setChatMessages(res.data);
+            })
     };
 
     const publish = (message) => {
@@ -83,7 +98,7 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
                     _chatMessage.senderId === senderId
                     ? <Message key={index}
                             model={{
-                        message: _chatMessage.message,
+                        message: _chatMessage.message + " " + lastMessageId,
                         sentTime: "15 mins ago",
                         sender: "Patrik",
                         direction: "outgoing",
@@ -91,7 +106,7 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
                     }}/>
                     : <Message key={index}
                             model={{
-                            message: _chatMessage.message,
+                            message: _chatMessage.message + " " + lastMessageId,
                             sentTime: "15 mins ago",
                             sender: "Patrik",
                             direction: "incoming",
