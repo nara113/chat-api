@@ -1,15 +1,18 @@
 package chat.api.chat.service;
 
+import chat.api.chat.entity.ChatFriend;
 import chat.api.chat.entity.ChatGroup;
 import chat.api.chat.entity.ChatMessage;
 import chat.api.chat.entity.ChatRoom;
 import chat.api.chat.mapper.ChatMapper;
 import chat.api.chat.model.ChatMessageDto;
 import chat.api.chat.model.ChatRoomDto;
+import chat.api.chat.repository.ChatFriendRepository;
 import chat.api.chat.repository.ChatGroupRepository;
 import chat.api.chat.repository.ChatMessageRepository;
 import chat.api.chat.repository.ChatRoomRepository;
 import chat.api.user.entity.User;
+import chat.api.user.model.UserDto;
 import chat.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,8 @@ public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
 
     private final ChatGroupRepository chatGroupRepository;
+
+    private final ChatFriendRepository chatFriendRepository;
 
     public List<ChatRoomDto> getAllRoom(Long userId) {
         return chatMapper.selectAllRoomsByUserId(userId);
@@ -56,7 +61,11 @@ public class ChatService {
         return chatMessage.getId();
     }
 
-    public List<ChatMessageDto> getMessages(Long roomId) {
+    public List<ChatMessageDto> getMessages(Long roomId, Long userId) {
+        chatGroupRepository.findByChatRoomIdAndUserId(roomId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("user does not exist in the chat room." +
+                        " room id : " + roomId + " user id : " + userId));
+
         return chatMessageRepository.findByChatRoomIdOrderById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id : " + roomId))
                 .stream()
@@ -77,5 +86,21 @@ public class ChatService {
                         " room id : " + roomId + " user id : " + userId));
 
         chatGroup.setLastReadMessageId(lastMessageId);
+    }
+
+    public List<UserDto> getFriends(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId));
+
+        return chatFriendRepository.findByUserAndBlockYn(user, "N")
+                .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId))
+                .stream()
+                .map(ChatFriend::getFriend)
+                .map(friend -> UserDto.builder()
+                        .userId(friend.getId())
+                        .name(friend.getName())
+                        .email(friend.getEmail())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

@@ -14,8 +14,8 @@ const App = () => {
         <BrowserRouter>
             <div className="m-3">
                 <Routes>
-                    <Route path="/" element={<Chat/>}/>
-                    <Route path="/login" element={<LoginForm authenticated={authenticated}/>}/>
+                    <Route path="/" element={<LoginForm authenticated={authenticated}/>}/>
+                    <Route path="/chat" element={<Chat/>}/>
                 </Routes>
             </div>
         </BrowserRouter>

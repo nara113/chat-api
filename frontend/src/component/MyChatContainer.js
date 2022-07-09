@@ -98,7 +98,7 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
                     _chatMessage.senderId === senderId
                     ? <Message key={index}
                             model={{
-                        message: _chatMessage.message + " " + lastMessageId,
+                        message: _chatMessage.message,
                         sentTime: "15 mins ago",
                         sender: "Patrik",
                         direction: "outgoing",
@@ -106,7 +106,7 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
                     }}/>
                     : <Message key={index}
                             model={{
-                            message: _chatMessage.message + " " + lastMessageId,
+                            message: _chatMessage.message,
                             sentTime: "15 mins ago",
                             sender: "Patrik",
                             direction: "incoming",

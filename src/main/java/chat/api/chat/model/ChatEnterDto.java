@@ -9,10 +9,8 @@ import org.apache.ibatis.type.Alias;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Alias("chatMessageDto")
-public class ChatMessageDto {
+@Alias("chatEnterDto")
+public class ChatEnterDto {
     private long roomId;
-    private long senderId;
-    private long messageId;
-    private String message;
+    private long userId;
 }

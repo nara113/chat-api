@@ -11,7 +11,7 @@ const LoginForm = () => {
     const handleClick = () => {
         try {
             login({ email, password });
-            navigate('/', {state: email});
+            navigate('/chat', {state: email});
         } catch (e) {
             alert("Failed to login");
             setEmail("");

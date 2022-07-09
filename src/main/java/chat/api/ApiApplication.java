@@ -1,7 +1,9 @@
 package chat.api;
 
+import chat.api.chat.entity.ChatFriend;
 import chat.api.chat.entity.ChatGroup;
 import chat.api.chat.entity.ChatRoom;
+import chat.api.chat.repository.ChatFriendRepository;
 import chat.api.chat.repository.ChatGroupRepository;
 import chat.api.chat.repository.ChatRoomRepository;
 import chat.api.user.entity.User;
@@ -26,6 +28,9 @@ public class ApiApplication {
 
     @Autowired
     ChatGroupRepository chatGroupRepository;
+
+    @Autowired
+    ChatFriendRepository chatFriendRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -73,6 +78,31 @@ public class ApiApplication {
             userRepository.save(user3);
             userRepository.save(user4);
             userRepository.save(user5);
+
+            ChatFriend chatFriend1 = ChatFriend.builder()
+                    .user(user1)
+                    .friend(user2)
+                    .build();
+
+            ChatFriend chatFriend2 = ChatFriend.builder()
+                    .user(user1)
+                    .friend(user3)
+                    .build();
+
+            ChatFriend chatFriend3 = ChatFriend.builder()
+                    .user(user1)
+                    .friend(user4)
+                    .build();
+
+            ChatFriend chatFriend4 = ChatFriend.builder()
+                    .user(user1)
+                    .friend(user5)
+                    .build();
+
+            chatFriendRepository.save(chatFriend1);
+            chatFriendRepository.save(chatFriend2);
+            chatFriendRepository.save(chatFriend3);
+            chatFriendRepository.save(chatFriend4);
 
             ChatRoom room1 = ChatRoom.builder()
                     .name("room 1")

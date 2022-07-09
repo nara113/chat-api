@@ -6,6 +6,7 @@ import chat.api.user.model.SignupUser;
 import chat.api.user.model.UserDto;
 import chat.api.user.model.response.LoginResponseData;
 import chat.api.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public Response signup(@RequestBody @Valid SignupUser signupUser) {
         userService.signup(signupUser);
@@ -29,6 +31,7 @@ public class UserController {
                 .build();
     }
 
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     public Response login(@RequestBody Login login) {
         return Response.builder()
@@ -38,6 +41,11 @@ public class UserController {
                         .user(new UserDto(userService.getUser(login.getEmail())))
                         .build())
                 .build();
+    }
+
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    public void logout(@RequestBody Login login) {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
