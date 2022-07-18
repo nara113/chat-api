@@ -38,6 +38,20 @@ public class ChatController {
         return Response.of(chatService.getFriends(user.getUserId()));
     }
 
+    @Operation(summary = "채팅방 입장")
+    @PostMapping("/rooms/{roomId}/user")
+    public Response addUser(@Parameter(hidden = true) @User UserDto user, @PathVariable String roomId) {
+
+        return null;
+    }
+
+    @Operation(summary = "채팅방 퇴장")
+    @DeleteMapping("/rooms/{roomId}/user")
+    public Response deleteUser(@Parameter(hidden = true) @User UserDto user, @PathVariable String roomId) {
+
+        return null;
+    }
+
     @PutMapping("/rooms/{roomId}/users/{userId}/last-message-id/{lastMessageId}")
     public void modifyLastMessageId(@PathVariable Long roomId,
                                     @PathVariable Long userId,

@@ -26,4 +26,8 @@ public class ChatGroup extends BaseEntity {
     private ChatRoom chatRoom;
 
     private Long lastReadMessageId;
+
+    public void changeLastReadMessageId(Long lastReadMessageId) {
+        this.lastReadMessageId = lastReadMessageId;
+    }
 }

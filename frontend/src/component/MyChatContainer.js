@@ -1,7 +1,7 @@
 import {
     Avatar,
     ChatContainer,
-    ConversationHeader, Message, MessageInput, MessageList
+    ConversationHeader, Message, MessageInput, MessageList, MessageSeparator
 } from "@chatscope/chat-ui-kit-react";
 import React, {useEffect, useRef, useState} from "react";
 import * as StompJs from "@stomp/stompjs";
@@ -67,9 +67,14 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
         });
 
         axios.get(`/api/v1/rooms/${room.roomId}/messages`)
-            .then((res) => {
-                setChatMessages(res.data);
+            .then(res => {
+                setChatMessages(res.data.data);
             })
+
+        client.current.publish({
+            destination: "/app/chat/enter",
+            body: JSON.stringify({roomId: room.roomId, senderId: senderId}),
+        });
     };
 
     const publish = (message) => {
@@ -95,7 +100,10 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
             <MessageList>
                 {chatMessages && chatMessages.length > 0 &&
                 chatMessages.map((_chatMessage, index) => (
-                    _chatMessage.senderId === senderId
+                    _chatMessage.chatType === 'ENTER'
+                    ? <MessageSeparator content="Content from property">enter {_chatMessage.senderId}</MessageSeparator>
+                        :
+                    (_chatMessage.senderId === senderId
                     ? <Message key={index}
                             model={{
                         message: _chatMessage.message,
@@ -111,7 +119,7 @@ const MyChatContainer = ({room, roomUsers, currentUser}) => {
                             sender: "Patrik",
                             direction: "incoming",
                             position: "last"
-                        }}/>
+                        }}/>)
                 ))
                 }
             </MessageList>

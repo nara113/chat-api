@@ -3,11 +3,11 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import axios from "axios";
 
-const SearchModal = ({show, onHide}) => {
+const CreateChatRoomModal = ({show, onHide}) => {
     const search = () => {
         axios.get(`/api/v1/friends`)
             .then(res => {
-                console.log(res.data)
+                console.log(res.data.data)
 
             })
             .catch(error => {
@@ -43,4 +43,4 @@ const SearchModal = ({show, onHide}) => {
     );
 }
 
-export default SearchModal;
+export default CreateChatRoomModal;

@@ -11,6 +11,7 @@ import org.apache.ibatis.type.Alias;
 @AllArgsConstructor
 @Alias("chatMessageDto")
 public class ChatMessageDto {
+    private ChatType chatType;
     private long roomId;
     private long senderId;
     private long messageId;

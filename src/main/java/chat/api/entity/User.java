@@ -32,6 +32,8 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    private String profileUrl;
+
     @OneToMany(mappedBy = "user")
     private List<ChatGroup> groups = new ArrayList<>();
 
