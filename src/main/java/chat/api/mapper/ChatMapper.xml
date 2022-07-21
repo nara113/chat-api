@@ -5,15 +5,24 @@
     <resultMap id="chatRoomMap" type="chatRoomDto">
         <id column="roomId" property="roomId"/>
         <result column="roomName" property="roomName"/>
+        <result column="lastMessage" property="lastMessage"/>
         <collection property="users" column="roomId" select="selectUsers" />
     </resultMap>
 
     <select id="selectAllRoomsByUserId" parameterType="Long" resultMap="chatRoomMap">
         SELECT room.room_id AS roomId
                , room.name AS roomName
+               , msg.message AS lastMessage
+               , (select count(*)
+                    from chat_message mm
+                    where mm.room_id = g.room_id
+                    and mm.message_id &gt; g.last_read_message_id) AS unreadMessagesCount
           FROM chat_group g
          INNER JOIN chat_room room
             ON g.room_id = room.room_id
+          LEFT JOIN chat_message msg
+            ON g.room_id = msg.room_id
+           AND msg.message_id = (select MAX(message_id) from chat_message m where m.room_id = g.room_id)
          WHERE g.user_id = #{userId}
     </select>
 

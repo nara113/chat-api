@@ -1,6 +1,8 @@
 package chat.api.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
@@ -9,6 +11,7 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
 @Entity
 public class ChatGroup extends BaseEntity {
 
@@ -25,9 +28,6 @@ public class ChatGroup extends BaseEntity {
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
+    @ColumnDefault("0")
     private Long lastReadMessageId;
-
-    public void changeLastReadMessageId(Long lastReadMessageId) {
-        this.lastReadMessageId = lastReadMessageId;
-    }
 }

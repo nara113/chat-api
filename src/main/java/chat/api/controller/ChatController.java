@@ -51,11 +51,4 @@ public class ChatController {
 
         return null;
     }
-
-    @PutMapping("/rooms/{roomId}/users/{userId}/last-message-id/{lastMessageId}")
-    public void modifyLastMessageId(@PathVariable Long roomId,
-                                    @PathVariable Long userId,
-                                    @PathVariable Long lastMessageId) {
-        chatService.modifyLastMessageId(roomId, userId, lastMessageId);
-    }
 }
