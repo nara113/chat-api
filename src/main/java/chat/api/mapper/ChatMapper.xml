@@ -6,13 +6,15 @@
         <id column="roomId" property="roomId"/>
         <result column="roomName" property="roomName"/>
         <result column="lastMessage" property="lastMessage"/>
-        <collection property="users" column="roomId" select="selectUsers" />
+        <collection property="users" column="{roomId=roomId,userId=userId}" select="selectUsers" />
     </resultMap>
 
     <select id="selectAllRoomsByUserId" parameterType="Long" resultMap="chatRoomMap">
         SELECT room.room_id AS roomId
                , room.name AS roomName
+               , g.user_id AS userId
                , msg.message AS lastMessage
+               , IFNULL(msg.created_date, room.created_date) AS lastMessageTime
                , (select count(*)
                     from chat_message mm
                     where mm.room_id = g.room_id
@@ -24,14 +26,16 @@
             ON g.room_id = msg.room_id
            AND msg.message_id = (select MAX(message_id) from chat_message m where m.room_id = g.room_id)
          WHERE g.user_id = #{userId}
+         ORDER BY msg.created_date DESC
     </select>
 
-    <select id="selectUsers" parameterType="Long" resultType="userDto">
+    <select id="selectUsers" parameterType="map" resultType="userDto">
         SELECT u.email AS email
                , u.name AS name
           FROM chat_group g
          INNER JOIN users u
             ON g.user_id = u.user_id
          WHERE g.room_id = #{roomId}
+           AND g.user_id != #{userId}
     </select>
 </mapper>

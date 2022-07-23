@@ -78,15 +78,6 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void modifyLastMessageId(Long roomId, Long userId, Long lastMessageId) {
-        ChatGroup chatGroup = chatGroupRepository.findByChatRoomIdAndUserId(roomId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("chat group does not exist." +
-                        " room id : " + roomId + " user id : " + userId));
-
-        chatGroup.setLastReadMessageId(lastMessageId);
-    }
-
     public List<UserDto> getFriends(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId));

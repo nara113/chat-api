@@ -2,20 +2,17 @@ import './App.css';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Chat from "./component/Chat";
 import React, {useState} from "react";
-import LoginForm from "./component/LoginForm";
+import SignIn from "./component/SignIn";
+import ChatRoom from "./component/ChatRoom";
 
 const App = () => {
-    const [user, setUser] = useState(null);
-    const authenticated = user != null;
-
-    const logout = () => setUser(null);
-
     return (
         <BrowserRouter>
             <div className="m-3">
                 <Routes>
-                    <Route path="/" element={<LoginForm authenticated={authenticated}/>}/>
+                    <Route path="/" element={<SignIn/>}/>
                     <Route path="/chat" element={<Chat/>}/>
+                    <Route path="/chat/room2" element={<ChatRoom/>}/>
                 </Routes>
             </div>
         </BrowserRouter>

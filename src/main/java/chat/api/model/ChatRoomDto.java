@@ -3,6 +3,7 @@ package chat.api.model;
 import lombok.*;
 import org.apache.ibatis.type.Alias;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ToString
@@ -18,4 +19,5 @@ public class ChatRoomDto {
     private List<UserDto> users;
     private int unreadMessagesCount;
     private String lastMessage;
+    private LocalDateTime lastMessageTime;
 }

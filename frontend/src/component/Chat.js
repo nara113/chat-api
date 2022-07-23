@@ -26,10 +26,6 @@ const Chat = () => {
         })
     }
 
-    const getRoomUsers = (users) => {
-        return users.filter(_user => _user.name !== currentUser[0].name);
-    }
-
     useEffect(() => {
         getAllRooms();
     }, []);
@@ -54,15 +50,13 @@ const Chat = () => {
                         <ConversationList>
                             {rooms && rooms.length > 0 &&
                                 rooms.map(_room => {
-                                    const roomUsers = getRoomUsers(_room.users);
-
-                                    return (<Conversation name={roomUsers.map(_user => _user.name).join(', ')}
+                                    return (<Conversation name={_room.users.map(_user => _user.name).join(', ')}
                                                           active={_room.roomId === selectedRoom.roomId}
                                                           onClick={() => setSelectedRoom(_room)}
-                                                          info="Yes, i can do it for you"
-                                                          unreadCnt={3}>
+                                                          info={_room.lastMessage}
+                                                          unreadCnt={_room.unreadMessagesCount}>
                                         <AvatarGroup size="sm">
-                                            {roomUsers.map(_user => <Avatar src={img} name={_user.name}/>)}
+                                            {_room.users.map(_user => <Avatar src={img} name={_user.name}/>)}
                                         </AvatarGroup>
                                     </Conversation>)
                                 })
@@ -72,7 +66,7 @@ const Chat = () => {
                     {
                         selectedRoom.roomId !== -1 &&
                         <MyChatContainer room={selectedRoom}
-                                         roomUsers={getRoomUsers(selectedRoom.users)}
+                                         roomUsers={selectedRoom.users}
                                          currentUser={currentUser[0]}
                         />
                     }

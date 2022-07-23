@@ -1,13 +1,7 @@
 package chat.api;
 
-import chat.api.entity.ChatFriend;
-import chat.api.entity.ChatGroup;
-import chat.api.entity.ChatRoom;
-import chat.api.repository.ChatFriendRepository;
-import chat.api.repository.ChatGroupRepository;
-import chat.api.repository.ChatRoomRepository;
-import chat.api.entity.User;
-import chat.api.repository.UserRepository;
+import chat.api.entity.*;
+import chat.api.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -31,6 +25,9 @@ public class ApiApplication {
 
     @Autowired
     ChatFriendRepository chatFriendRepository;
+
+    @Autowired
+    ChatMessageRepository chatMessageRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -124,6 +121,14 @@ public class ApiApplication {
             chatRoomRepository.save(room2);
             chatRoomRepository.save(room3);
             chatRoomRepository.save(room4);
+
+            ChatMessage chatMessage = ChatMessage.builder()
+                    .message("hello")
+                    .user(user1)
+                    .chatRoom(room1)
+                    .build();
+
+            chatMessageRepository.save(chatMessage);
 
             ChatGroup chatGroup = ChatGroup.builder()
                     .chatRoom(room1)
