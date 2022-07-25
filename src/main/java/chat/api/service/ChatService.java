@@ -69,9 +69,7 @@ public class ChatService {
     }
 
     public List<ChatGroup> getGroupsByRoomId(Long roomId) {
-        return chatGroupRepository.findByChatRoomId(roomId)
-                .stream()
-                .collect(Collectors.toList());
+        return chatGroupRepository.findByChatRoomId(roomId);
     }
 
     public List<LastReadMessageDto> getLastReadMessagesByRoomId(Long roomId) {
