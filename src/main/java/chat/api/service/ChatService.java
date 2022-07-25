@@ -93,4 +93,11 @@ public class ChatService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public List<User> getUsersByRoomId(Long roomId) {
+        return chatGroupRepository.findByChatRoomId(roomId)
+                .stream()
+                .map(ChatGroup::getUser)
+                .collect(Collectors.toList());
+    }
 }

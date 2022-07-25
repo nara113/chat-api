@@ -4,6 +4,8 @@ import Chat from "./component/Chat";
 import React, {useState} from "react";
 import SignIn from "./component/SignIn";
 import ChatRoom from "./component/ChatRoom";
+import MyChatContainer2 from "./component/ChatContainer2";
+
 
 const App = () => {
     return (
@@ -12,7 +14,7 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={<SignIn/>}/>
                     <Route path="/chat" element={<Chat/>}/>
-                    <Route path="/chat/room2" element={<ChatRoom/>}/>
+                    <Route path="/chat/room" element={<ChatRoom/>}/>
                 </Routes>
             </div>
         </BrowserRouter>

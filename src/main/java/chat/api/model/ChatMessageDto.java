@@ -3,6 +3,8 @@ package chat.api.model;
 import lombok.*;
 import org.apache.ibatis.type.Alias;
 
+import java.time.LocalDateTime;
+
 @ToString
 @Builder
 @Getter
@@ -16,4 +18,5 @@ public class ChatMessageDto {
     private long senderId;
     private long messageId;
     private String message;
+    private LocalDateTime createdDate = LocalDateTime.now();
 }
