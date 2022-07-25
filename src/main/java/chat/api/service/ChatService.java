@@ -1,19 +1,12 @@
 package chat.api.service;
 
-import chat.api.entity.ChatFriend;
 import chat.api.entity.ChatGroup;
 import chat.api.entity.ChatMessage;
 import chat.api.entity.ChatRoom;
-import chat.api.mapper.ChatMapper;
-import chat.api.model.ChatMessageDto;
-import chat.api.model.ChatRoomDto;
-import chat.api.repository.ChatFriendRepository;
-import chat.api.repository.ChatGroupRepository;
-import chat.api.repository.ChatMessageRepository;
-import chat.api.repository.ChatRoomRepository;
 import chat.api.entity.User;
-import chat.api.model.UserDto;
-import chat.api.repository.UserRepository;
+import chat.api.mapper.ChatMapper;
+import chat.api.model.*;
+import chat.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,6 +43,7 @@ public class ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id : " + messageDto.getRoomId()));
 
         ChatMessage chatMessage = ChatMessage.builder()
+                .senderName(messageDto.getSenderName())
                 .message(messageDto.getMessage())
                 .user(user)
                 .chatRoom(chatRoom)
@@ -61,43 +55,47 @@ public class ChatService {
     }
 
     public List<ChatMessageDto> getMessages(Long roomId, Long userId) {
-        chatGroupRepository.findByChatRoomIdAndUserId(roomId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("user does not exist in the chat room." +
-                        " room id : " + roomId + " user id : " + userId));
-
         return chatMessageRepository.findByChatRoomIdOrderById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id : " + roomId))
                 .stream()
-                .map(chatMessage -> ChatMessageDto.builder()
-                        .message(chatMessage.getMessage())
-                        .messageId(chatMessage.getId())
-                        .roomId(chatMessage.getChatRoom().getId())
-                        .senderId(chatMessage.getUser().getId())
-                        .build()
-                )
+                .map(ChatMessageDto::new)
                 .collect(Collectors.toList());
     }
 
     public List<UserDto> getFriends(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId));
-
-        return chatFriendRepository.findByUserAndBlockYn(user, "N")
-                .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId))
+        return chatFriendRepository.findFriendByUserIdAndBlockYn(userId, "N")
                 .stream()
-                .map(ChatFriend::getFriend)
-                .map(friend -> UserDto.builder()
-                        .userId(friend.getId())
-                        .name(friend.getName())
-                        .email(friend.getEmail())
-                        .build())
+                .map(UserDto::new)
                 .collect(Collectors.toList());
     }
 
-    public List<User> getUsersByRoomId(Long roomId) {
+    public List<ChatGroup> getGroupsByRoomId(Long roomId) {
         return chatGroupRepository.findByChatRoomId(roomId)
                 .stream()
-                .map(ChatGroup::getUser)
                 .collect(Collectors.toList());
+    }
+
+    public List<LastReadMessageDto> getLastReadMessagesByRoomId(Long roomId) {
+        return chatGroupRepository.findByChatRoomId(roomId)
+                .stream()
+                .map(LastReadMessageDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Long updateToLastMessage(Long roomId, Long userId) {
+        ChatGroup chatGroup =
+                chatGroupRepository.findByChatRoomIdAndUserId(roomId, userId)
+                        .orElseThrow(() -> new IllegalArgumentException("chatGroup does not exist. room id : " + roomId));
+
+        Long lastMessageId = chatMessageRepository.findLastMessageByRoomId(roomId)
+                .orElse(0L);
+
+        chatGroup.setLastReadMessageId(lastMessageId);
+
+        return lastMessageId;
+    }
+
+    public void markAsRead(ReadMessageDto readMessageDto) {
+        chatGroupRepository.updateLastReadMessageId(readMessageDto.getRoomId(), readMessageDto.getUserId(), readMessageDto.getMessageId());
     }
 }

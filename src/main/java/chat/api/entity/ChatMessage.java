@@ -22,6 +22,8 @@ public class ChatMessage {
     @Column(name = "message_id")
     private Long id;
 
+    private String senderName;
+
     @Column
     private String message;
 

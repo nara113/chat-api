@@ -1,42 +1,27 @@
 package chat.api.event;
 
-import chat.api.entity.ChatGroup;
 import chat.api.model.ChatMessageDto;
-import chat.api.repository.ChatGroupRepository;
-import chat.api.repository.ChatMessageRepository;
+import chat.api.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@Component
+//@Component
 public class PresenceEventListener {
 
-    private final ChatGroupRepository chatGroupRepository;
+    private final ChatService chatService;
 
-    private final ChatMessageRepository chatMessageRepository;
-
-    @Transactional
     @EventListener
-    public void handleSessionDisconnect(SessionDisconnectEvent event) {
+    private void handleSessionDisconnect(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
         Optional.ofNullable(headerAccessor.getSessionAttributes())
                 .map(attributes -> (ChatMessageDto) attributes.get("chatMessage"))
-                .ifPresent(chatMessage -> {
-                    ChatGroup chatGroup =
-                            chatGroupRepository.findByChatRoomIdAndUserId(chatMessage.getRoomId(), chatMessage.getSenderId())
-                            .orElseThrow(() -> new IllegalArgumentException("chatGroup does not exist. room id : " + chatMessage.getRoomId()));
-
-                    Long lastMessageId = chatMessageRepository.findLastMessageByRoomId(chatMessage.getRoomId())
-                            .orElse(0L);
-
-                    chatGroup.setLastReadMessageId(lastMessageId);
-                });
+                .ifPresent(message -> chatService.updateToLastMessage(message.getRoomId(), message.getSenderId()));
     }
 }

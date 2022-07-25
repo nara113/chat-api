@@ -67,11 +67,7 @@ export default function ChatRoom() {
     }
 
     const onClickRoom = (room) => {
-        // navigate('/chat/container',
-        //     {state: {room: room, roomUsers: room.users, currentUser: currentUser[0]}});
         setSelectedRoom(room);
-
-        console.log("click room", room)
     }
 
     useEffect(() => {
@@ -129,6 +125,11 @@ export default function ChatRoom() {
 
             if (selectedRoom && message.roomId === selectedRoom.roomId) {
                 setNewMessage(message);
+
+                client.current.publish({
+                    destination: "/app/chat/message/read",
+                    body: JSON.stringify({roomId: message.roomId, userId: userId, messageId: message.messageId}),
+                });
             }
 
             setRooms(prevState => {
@@ -219,10 +220,11 @@ export default function ChatRoom() {
                         <Toolbar/>
                         <ChatContainer2
                             client={client}
-                            room={selectedRoom}
+                            currentRoom={selectedRoom}
                             roomUsers={selectedRoom.users}
-                            currentUserId={currentUser[0].userId}
+                            currentUser={currentUser[0]}
                             newMessage={newMessage}
+                            setRooms={setRooms}
                         />
                     </Box>
                 }

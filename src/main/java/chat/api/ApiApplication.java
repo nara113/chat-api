@@ -124,6 +124,7 @@ public class ApiApplication {
 
             ChatMessage chatMessage = ChatMessage.builder()
                     .message("hello")
+                    .senderName("hello")
                     .user(user1)
                     .chatRoom(room1)
                     .build();

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
-    Optional<List<ChatMessage>> findByChatRoomIdOrderById(Long chatRoomId);
+    List<ChatMessage> findByChatRoomIdOrderById(Long chatRoomId);
 
     @Query("select max(m.id) from ChatMessage m where m.chatRoom.id = :roomId")
     Optional<Long> findLastMessageByRoomId(Long roomId);

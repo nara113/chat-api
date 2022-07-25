@@ -1,11 +1,8 @@
 package chat.api.controller;
 
 import chat.api.argumentresolver.User;
-import chat.api.model.ChatMessageDto;
-import chat.api.model.ChatRoomDto;
-import chat.api.model.Response;
+import chat.api.model.*;
 import chat.api.service.ChatService;
-import chat.api.model.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +25,14 @@ public class ChatController {
 
     @Operation(summary = "채팅방 메시지 목록")
     @GetMapping("/rooms/{roomId}/messages")
-    public Response<List<ChatMessageDto>> getMessage(@PathVariable Long roomId, @Parameter(hidden = true) @User UserDto user) {
+    public Response<List<ChatMessageDto>> getMessages(@PathVariable Long roomId, @Parameter(hidden = true) @User UserDto user) {
         return Response.of(chatService.getMessages(roomId, user.getUserId()));
+    }
+
+    @Operation(summary = "채팅방 유저별 마지막 읽은 메시지 아이디 목록")
+    @GetMapping("/rooms/{roomId}/last-read")
+    public Response<List<LastReadMessageDto>> getUsersByRoom(@PathVariable Long roomId) {
+        return Response.of(chatService.getLastReadMessagesByRoomId(roomId));
     }
 
     @Operation(summary = "친구 목록")

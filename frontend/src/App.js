@@ -4,7 +4,6 @@ import Chat from "./component/Chat";
 import React, {useState} from "react";
 import SignIn from "./component/SignIn";
 import ChatRoom from "./component/ChatRoom";
-import MyChatContainer2 from "./component/ChatContainer2";
 
 
 const App = () => {

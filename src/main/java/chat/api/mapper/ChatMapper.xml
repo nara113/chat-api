@@ -30,8 +30,10 @@
     </select>
 
     <select id="selectUsers" parameterType="map" resultType="userDto">
-        SELECT u.email AS email
+        SELECT u.user_id AS userId
+               , u.email AS email
                , u.name AS name
+               , u.profile_url AS profileUrl
           FROM chat_group g
          INNER JOIN users u
             ON g.user_id = u.user_id
