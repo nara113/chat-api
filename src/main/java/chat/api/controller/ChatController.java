@@ -25,8 +25,8 @@ public class ChatController {
 
     @Operation(summary = "채팅방 메시지 목록")
     @GetMapping("/rooms/{roomId}/messages")
-    public Response<List<ChatMessageDto>> getMessages(@PathVariable Long roomId, @Parameter(hidden = true) @User UserDto user) {
-        return Response.of(chatService.getMessages(roomId, user.getUserId()));
+    public Response<List<ChatMessageDto>> getMessages(@PathVariable Long roomId, @RequestParam(required = false) Long messageId) {
+        return Response.of(chatService.getMessages(roomId, messageId));
     }
 
     @Operation(summary = "채팅방 유저별 마지막 읽은 메시지 아이디 목록")

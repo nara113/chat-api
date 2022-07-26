@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.IntStream;
+
 @EnableJpaAuditing
 @SpringBootApplication
 public class ApiApplication {
@@ -122,14 +124,18 @@ public class ApiApplication {
             chatRoomRepository.save(room3);
             chatRoomRepository.save(room4);
 
-            ChatMessage chatMessage = ChatMessage.builder()
-                    .message("hello")
-                    .senderName("hello")
-                    .user(user1)
-                    .chatRoom(room1)
-                    .build();
+            IntStream.rangeClosed(0, 300)
+                    .forEach(i -> {
+                        ChatMessage chatMessage = ChatMessage.builder()
+                                .message("hello " + i)
+                                .senderName(user1.getName())
+                                .user(user1)
+                                .chatRoom(room1)
+                                .build();
 
-            chatMessageRepository.save(chatMessage);
+                        chatMessageRepository.save(chatMessage);
+                    });
+
 
             ChatGroup chatGroup = ChatGroup.builder()
                     .chatRoom(room1)

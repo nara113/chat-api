@@ -5,10 +5,9 @@ import {
     MainContainer,
     Message,
     MessageInput,
-    MessageList,
-    MessageSeparator
+    MessageList
 } from "@chatscope/chat-ui-kit-react";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 
 const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessage, setRooms}) => {
@@ -17,6 +16,10 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
     const [chatMessages, setChatMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [users, setUsers] = useState();
+    const [messageId, setMessageId] = useState();
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [last, setLast] = useState(false)
+    const isUsersFirstRender = useRef(true);
 
     useEffect(() => {
         const subscription = client.current.subscribe(`/topic/room/${currentRoom.roomId}`, ({body}) => {
@@ -53,11 +56,6 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
                 setUsers(res.data.data);
             })
 
-        axios.get(`/api/v1/rooms/${currentRoom.roomId}/messages`)
-            .then(res => {
-                setChatMessages(res.data.data);
-            })
-
         client.current.publish({
             destination: "/app/chat/enter",
             body: JSON.stringify({roomId: currentRoom.roomId, senderId: currentUser.userId}),
@@ -65,16 +63,85 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
 
         return () => {
             subscription.unsubscribe()
+            setChatMessages([])
+            setMessage("")
+            setMessageId();
+            setLoadingMore(false)
+            setLast(false)
+            isUsersFirstRender.current = true;
         }
     }, [currentRoom]);
+
+    useEffect(() => {
+        if (!users || !isUsersFirstRender.current) return;
+
+        isUsersFirstRender.current = false;
+
+        loadMessages();
+    }, [users])
 
     useEffect(() => {
         if (!newMessage) {
             return;
         }
 
-        setChatMessages((_chatMessages) => [..._chatMessages, newMessage]);
+        setChatMessages((_chatMessages) => [..._chatMessages, makeMessage(newMessage)]);
     }, [newMessage])
+
+    const loadMessages = () => {
+        setLoadingMore(true);
+
+        axios.get(`/api/v1/rooms/${currentRoom.roomId}/messages${messageId ? `?messageId=${messageId}` : ''}`)
+            .then(res => {
+                const data = res.data.data.reverse();
+
+                setLoadingMore(false);
+
+                if (Array.isArray(data) && data.length === 0) {
+                    setLast(true);
+                    return;
+                }
+
+                const messages = data.map((_chatMessage) => makeMessage(_chatMessage))
+
+                setMessageId(data[0].messageId)
+                setChatMessages(messages.concat(chatMessages));
+            })
+    }
+
+    const makeMessage = (_chatMessage) => {
+        return _chatMessage.senderId === currentUser.userId
+            ? <Message key={_chatMessage.messageId}
+                       model={{
+                           message: _chatMessage.message,
+                           sentTime: "15 mins ago",
+                           sender: _chatMessage.senderName,
+                           direction: "outgoing",
+                           position: "last"
+                       }}>
+                <Message.Footer sentTime={getUnreadCount(_chatMessage)}/>
+            </Message>
+            : <Message key={_chatMessage.messageId}
+                       model={{
+                           message: _chatMessage.message,
+                           sentTime: "15 mins ago",
+                           sender: _chatMessage.senderName,
+                           direction: "incoming",
+                           position: "first"
+                       }}>
+                <Message.Header sender={_chatMessage.senderName}/>
+                <Avatar src={img} name={_chatMessage.senderName}/>
+                <Message.Footer
+                    sender={getUnreadCount(_chatMessage)}
+                    sentTime="just now"/>
+            </Message>
+    }
+
+    const getUnreadCount = (_chatMessage) => {
+        return users
+            .filter(user => user.lastReadMessageId < _chatMessage.messageId)
+            .length;
+    }
 
     const publish = (message) => {
         if (!client.current.connected) {
@@ -94,11 +161,13 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
         setMessage("");
     };
 
-    const getUnreadCount = _chatMessage => {
-        return users
-            .filter(user => user.lastReadMessageId < _chatMessage.messageId)
-            .length;
-    }
+    const onYReachStart = () => {
+        if (loadingMore === true || last === true) {
+            return;
+        }
+
+        loadMessages();
+    };
 
     return (
         <div style={{
@@ -113,41 +182,8 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
                         <Avatar src={img} name="Zoe"/>
                         <ConversationHeader.Content userName={roomUsers.map(_user => _user.name).join(', ')}/>
                     </ConversationHeader>
-                    <MessageList>
-                        {chatMessages && chatMessages.length > 0 &&
-                            chatMessages.map((_chatMessage, index) => (
-                                _chatMessage.chatType === 'ENTER'
-                                    ? <MessageSeparator
-                                        content="Content from property">enter {_chatMessage.senderId}</MessageSeparator>
-                                    :
-                                    (_chatMessage.senderId === currentUser.userId
-                                            ? <Message key={index}
-                                                       model={{
-                                                           message: _chatMessage.message,
-                                                           sentTime: "15 mins ago",
-                                                           sender: _chatMessage.senderName,
-                                                           direction: "outgoing",
-                                                           position: "last"
-                                                       }}>
-                                                <Message.Footer sentTime={getUnreadCount(_chatMessage)}/>
-                                            </Message>
-                                            : <Message key={index}
-                                                       model={{
-                                                           message: _chatMessage.message,
-                                                           sentTime: "15 mins ago",
-                                                           sender: _chatMessage.senderName,
-                                                           direction: "incoming",
-                                                           position: "first"
-                                                       }}>
-                                                <Message.Header sender={_chatMessage.senderName}/>
-                                                <Avatar src={img} name={_chatMessage.senderName}/>
-                                                <Message.Footer
-                                                    sender={getUnreadCount(_chatMessage)}
-                                                    sentTime="just now"/>
-                                            </Message>
-                                    )
-                            ))
-                        }
+                    <MessageList loadingMore={loadingMore} onYReachStart={onYReachStart}>
+                        {chatMessages}
                     </MessageList>
                     <MessageInput placeholder="Type message here"
                                   value={message}

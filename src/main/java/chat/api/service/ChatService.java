@@ -54,9 +54,16 @@ public class ChatService {
         return chatMessage.getId();
     }
 
-    public List<ChatMessageDto> getMessages(Long roomId, Long userId) {
-        return chatMessageRepository.findByChatRoomIdOrderById(roomId)
-                .stream()
+    public List<ChatMessageDto> getMessages(Long roomId, Long messageId) {
+        List<ChatMessage> messages;
+
+        if (messageId == null) {
+            messages = chatMessageRepository.findTop30ByChatRoomIdOrderByIdDesc(roomId);
+        } else {
+            messages = chatMessageRepository.findTop30ByChatRoomIdAndIdIsLessThanOrderByIdDesc(roomId, messageId);
+        }
+
+        return messages.stream()
                 .map(ChatMessageDto::new)
                 .collect(Collectors.toList());
     }
