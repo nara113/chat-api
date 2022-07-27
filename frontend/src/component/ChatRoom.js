@@ -146,7 +146,13 @@ export default function ChatRoom() {
                     }
 
                     return room;
-                });
+                }).sort((a, b) => {
+                        if (dayjs(a.lastMessageTime).isAfter(b.lastMessageTime)) {
+                            return -1;
+                        }
+
+                        return 1;
+                    });
             });
         });
     };

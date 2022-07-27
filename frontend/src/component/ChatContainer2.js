@@ -9,6 +9,7 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
+import dayjs from "dayjs";
 
 const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessage, setRooms}) => {
     const img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAAAXNSR0IArs4c6QAAATpJREFUWEdjvPm+8T/DEACMow6lciyNhiiVA5RhNERHQ5TaIUBt80bT6GiIUjsEqG0e0WlUhb+SgYmRFWz/i2/rGT79uoziFkW+PAZWJgGw2Pufxxlef9+N1a3CHA4Mwhx2YLk//z4z3PvUT5SfiHaoqkA1AyMDM9jQl982MXz8dQHFAiW+IgYWJh6w2IefZxhefd+G1QGinC4MguxWYLm//78x3P3YM+rQ0RDFlwaGdxqF+By9B8MID5BBk5kIZdNRhxIKIZA8cjkKKuy//rmNok2c04uBiZFjtBwd3rl+tArFk1mGd9Rja+Yp8RUysDDxQnP9KYZX33dgDR8RDkcGIQ5baOvpK8Pdj73EFDqj/XqiQokURUSnUVIMpYXaUYdSO1RHQ3Q0RKkdAtQ2bzSNjoYotUOA2uYBAI6umQqSmDikAAAAAElFTkSuQmCC";
@@ -16,7 +17,7 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
     const [chatMessages, setChatMessages] = useState([]);
     const [message, setMessage] = useState("");
     const [users, setUsers] = useState();
-    const [messageId, setMessageId] = useState();
+    const [oldestMessageId, setOldestMessageId] = useState();
     const [loadingMore, setLoadingMore] = useState(false);
     const [last, setLast] = useState(false)
     const isUsersFirstRender = useRef(true);
@@ -65,7 +66,7 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
             subscription.unsubscribe()
             setChatMessages([])
             setMessage("")
-            setMessageId();
+            setOldestMessageId(null);
             setLoadingMore(false)
             setLast(false)
             isUsersFirstRender.current = true;
@@ -91,7 +92,7 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
     const loadMessages = () => {
         setLoadingMore(true);
 
-        axios.get(`/api/v1/rooms/${currentRoom.roomId}/messages${messageId ? `?messageId=${messageId}` : ''}`)
+        axios.get(`/api/v1/rooms/${currentRoom.roomId}/messages${oldestMessageId ? `?messageId=${oldestMessageId}` : ''}`)
             .then(res => {
                 const data = res.data.data.reverse();
 
@@ -104,7 +105,7 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
 
                 const messages = data.map((_chatMessage) => makeMessage(_chatMessage))
 
-                setMessageId(data[0].messageId)
+                setOldestMessageId(data[0].messageId)
                 setChatMessages(messages.concat(chatMessages));
             })
     }
@@ -133,7 +134,7 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
                 <Avatar src={img} name={_chatMessage.senderName}/>
                 <Message.Footer
                     sender={getUnreadCount(_chatMessage)}
-                    sentTime="just now"/>
+                    sentTime={dayjs(_chatMessage.createdDate).format("A hh:mm")}/>
             </Message>
     }
 
