@@ -86,7 +86,7 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
             return;
         }
 
-        setChatMessages((_chatMessages) => [..._chatMessages, makeMessage(newMessage)]);
+        setChatMessages((_chatMessages) => [..._chatMessages, newMessage]);
     }, [newMessage])
 
     const loadMessages = () => {
@@ -103,10 +103,8 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
                     return;
                 }
 
-                const messages = data.map((_chatMessage) => makeMessage(_chatMessage))
-
                 setOldestMessageId(data[0].messageId)
-                setChatMessages(messages.concat(chatMessages));
+                setChatMessages(data.concat(chatMessages));
             })
     }
 
@@ -184,7 +182,9 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
                         <ConversationHeader.Content userName={roomUsers.map(_user => _user.name).join(', ')}/>
                     </ConversationHeader>
                     <MessageList loadingMore={loadingMore} onYReachStart={onYReachStart}>
-                        {chatMessages}
+                        {chatMessages &&
+                            chatMessages.map((_chatMessage) => makeMessage(_chatMessage))
+                        }
                     </MessageList>
                     <MessageInput placeholder="Type message here"
                                   value={message}
