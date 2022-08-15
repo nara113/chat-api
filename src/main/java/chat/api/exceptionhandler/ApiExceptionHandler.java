@@ -15,4 +15,10 @@ public class ApiExceptionHandler {
     public Response<String> handle(MethodArgumentNotValidException ex) {
         return Response.of(HttpStatus.BAD_REQUEST.value(), ex.getFieldErrors().get(0).getDefaultMessage());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    private Response<String> illegalEx(Exception ex) {
+        return Response.of(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    }
 }

@@ -18,11 +18,12 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "회원가입")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
     public Response<String> signup(@RequestBody @Valid SignupUser signupUser) {
         userService.signup(signupUser);
 
-        return Response.of("success");
+        return Response.of(HttpStatus.CREATED.value(), "success");
     }
 
     @Operation(summary = "로그인")

@@ -43,7 +43,6 @@ public class SecurityConfig {
                 .authorizeRequests(request ->
                         request
                                 .antMatchers(
-                                        "/**",
                                         "/node_modules/**",
                                         "/ws/chat/**",
                                         "/h2-console/**",

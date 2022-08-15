@@ -44,7 +44,9 @@ public class UserService {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
                 = new UsernamePasswordAuthenticationToken(login.getEmail(), login.getPassword());
 
-        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
+        Authentication authenticate = authenticationManagerBuilder
+                .getObject()
+                .authenticate(usernamePasswordAuthenticationToken);
 
         return tokenProvider.createToken(authenticate);
     }

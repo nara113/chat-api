@@ -6,6 +6,8 @@ import chat.api.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +45,11 @@ public class ChatController {
 
     @Operation(summary = "채팅방 입장")
     @PostMapping("/rooms/{roomId}/user")
-    public Response addUser(@Parameter(hidden = true) @User UserDto user, @PathVariable String roomId) {
+    public Response addUser(@AuthenticationPrincipal UserDetails user,
+                            @Parameter(hidden = true) @User UserDto user2,
+                            @PathVariable String roomId) {
+        System.out.println("user = " + user.getUsername());
+        System.out.println("user2 = " + user2);
 
         return null;
     }
