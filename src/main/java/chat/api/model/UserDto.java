@@ -15,10 +15,12 @@ public class UserDto {
     private String email;
     private String name;
     private String profileUrl;
+    private String statusMessage;
 
     public UserDto(User user) {
         this.userId = user.getId();
         this.email = user.getEmail();
         this.name = user.getName();
+        this.statusMessage = user.getStatusMessage();
     }
 }

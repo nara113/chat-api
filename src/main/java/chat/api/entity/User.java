@@ -34,6 +34,8 @@ public class User extends BaseEntity {
 
     private String profileUrl;
 
+    private String statusMessage;
+
     @OneToMany(mappedBy = "user")
     private List<ChatGroup> groups = new ArrayList<>();
 

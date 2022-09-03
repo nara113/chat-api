@@ -46,6 +46,7 @@ public class ApiApplication {
                     .email("email1")
                     .password(passwordEncoder.encode("pass1"))
                     .name("Lilly")
+                    .statusMessage("i'm happy")
                     .build();
 
             User user2 = User.builder()
@@ -58,12 +59,14 @@ public class ApiApplication {
                     .email("email3")
                     .password(passwordEncoder.encode("pass2"))
                     .name("Emily")
+                    .statusMessage("hahaha")
                     .build();
 
             User user4 = User.builder()
                     .email("email4")
                     .password(passwordEncoder.encode("pass2"))
                     .name("Kai")
+                    .statusMessage("message 2")
                     .build();
 
             User user5 = User.builder()

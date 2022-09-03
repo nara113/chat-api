@@ -41,7 +41,7 @@ export default function SignIn() {
         const email = data.get('email');
         const password = data.get('password');
 
-        axios.post("/api/v1/users/login", {
+        axios.post("/auth/login", {
             email,
             password,
         })

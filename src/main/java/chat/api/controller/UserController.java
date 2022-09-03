@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@RequestMapping("/api/v1/users")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 @RestController
 public class UserController {
