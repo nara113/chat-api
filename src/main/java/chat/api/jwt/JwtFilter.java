@@ -1,10 +1,9 @@
 package chat.api.jwt;
 
-import chat.api.model.TokenConst;
+import chat.api.util.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,23 +22,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = resolveToken(request);
+        String jwt = TokenUtil.resolveToken(request);
 
-        if (StringUtils.isNotEmpty(jwt) && tokenProvider.validateToken(jwt)) {
+        if (StringUtils.isNotEmpty(jwt) && tokenProvider.validateToken(jwt) && !tokenProvider.isLogout(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-        if (StringUtils.isNotEmpty(bearerToken) && StringUtils.startsWith(bearerToken, TokenConst.BEARER_TOKEN_PREFIX)) {
-            return bearerToken.substring(TokenConst.BEARER_TOKEN_PREFIX.length());
-        }
-
-        return null;
     }
 }

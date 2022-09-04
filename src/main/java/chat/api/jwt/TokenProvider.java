@@ -1,12 +1,15 @@
 package chat.api.jwt;
 
 import chat.api.model.Authority;
+import chat.api.model.TokenConst;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,15 +25,20 @@ import java.util.List;
 public class TokenProvider implements InitializingBean {
     private static final String AUTHORITIES_KEY = "auth";
 
-    private String secret;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    private long tokenValidityInMilliseconds;
+    private final String secret;
+
+    private final long tokenValidityInMilliseconds;
 
     public TokenProvider(
+            RedisTemplate<String, Object> redisTemplate,
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
+            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds
+    ) {
+        this.redisTemplate = redisTemplate;
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
+        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000L;
     }
 
     private Key key;
@@ -42,13 +50,13 @@ public class TokenProvider implements InitializingBean {
     }
 
     public String createToken(Authentication authentication) {
-        Date validity = new Date(new Date().getTime() + tokenValidityInMilliseconds);
+        long now = new Date().getTime();
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, Authority.ROLE_USER.name())
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(validity)
+                .setExpiration(new Date(now + tokenValidityInMilliseconds))
                 .compact();
     }
 
@@ -80,6 +88,10 @@ public class TokenProvider implements InitializingBean {
             log.error("JWT claims string is empty");
         }
         return false;
+    }
+
+    public boolean isLogout(String token) {
+        return ObjectUtils.isNotEmpty(redisTemplate.opsForValue().get(TokenConst.LOGOUT_PREFIX + token));
     }
 
 }

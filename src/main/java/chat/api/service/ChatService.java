@@ -101,6 +101,9 @@ public class ChatService {
     }
 
     public void markAsRead(ReadMessageDto readMessageDto) {
-        chatGroupRepository.updateLastReadMessageId(readMessageDto.getRoomId(), readMessageDto.getUserId(), readMessageDto.getMessageId());
+        chatGroupRepository.updateLastReadMessageId(
+                readMessageDto.getRoomId(),
+                readMessageDto.getUserId(),
+                readMessageDto.getMessageId());
     }
 }
