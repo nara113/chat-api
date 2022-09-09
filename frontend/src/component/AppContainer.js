@@ -11,19 +11,141 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {Badge} from "@mui/material";
+import {Badge, FormControl} from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import ChatRoom2 from "./ChatRoom2";
+import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Modal from '@mui/material/Modal';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormLabel from '@mui/material/FormLabel';
 
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import ChatFriends from "./ChatFriends";
+
+const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+const CreateRoomButton = () => {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+
+    const [modalOpen, setModalOpen] = React.useState(false);
+    const handleModalOpen = () => setModalOpen(true);
+    const handleModalClose = () => setModalOpen(false);
+
+    return (
+        <>
+            <IconButton
+                id="basic-button"
+                aria-controls={open ? 'basic-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
+                color="inherit">
+                <AddCommentOutlinedIcon/>
+            </IconButton>
+            <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                }}
+            >
+                <MenuItem onClick={handleModalOpen}>
+                    <ListItemIcon>
+                        <ChatBubbleOutlineOutlinedIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>일반채팅</ListItemText>
+                </MenuItem>
+                <Modal
+                    open={modalOpen}
+                    onClose={handleModalClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={modalStyle}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            대화상대 선택
+                        </Typography>
+                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                            <Paper
+                                component="form"
+                                sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
+                            >
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    placeholder="이름(초성), 전화번호 검색"
+                                />
+                                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                                    <SearchIcon />
+                                </IconButton>
+                            </Paper>
+                            <FormControl sx={{pt: 2}}>
+                                <FormLabel id="demo-radio-buttons-group-label" sx={{ pt: 2 }}>친구</FormLabel>
+                                <FormGroup>
+                                    <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
+                                    <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
+                                    <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
+                                </FormGroup>
+                            </FormControl>
+                        </Typography>
+                    </Box>
+                </Modal>
+                <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                        <LockOutlinedIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>비밀채팅</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                        <ForumOutlinedIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>오픈채팅</ListItemText>
+                </MenuItem>
+            </Menu>
+        </>
+    )
+}
 
 export default function AppContainer() {
     const [rooms, setRooms] = useState();
     const [selectedRoom, setSelectedRoom] = useState();
     const [newMessage, setNewMessage] = useState();
     const [toolbar, setToolbar] = useState('ROOMS');
+    const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
     const currentUser = useState(JSON.parse(localStorage.getItem('user')));
     const isRoomsFirstRender = useRef(true);
     const stateRef = useRef();
@@ -142,6 +264,7 @@ export default function AppContainer() {
                             <IconButton color="inherit">
                                 <SearchIcon/>
                             </IconButton>
+                            <CreateRoomButton />
                             <IconButton color="inherit">
                                 <SettingsIcon/>
                             </IconButton>

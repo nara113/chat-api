@@ -7,7 +7,7 @@ import chat.api.model.SignupUser;
 import chat.api.model.TokenConst;
 import chat.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,7 @@ public class UserService {
 
     private final TokenProvider tokenProvider;
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     private final long tokenValidityInMilliseconds;
 
@@ -37,7 +37,7 @@ public class UserService {
             PasswordEncoder passwordEncoder,
             AuthenticationManagerBuilder authenticationManagerBuilder,
             TokenProvider tokenProvider,
-            RedisTemplate<String, Object> redisTemplate,
+            StringRedisTemplate redisTemplate,
             @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds
     ) {
         this.userRepository = userRepository;
@@ -81,6 +81,6 @@ public class UserService {
 
     public void logout(String token) {
         redisTemplate.opsForValue()
-                .set(TokenConst.LOGOUT_PREFIX + token, true, tokenValidityInMilliseconds, TimeUnit.MILLISECONDS);
+                .set(TokenConst.LOGOUT_PREFIX + token, "true", tokenValidityInMilliseconds, TimeUnit.MILLISECONDS);
     }
 }

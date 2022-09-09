@@ -17,7 +17,7 @@ const CreateChatRoomModal = ({show, onHide}) => {
     }
 
     useEffect(() => {
-        search();
+        // search();
     }, [])
 
     return (

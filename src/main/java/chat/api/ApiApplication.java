@@ -81,30 +81,36 @@ public class ApiApplication {
             userRepository.save(user4);
             userRepository.save(user5);
 
-            ChatFriend chatFriend1 = ChatFriend.builder()
+            ChatFriend chatFriend1_1 = ChatFriend.builder()
                     .user(user1)
                     .friend(user2)
                     .build();
 
-            ChatFriend chatFriend2 = ChatFriend.builder()
+            ChatFriend chatFriend1_2 = ChatFriend.builder()
                     .user(user1)
                     .friend(user3)
                     .build();
 
-            ChatFriend chatFriend3 = ChatFriend.builder()
+            ChatFriend chatFriend1_3 = ChatFriend.builder()
                     .user(user1)
                     .friend(user4)
                     .build();
 
-            ChatFriend chatFriend4 = ChatFriend.builder()
+            ChatFriend chatFriend1_4 = ChatFriend.builder()
                     .user(user1)
                     .friend(user5)
                     .build();
 
-            chatFriendRepository.save(chatFriend1);
-            chatFriendRepository.save(chatFriend2);
-            chatFriendRepository.save(chatFriend3);
-            chatFriendRepository.save(chatFriend4);
+            ChatFriend chatFriend2_1 = ChatFriend.builder()
+                    .user(user2)
+                    .friend(user1)
+                    .friend(user1).build();
+
+            chatFriendRepository.save(chatFriend1_1);
+            chatFriendRepository.save(chatFriend1_2);
+            chatFriendRepository.save(chatFriend1_3);
+            chatFriendRepository.save(chatFriend1_4);
+            chatFriendRepository.save(chatFriend2_1);
 
             ChatRoom room1 = ChatRoom.builder()
                     .name("room 1")
