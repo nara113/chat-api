@@ -30,9 +30,126 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import FormLabel from '@mui/material/FormLabel';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
 
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import ChatFriends from "./ChatFriends";
+import Button from "@mui/material/Button";
+
+const BootstrapDialog = styled(Dialog)(({theme}) => ({
+    '& .MuiDialogContent-root': {
+        padding: theme.spacing(2),
+    },
+    '& .MuiDialogActions-root': {
+        padding: theme.spacing(1),
+    },
+}));
+
+const BootstrapDialogTitle = (props) => {
+    const {children, onClose, ...other} = props;
+
+    return (
+        <DialogTitle sx={{m: 0, p: 2}} {...other}>
+            {children}
+            {onClose ? (
+                <IconButton
+                    aria-label="close"
+                    onClick={onClose}
+                    sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: 8,
+                        color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                    <CloseIcon/>
+                </IconButton>
+            ) : null}
+        </DialogTitle>
+    );
+};
+
+BootstrapDialogTitle.propTypes = {
+    children: PropTypes.node,
+    onClose: PropTypes.func.isRequired,
+};
+
+const RegularChatDialog = ({open, handleClose, friends}) => {
+    const [count, setCount] = useState(0);
+    const [invitedFriends, setInvitedFriends] = useState([]);
+
+    const handleChange = (event) => {
+        const checked = event.target.checked;
+        const value = event.target.value;
+
+        if (checked) {
+            setCount(count + 1);
+            setInvitedFriends(current => [value, ...current]);
+        } else {
+            setCount(count - 1);
+            setInvitedFriends(invitedFriends.filter(friend => friend !== value))
+        }
+    };
+
+    return (
+        <BootstrapDialog
+            onClose={handleClose}
+            aria-labelledby="customized-dialog-title"
+            open={open}
+        >
+            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+                대화상대 선택
+            </BootstrapDialogTitle>
+            <DialogContent>
+                <Typography id="modal-modal-description" sx={{mt: 2}}>
+                    <Paper
+                        component="form"
+                        sx={{p: '2px 4px', display: 'flex', alignItems: 'center', width: 400}}
+                    >
+                        <InputBase
+                            sx={{ml: 1, flex: 1}}
+                            placeholder="이름(초성), 전화번호 검색"
+                        />
+                        <IconButton type="button" sx={{p: '10px'}} aria-label="search">
+                            <SearchIcon/>
+                        </IconButton>
+                    </Paper>
+                    <FormControl sx={{pt: 2}}>
+                        <FormLabel id="demo-radio-buttons-group-label" sx={{pt: 2}}>친구</FormLabel>
+                        <FormGroup>
+                            {friends && friends.length > 0 &&
+                                friends.map((_friend) => {
+                                    return (
+                                        <FormControlLabel
+                                            control={<Checkbox
+                                                value={_friend.userId}
+                                                onChange={handleChange}
+                                                icon={<FavoriteBorder/>}
+                                                checkedIcon={<Favorite/>}/>}
+                                            label={_friend.name}/>
+                                    )
+                                })
+                            }
+                        </FormGroup>
+                    </FormControl>
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus disabled={count === 0} onClick={handleClose}>
+                    {count} 확인
+                </Button>
+            </DialogActions>
+        </BootstrapDialog>
+    );
+}
 
 const modalStyle = {
     position: 'absolute',
@@ -40,13 +157,70 @@ const modalStyle = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
+    maxHeight: 600,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
+    overflow: 'scroll'
 };
 
+const RegularChatModal = ({modalOpen, handleModalClose, friends}) => {
+    const handleChange = (event) => {
+        console.log(event.target.value)
+        console.log(event.target.checked)
+    };
+
+    return (
+        <Modal
+            open={modalOpen}
+            onClose={handleModalClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box sx={modalStyle}>
+                <Typography id="modal-modal-title" variant="h6" component="h2">
+                    대화상대 선택
+                </Typography>
+                <Typography id="modal-modal-description" sx={{mt: 2}}>
+                    <Paper
+                        component="form"
+                        sx={{p: '2px 4px', display: 'flex', alignItems: 'center', width: 400}}
+                    >
+                        <InputBase
+                            sx={{ml: 1, flex: 1}}
+                            placeholder="이름(초성), 전화번호 검색"
+                        />
+                        <IconButton type="button" sx={{p: '10px'}} aria-label="search">
+                            <SearchIcon/>
+                        </IconButton>
+                    </Paper>
+                    <FormControl sx={{pt: 2}}>
+                        <FormLabel id="demo-radio-buttons-group-label" sx={{pt: 2}}>친구</FormLabel>
+                        <FormGroup>
+                            {friends && friends.length > 0 &&
+                                friends.map((_friend) => {
+                                    return (
+                                        <FormControlLabel
+                                            control={<Checkbox
+                                                value={_friend.userId}
+                                                onChange={handleChange}
+                                                icon={<FavoriteBorder/>}
+                                                checkedIcon={<Favorite/>}/>}
+                                            label={_friend.name}/>
+                                    )
+                                })
+                            }
+                        </FormGroup>
+                    </FormControl>
+                </Typography>
+            </Box>
+        </Modal>
+    )
+}
+
 const CreateRoomButton = () => {
+    const [friends, setFriends] = useState()
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {
@@ -62,6 +236,17 @@ const CreateRoomButton = () => {
     const [modalOpen, setModalOpen] = React.useState(false);
     const handleModalOpen = () => setModalOpen(true);
     const handleModalClose = () => setModalOpen(false);
+
+    const getFriends = () => {
+        axios.get(`/api/v1/friends`)
+            .then(res => {
+                setFriends(res.data.data);
+            })
+    }
+
+    useEffect(() => {
+        getFriends();
+    }, []);
 
     return (
         <>
@@ -85,53 +270,27 @@ const CreateRoomButton = () => {
             >
                 <MenuItem onClick={handleModalOpen}>
                     <ListItemIcon>
-                        <ChatBubbleOutlineOutlinedIcon fontSize="small" />
+                        <ChatBubbleOutlineOutlinedIcon fontSize="small"/>
                     </ListItemIcon>
                     <ListItemText>일반채팅</ListItemText>
                 </MenuItem>
-                <Modal
+                <RegularChatDialog
                     open={modalOpen}
-                    onClose={handleModalClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={modalStyle}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            대화상대 선택
-                        </Typography>
-                        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                            <Paper
-                                component="form"
-                                sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}
-                            >
-                                <InputBase
-                                    sx={{ ml: 1, flex: 1 }}
-                                    placeholder="이름(초성), 전화번호 검색"
-                                />
-                                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                                    <SearchIcon />
-                                </IconButton>
-                            </Paper>
-                            <FormControl sx={{pt: 2}}>
-                                <FormLabel id="demo-radio-buttons-group-label" sx={{ pt: 2 }}>친구</FormLabel>
-                                <FormGroup>
-                                    <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
-                                    <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
-                                    <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
-                                </FormGroup>
-                            </FormControl>
-                        </Typography>
-                    </Box>
-                </Modal>
+                    handleClose={handleModalClose}
+                    friends={friends}/>
+                {/*<RegularChatModal*/}
+                {/*    modalOpen={modalOpen}*/}
+                {/*    handleModalClose={handleModalClose}*/}
+                {/*    friends={friends}/>*/}
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
-                        <LockOutlinedIcon fontSize="small" />
+                        <LockOutlinedIcon fontSize="small"/>
                     </ListItemIcon>
                     <ListItemText>비밀채팅</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
-                        <ForumOutlinedIcon fontSize="small" />
+                        <ForumOutlinedIcon fontSize="small"/>
                     </ListItemIcon>
                     <ListItemText>오픈채팅</ListItemText>
                 </MenuItem>
@@ -145,7 +304,6 @@ export default function AppContainer() {
     const [selectedRoom, setSelectedRoom] = useState();
     const [newMessage, setNewMessage] = useState();
     const [toolbar, setToolbar] = useState('ROOMS');
-    const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
     const currentUser = useState(JSON.parse(localStorage.getItem('user')));
     const isRoomsFirstRender = useRef(true);
     const stateRef = useRef();
@@ -264,7 +422,7 @@ export default function AppContainer() {
                             <IconButton color="inherit">
                                 <SearchIcon/>
                             </IconButton>
-                            <CreateRoomButton />
+                            <CreateRoomButton/>
                             <IconButton color="inherit">
                                 <SettingsIcon/>
                             </IconButton>
@@ -275,12 +433,12 @@ export default function AppContainer() {
                     toolbar === 'FRIENDS'
                         ? <ChatFriends/>
                         : <ChatRoom2 client={client}
-                                   currentUser={currentUser}
-                                   newMessage={newMessage}
-                                   rooms={rooms}
-                                   setRooms={setRooms}
-                                   selectedRoom={selectedRoom}
-                                   setSelectedRoom={setSelectedRoom}/>
+                                     currentUser={currentUser}
+                                     newMessage={newMessage}
+                                     rooms={rooms}
+                                     setRooms={setRooms}
+                                     selectedRoom={selectedRoom}
+                                     setSelectedRoom={setSelectedRoom}/>
                 }
             </Box>
             <AppBar position="fixed" color="primary" sx={{top: 'auto', bottom: 0}}>
