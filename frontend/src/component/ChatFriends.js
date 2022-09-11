@@ -46,7 +46,7 @@ export default function ChatFriends() {
                         >
                             <Grid container wrap="nowrap" spacing={2}>
                                 <Grid item>
-                                    <Avatar>W</Avatar>
+                                    <Avatar />
                                 </Grid>
                                 <Grid item xs={12} sm container zeroMinWidth>
                                     <Grid item xs zeroMinWidth>

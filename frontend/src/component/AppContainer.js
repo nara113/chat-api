@@ -37,10 +37,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import CloseIcon from '@mui/icons-material/Close';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
 import PropTypes from 'prop-types';
-import { styled } from '@mui/material/styles';
-
-import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import {styled} from '@mui/material/styles';
+import CancelIcon from '@mui/icons-material/Cancel';
 import ChatFriends from "./ChatFriends";
 import Button from "@mui/material/Button";
 
@@ -83,19 +84,21 @@ BootstrapDialogTitle.propTypes = {
 };
 
 const RegularChatDialog = ({open, handleClose, friends}) => {
-    const [count, setCount] = useState(0);
-    const [invitedFriends, setInvitedFriends] = useState([]);
+    const [invitedUserIds, setInvitedUserIds] = useState([]);
+
+    const friendsMap = new Map(
+        friends.map(f => {
+            return [f.userId, f];
+        }),
+    );
 
     const handleChange = (event) => {
-        const checked = event.target.checked;
-        const value = event.target.value;
+        const {checked, id} = event.target;
 
         if (checked) {
-            setCount(count + 1);
-            setInvitedFriends(current => [value, ...current]);
+            setInvitedUserIds([id, ...invitedUserIds]);
         } else {
-            setCount(count - 1);
-            setInvitedFriends(invitedFriends.filter(friend => friend !== value))
+            setInvitedUserIds(invitedUserIds.filter(userId => userId !== id))
         }
     };
 
@@ -109,6 +112,27 @@ const RegularChatDialog = ({open, handleClose, friends}) => {
                 대화상대 선택
             </BootstrapDialogTitle>
             <DialogContent>
+                <Stack direction="row" spacing={1}
+                       sx={{width: '100%', maxWidth: 400, overflow: "auto"}}>
+                    {
+                        invitedUserIds
+                            .map(userId => {
+                            return (
+                                <IconButton sx={{px: 0}}>
+                                    <Badge
+                                        overlap="circular"
+                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                        badgeContent={
+                                            <CancelIcon/>
+                                        }
+                                    >
+                                        <Avatar>{friendsMap.get(Number(userId)).name}</Avatar>
+                                    </Badge>
+                                </IconButton>
+                            )
+                        })
+                    }
+                </Stack>
                 <Typography id="modal-modal-description" sx={{mt: 2}}>
                     <Paper
                         component="form"
@@ -130,7 +154,7 @@ const RegularChatDialog = ({open, handleClose, friends}) => {
                                     return (
                                         <FormControlLabel
                                             control={<Checkbox
-                                                value={_friend.userId}
+                                                id={_friend.userId.toString()}
                                                 onChange={handleChange}
                                                 icon={<FavoriteBorder/>}
                                                 checkedIcon={<Favorite/>}/>}
@@ -143,8 +167,8 @@ const RegularChatDialog = ({open, handleClose, friends}) => {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button autoFocus disabled={count === 0} onClick={handleClose}>
-                    {count} 확인
+                <Button autoFocus disabled={invitedUserIds.length === 0} onClick={handleClose}>
+                    {invitedUserIds.length} 확인
                 </Button>
             </DialogActions>
         </BootstrapDialog>
@@ -274,10 +298,10 @@ const CreateRoomButton = () => {
                     </ListItemIcon>
                     <ListItemText>일반채팅</ListItemText>
                 </MenuItem>
-                <RegularChatDialog
+                {modalOpen && <RegularChatDialog
                     open={modalOpen}
                     handleClose={handleModalClose}
-                    friends={friends}/>
+                    friends={friends}/>}
                 {/*<RegularChatModal*/}
                 {/*    modalOpen={modalOpen}*/}
                 {/*    handleModalClose={handleModalClose}*/}
