@@ -1,18 +1,18 @@
 package chat.api.service;
 
-import chat.api.entity.ChatGroup;
-import chat.api.entity.ChatMessage;
-import chat.api.entity.ChatRoom;
-import chat.api.entity.User;
+import chat.api.entity.*;
+import chat.api.mapper.ChatGroupMapper;
 import chat.api.mapper.ChatMapper;
 import chat.api.model.*;
+import chat.api.model.request.CreateRoomRequest;
 import chat.api.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @RequiredArgsConstructor
 @Service
@@ -29,6 +29,8 @@ public class ChatService {
     private final ChatGroupRepository chatGroupRepository;
 
     private final ChatFriendRepository chatFriendRepository;
+
+    private final ChatGroupMapper chatGroupMapper;
 
     public List<ChatRoomDto> getAllRoom(Long userId) {
         return chatMapper.selectAllRoomsByUserId(userId);
@@ -65,14 +67,14 @@ public class ChatService {
 
         return messages.stream()
                 .map(ChatMessageDto::new)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public List<UserDto> getFriends(Long userId) {
         return chatFriendRepository.findFriendByUserIdAndBlockYn(userId, "N")
                 .stream()
                 .map(UserDto::new)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public List<ChatGroup> getGroupsByRoomId(Long roomId) {
@@ -83,7 +85,7 @@ public class ChatService {
         return chatGroupRepository.findByChatRoomId(roomId)
                 .stream()
                 .map(LastReadMessageDto::new)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Transactional
@@ -105,5 +107,20 @@ public class ChatService {
                 readMessageDto.getRoomId(),
                 readMessageDto.getUserId(),
                 readMessageDto.getMessageId());
+    }
+
+    @Transactional
+    public void createRoom(Long userId, CreateRoomRequest request) {
+        if (!request.getParticipantUserIds().contains(userId)) {
+            throw new IllegalArgumentException("Room creator must always be included as a participant.");
+        }
+
+        ChatRoom room = ChatRoom.builder()
+                .name(request.getRoomName())
+                .build();
+
+        chatRoomRepository.save(room);
+
+        chatGroupMapper.insertChatGroups(room.getId(), request.getParticipantUserIds());
     }
 }

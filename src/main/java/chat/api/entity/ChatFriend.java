@@ -1,5 +1,6 @@
 package chat.api.entity;
 
+import chat.api.entity.base.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @Entity
-public class ChatFriend extends BaseEntity {
+public class ChatFriend extends BaseTimeEntity {
 
     @Id @GeneratedValue
     @Column(name = "chat_friend_id")

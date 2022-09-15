@@ -2,6 +2,7 @@ package chat.api.controller;
 
 import chat.api.argumentresolver.User;
 import chat.api.model.*;
+import chat.api.model.request.CreateRoomRequest;
 import chat.api.service.ChatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -59,5 +61,14 @@ public class ChatController {
     public Response deleteUser(@Parameter(hidden = true) @User UserDto user, @PathVariable String roomId) {
 
         return null;
+    }
+
+    @Operation(summary = "채팅방 생성")
+    @PostMapping("/rooms")
+    public Response<String> createRoom(
+            @Parameter(hidden = true) @User UserDto user,
+            @Valid @RequestBody CreateRoomRequest createRoomRequest) {
+        chatService.createRoom(user.getUserId(), createRoomRequest);
+        return Response.of("ok");
     }
 }

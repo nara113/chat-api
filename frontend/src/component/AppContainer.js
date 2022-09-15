@@ -83,31 +83,86 @@ BootstrapDialogTitle.propTypes = {
     onClose: PropTypes.func.isRequired,
 };
 
-const RegularChatDialog = ({open, handleClose, friends}) => {
-    const [invitedUserIds, setInvitedUserIds] = useState([]);
+const GroupChatInfo = ({handleClose, participantUserIds, friends, currentUserId}) => {
+    const [roomName, setRoomName] = useState("test");
 
+    const createRoom = () => {
+        axios
+            .post("/api/v1/rooms", {
+                roomName,
+                'participantUserIds': [...participantUserIds, currentUserId]
+            }).then(r => {
+            handleClose();
+        }).catch(e => {
+
+        })
+    }
+
+    return (
+        <>
+            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+                그룹채팅방 정보 설정
+            </BootstrapDialogTitle>
+            <DialogContent>
+                <Typography id="modal-modal-description" sx={{mt: 2}}>
+                    <Paper
+                        component="form"
+                        sx={{p: '2px 4px', display: 'flex', alignItems: 'center', width: 400}}
+                    >
+                        <InputBase
+                            sx={{ml: 1, flex: 1}}
+                            placeholder="이름(초성), 전화번호 검색"
+                        />
+                        <IconButton type="button" sx={{p: '10px'}} aria-label="search">
+                            <SearchIcon/>
+                        </IconButton>
+                    </Paper>
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button autoFocus onClick={createRoom}>
+                    확인
+                </Button>
+            </DialogActions>
+        </>
+    );
+}
+
+const ChatParticipants = ({handleClose, friends, participantUserIds, setParticipantUserIds, setDialogContent}) => {
     const friendsMap = new Map(
         friends.map(f => {
             return [f.userId, f];
         }),
     );
 
+    const addUser = (id) => {
+        setParticipantUserIds([id, ...participantUserIds]);
+    }
+
+    const removeUser = (id) => {
+        setParticipantUserIds(participantUserIds.filter(userId => userId !== id));
+    }
+
     const handleChange = (event) => {
         const {checked, id} = event.target;
 
         if (checked) {
-            setInvitedUserIds([id, ...invitedUserIds]);
+            addUser(id);
         } else {
-            setInvitedUserIds(invitedUserIds.filter(userId => userId !== id))
+            removeUser(id);
         }
     };
 
+    const handleNext = () => {
+        setDialogContent("GroupChatInfo")
+    }
+
+    useEffect(() => {
+
+    }, [participantUserIds])
+
     return (
-        <BootstrapDialog
-            onClose={handleClose}
-            aria-labelledby="customized-dialog-title"
-            open={open}
-        >
+        <>
             <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
                 대화상대 선택
             </BootstrapDialogTitle>
@@ -115,22 +170,22 @@ const RegularChatDialog = ({open, handleClose, friends}) => {
                 <Stack direction="row" spacing={1}
                        sx={{width: '100%', maxWidth: 400, overflow: "auto"}}>
                     {
-                        invitedUserIds
+                        participantUserIds
                             .map(userId => {
-                            return (
-                                <IconButton sx={{px: 0}}>
-                                    <Badge
-                                        overlap="circular"
-                                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                                        badgeContent={
-                                            <CancelIcon/>
-                                        }
-                                    >
-                                        <Avatar>{friendsMap.get(Number(userId)).name}</Avatar>
-                                    </Badge>
-                                </IconButton>
-                            )
-                        })
+                                return (
+                                    <IconButton sx={{px: 0}} onClick={() => removeUser(userId)}>
+                                        <Badge
+                                            overlap="circular"
+                                            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                                            badgeContent={
+                                                <CancelIcon/>
+                                            }
+                                        >
+                                            <Avatar>{friendsMap.get(Number(userId)).name}</Avatar>
+                                        </Badge>
+                                    </IconButton>
+                                )
+                            })
                     }
                 </Stack>
                 <Typography id="modal-modal-description" sx={{mt: 2}}>
@@ -155,9 +210,8 @@ const RegularChatDialog = ({open, handleClose, friends}) => {
                                         <FormControlLabel
                                             control={<Checkbox
                                                 id={_friend.userId.toString()}
-                                                onChange={handleChange}
-                                                icon={<FavoriteBorder/>}
-                                                checkedIcon={<Favorite/>}/>}
+                                                checked={participantUserIds.includes(_friend.userId.toString())}
+                                                onChange={handleChange}/>}
                                             label={_friend.name}/>
                                     )
                                 })
@@ -167,10 +221,43 @@ const RegularChatDialog = ({open, handleClose, friends}) => {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button autoFocus disabled={invitedUserIds.length === 0} onClick={handleClose}>
-                    {invitedUserIds.length} 확인
+                <Button autoFocus disabled={participantUserIds.length === 0}
+                        onClick={handleNext}>
+                    {participantUserIds.length} 확인
                 </Button>
             </DialogActions>
+        </>
+    )
+}
+
+const RegularChatDialog = ({open, handleClose, friends, currentUserId}) => {
+    const [participantUserIds, setParticipantUserIds] = useState([]);
+    const [dialogContent, setDialogContent] = useState();
+
+    const dialogContentMap = {
+        "ChatParticipants": <ChatParticipants handleClose={handleClose}
+                                              friends={friends}
+                                              participantUserIds={participantUserIds}
+                                              setParticipantUserIds={setParticipantUserIds}
+                                              setDialogContent={setDialogContent}
+        />,
+        "GroupChatInfo": <GroupChatInfo currentUserId={currentUserId}
+                                        handleClose={handleClose}
+                                        friends={friends}
+                                        participantUserIds={participantUserIds}/>
+    }
+
+    useEffect(() => {
+        setDialogContent("ChatParticipants");
+    }, [])
+
+    return (
+        <BootstrapDialog
+            onClose={handleClose}
+            aria-labelledby="customized-dialog-title"
+            open={open}
+        >
+            {dialogContent && dialogContentMap[dialogContent]}
         </BootstrapDialog>
     );
 }
@@ -243,7 +330,7 @@ const RegularChatModal = ({modalOpen, handleModalClose, friends}) => {
     )
 }
 
-const CreateRoomButton = () => {
+const CreateRoomButton = ({currentUserId}) => {
     const [friends, setFriends] = useState()
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -301,7 +388,9 @@ const CreateRoomButton = () => {
                 {modalOpen && <RegularChatDialog
                     open={modalOpen}
                     handleClose={handleModalClose}
-                    friends={friends}/>}
+                    friends={friends}
+                    currentUserId={currentUserId}
+                />}
                 {/*<RegularChatModal*/}
                 {/*    modalOpen={modalOpen}*/}
                 {/*    handleModalClose={handleModalClose}*/}
@@ -446,7 +535,7 @@ export default function AppContainer() {
                             <IconButton color="inherit">
                                 <SearchIcon/>
                             </IconButton>
-                            <CreateRoomButton/>
+                            <CreateRoomButton currentUserId={currentUser[0].userId}/>
                             <IconButton color="inherit">
                                 <SettingsIcon/>
                             </IconButton>

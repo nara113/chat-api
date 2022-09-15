@@ -5,6 +5,8 @@ import SignIn from "./component/SignIn";
 import ChatRoom from "./component/ChatRoom";
 import AppContainer from "./component/AppContainer";
 
+import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+
 
 const App = () => {
     return (

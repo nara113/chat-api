@@ -1,4 +1,4 @@
-package chat.api.entity;
+package chat.api.entity.base;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity {
+public abstract class BaseTimeEntity {
     @Column(updatable = false)
     @CreatedDate
     private LocalDateTime createdDate;

@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.IntStream;
 
-@EnableJpaAuditing
 @SpringBootApplication
 public class ApiApplication {
     @Autowired
@@ -145,7 +144,6 @@ public class ApiApplication {
                         chatMessageRepository.save(chatMessage);
                     });
 
-
             ChatGroup chatGroup = ChatGroup.builder()
                     .chatRoom(room1)
                     .user(user1)
@@ -181,6 +179,22 @@ public class ApiApplication {
                     .user(user5)
                     .build();
 
+
+            ChatGroup chatGroup8 = ChatGroup.builder()
+                    .chatRoom(room4)
+                    .user(user1)
+                    .build();
+
+            ChatGroup chatGroup9 = ChatGroup.builder()
+                    .chatRoom(room4)
+                    .user(user5)
+                    .build();
+
+            ChatGroup chatGroup10 = ChatGroup.builder()
+                    .chatRoom(room4)
+                    .user(user2)
+                    .build();
+
             chatGroupRepository.save(chatGroup);
             chatGroupRepository.save(chatGroup2);
             chatGroupRepository.save(chatGroup3);
@@ -188,6 +202,9 @@ public class ApiApplication {
             chatGroupRepository.save(chatGroup5);
             chatGroupRepository.save(chatGroup6);
             chatGroupRepository.save(chatGroup7);
+            chatGroupRepository.save(chatGroup8);
+            chatGroupRepository.save(chatGroup9);
+            chatGroupRepository.save(chatGroup10);
         };
     }
 

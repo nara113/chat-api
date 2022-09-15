@@ -1,22 +1,20 @@
 package chat.api.entity;
 
+import chat.api.entity.base.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
-@ToString
 @Getter @Setter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @Entity
-public class ChatGroup extends BaseEntity {
+public class ChatGroup extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "group_id")
     private Long id;
 
@@ -30,4 +28,10 @@ public class ChatGroup extends BaseEntity {
 
     @ColumnDefault("0")
     private Long lastReadMessageId;
+
+    @Builder
+    private ChatGroup(User user, ChatRoom chatRoom) {
+        this.user = user;
+        this.chatRoom = chatRoom;
+    }
 }

@@ -1,5 +1,6 @@
 package chat.api.entity;
 
+import chat.api.entity.base.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,17 +9,15 @@ import java.util.List;
 
 @ToString(of = {"id", "name"})
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class ChatRoom extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "room_id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "chatRoom")
@@ -26,4 +25,9 @@ public class ChatRoom extends BaseEntity {
 
     @OneToMany(mappedBy = "chatRoom")
     private List<ChatMessage> messages = new ArrayList<>();
+
+    @Builder
+    private ChatRoom(String name) {
+        this.name = name;
+    }
 }
