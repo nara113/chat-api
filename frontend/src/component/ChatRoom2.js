@@ -73,7 +73,7 @@ export default function ChatRoom2({
                                     <Grid item xs={12} sm container zeroMinWidth>
                                         <Grid item xs zeroMinWidth>
                                             <Typography
-                                                noWrap>{_room.users.map(_user => _user.name).join(', ')}</Typography>
+                                                noWrap>{_room.roomName}</Typography>
                                             <Typography variant="body2" color="text.secondary">
                                                 {_room.lastMessage}
                                             </Typography>

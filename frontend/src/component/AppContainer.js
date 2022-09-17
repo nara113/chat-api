@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {Badge, FormControl} from "@mui/material";
+import {Badge, DialogContentText, FormControl} from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import ChatRoom2 from "./ChatRoom2";
@@ -44,6 +44,10 @@ import {styled} from '@mui/material/styles';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ChatFriends from "./ChatFriends";
 import Button from "@mui/material/Button";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import AvatarGroup from '@mui/material/AvatarGroup';
 
 const BootstrapDialog = styled(Dialog)(({theme}) => ({
     '& .MuiDialogContent-root': {
@@ -83,41 +87,84 @@ BootstrapDialogTitle.propTypes = {
     onClose: PropTypes.func.isRequired,
 };
 
-const GroupChatInfo = ({handleClose, participantUserIds, friends, currentUserId}) => {
-    const [roomName, setRoomName] = useState("test");
+const GroupChatInfo = ({handleClose, participantUsers, currentUserId, setDialogContent}) => {
+    const [roomName, setRoomName] = useState('');
+    const placeholder = participantUsers.slice(0, 5).map(user => user.name).join(', ');
+
+    const handleChange = (event) => {
+        const value = event.target.value;
+
+        if (value.length > 50) return;
+
+        setRoomName(value);
+    };
 
     const createRoom = () => {
+        const name = (roomName || placeholder);
+
         axios
             .post("/api/v1/rooms", {
-                roomName,
-                'participantUserIds': [...participantUserIds, currentUserId]
+                roomName: name,
+                'participantUserIds': [...participantUsers.map(user => user.userId), currentUserId]
             }).then(r => {
             handleClose();
+            window.location.reload(false);
         }).catch(e => {
 
         })
     }
 
+    const handlePrevious = () => {
+        setDialogContent("ChatParticipants")
+    }
+
     return (
         <>
             <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+                <IconButton type="button"
+                            onClick={handlePrevious}
+                            sx={{p: 0}}>
+                    <ArrowBackIosIcon/>
+                </IconButton>
                 그룹채팅방 정보 설정
             </BootstrapDialogTitle>
-            <DialogContent>
-                <Typography id="modal-modal-description" sx={{mt: 2}}>
-                    <Paper
-                        component="form"
-                        sx={{p: '2px 4px', display: 'flex', alignItems: 'center', width: 400}}
-                    >
-                        <InputBase
-                            sx={{ml: 1, flex: 1}}
-                            placeholder="이름(초성), 전화번호 검색"
-                        />
-                        <IconButton type="button" sx={{p: '10px'}} aria-label="search">
-                            <SearchIcon/>
-                        </IconButton>
-                    </Paper>
-                </Typography>
+            <DialogContent sx={{width: 400}}>
+                <Box
+                    noValidate
+                    component="form"
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        m: 'auto',
+                        width: 'fit-content',
+                    }}
+                >
+                    <AvatarGroup
+                        max={4}>
+                        {
+                            participantUsers
+                                .map(user => {
+                                    return <Avatar key={user.userId}>{user.name}</Avatar>
+                                })
+                        }
+                    </AvatarGroup>
+                </Box>
+                <TextField
+                    id="standard-start-adornment"
+                    sx={{width: 400, py: 3}}
+                    multiline
+                    placeholder={placeholder}
+                    InputProps={{
+                        endAdornment: <InputAdornment position="end">{roomName.length}/50</InputAdornment>,
+                    }}
+                    value={roomName}
+                    onChange={handleChange}
+                    variant="standard"
+                />
+                <DialogContentText>
+                    채팅시작 전, 내가 설정한 그룹채팅방의 사진과 이름은 다른 모든 대화상대에게도 동일하게 보입니다.
+                    채팅시작 후 설정한 사진과 이름은 나에게만 보입니다.
+                </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button autoFocus onClick={createRoom}>
@@ -128,7 +175,7 @@ const GroupChatInfo = ({handleClose, participantUserIds, friends, currentUserId}
     );
 }
 
-const ChatParticipants = ({handleClose, friends, participantUserIds, setParticipantUserIds, setDialogContent}) => {
+const ChatParticipants = ({handleClose, friends, participantUsers, setParticipantUsers, setDialogContent}) => {
     const friendsMap = new Map(
         friends.map(f => {
             return [f.userId, f];
@@ -136,11 +183,11 @@ const ChatParticipants = ({handleClose, friends, participantUserIds, setParticip
     );
 
     const addUser = (id) => {
-        setParticipantUserIds([id, ...participantUserIds]);
+        setParticipantUsers([friendsMap.get(Number(id)), ...participantUsers]);
     }
 
     const removeUser = (id) => {
-        setParticipantUserIds(participantUserIds.filter(userId => userId !== id));
+        setParticipantUsers(participantUsers.filter(user => user.userId !== id));
     }
 
     const handleChange = (event) => {
@@ -157,10 +204,6 @@ const ChatParticipants = ({handleClose, friends, participantUserIds, setParticip
         setDialogContent("GroupChatInfo")
     }
 
-    useEffect(() => {
-
-    }, [participantUserIds])
-
     return (
         <>
             <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
@@ -170,10 +213,10 @@ const ChatParticipants = ({handleClose, friends, participantUserIds, setParticip
                 <Stack direction="row" spacing={1}
                        sx={{width: '100%', maxWidth: 400, overflow: "auto"}}>
                     {
-                        participantUserIds
-                            .map(userId => {
+                        participantUsers
+                            .map(user => {
                                 return (
-                                    <IconButton sx={{px: 0}} onClick={() => removeUser(userId)}>
+                                    <IconButton sx={{px: 0}} onClick={() => removeUser(user.userId)}>
                                         <Badge
                                             overlap="circular"
                                             anchorOrigin={{vertical: 'top', horizontal: 'right'}}
@@ -181,7 +224,7 @@ const ChatParticipants = ({handleClose, friends, participantUserIds, setParticip
                                                 <CancelIcon/>
                                             }
                                         >
-                                            <Avatar>{friendsMap.get(Number(userId)).name}</Avatar>
+                                            <Avatar>{user.name}</Avatar>
                                         </Badge>
                                     </IconButton>
                                 )
@@ -210,7 +253,8 @@ const ChatParticipants = ({handleClose, friends, participantUserIds, setParticip
                                         <FormControlLabel
                                             control={<Checkbox
                                                 id={_friend.userId.toString()}
-                                                checked={participantUserIds.includes(_friend.userId.toString())}
+                                                checked={participantUsers.map(user => user.userId)
+                                                    .includes(_friend.userId)}
                                                 onChange={handleChange}/>}
                                             label={_friend.name}/>
                                     )
@@ -221,9 +265,9 @@ const ChatParticipants = ({handleClose, friends, participantUserIds, setParticip
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button autoFocus disabled={participantUserIds.length === 0}
+                <Button autoFocus disabled={participantUsers.length === 0}
                         onClick={handleNext}>
-                    {participantUserIds.length} 확인
+                    {participantUsers.length} 확인
                 </Button>
             </DialogActions>
         </>
@@ -231,20 +275,21 @@ const ChatParticipants = ({handleClose, friends, participantUserIds, setParticip
 }
 
 const RegularChatDialog = ({open, handleClose, friends, currentUserId}) => {
-    const [participantUserIds, setParticipantUserIds] = useState([]);
+    const [participantUsers, setParticipantUsers] = useState([]);
     const [dialogContent, setDialogContent] = useState();
 
     const dialogContentMap = {
         "ChatParticipants": <ChatParticipants handleClose={handleClose}
                                               friends={friends}
-                                              participantUserIds={participantUserIds}
-                                              setParticipantUserIds={setParticipantUserIds}
+                                              participantUsers={participantUsers}
+                                              setParticipantUsers={setParticipantUsers}
                                               setDialogContent={setDialogContent}
         />,
         "GroupChatInfo": <GroupChatInfo currentUserId={currentUserId}
                                         handleClose={handleClose}
-                                        friends={friends}
-                                        participantUserIds={participantUserIds}/>
+                                        participantUsers={participantUsers}
+                                        setDialogContent={setDialogContent}
+        />
     }
 
     useEffect(() => {
