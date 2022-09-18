@@ -11,6 +11,7 @@ import 'dayjs/locale/ko';
 
 import React from "react";
 import ChatContainer2 from "./ChatContainer2";
+import AvatarGroup from "@mui/material/AvatarGroup";
 
 dayjs.locale('ko');
 
@@ -68,7 +69,15 @@ export default function ChatRoom2({
                             >
                                 <Grid container wrap="nowrap" spacing={2} onClick={() => onClickRoom(_room)}>
                                     <Grid item>
-                                        <Avatar />
+                                        <AvatarGroup
+                                            max={4}>
+                                            {
+                                                _room.users
+                                                    .map(user => {
+                                                        return <Avatar key={user.userId} src={user.profileUrl}>{user.name}</Avatar>
+                                                    })
+                                            }
+                                        </AvatarGroup>
                                     </Grid>
                                     <Grid item xs={12} sm container zeroMinWidth>
                                         <Grid item xs zeroMinWidth>

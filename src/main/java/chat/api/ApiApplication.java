@@ -103,7 +103,7 @@ public class ApiApplication {
             ChatFriend chatFriend2_1 = ChatFriend.builder()
                     .user(user2)
                     .friend(user1)
-                    .friend(user1).build();
+                    .build();
 
             chatFriendRepository.save(chatFriend1_1);
             chatFriendRepository.save(chatFriend1_2);

@@ -4,16 +4,22 @@ import chat.api.argumentresolver.User;
 import chat.api.model.*;
 import chat.api.model.request.CreateRoomRequest;
 import chat.api.service.ChatService;
+import chat.api.validator.ValidImage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 @RestController
@@ -29,7 +35,8 @@ public class ChatController {
 
     @Operation(summary = "채팅방 메시지 목록")
     @GetMapping("/rooms/{roomId}/messages")
-    public Response<List<ChatMessageDto>> getMessages(@PathVariable Long roomId, @RequestParam(required = false) Long messageId) {
+    public Response<List<ChatMessageDto>> getMessages(@PathVariable Long roomId,
+                                                      @RequestParam(required = false) Long messageId) {
         return Response.of(chatService.getMessages(roomId, messageId));
     }
 
@@ -58,7 +65,8 @@ public class ChatController {
 
     @Operation(summary = "채팅방 퇴장")
     @DeleteMapping("/rooms/{roomId}/user")
-    public Response deleteUser(@Parameter(hidden = true) @User UserDto user, @PathVariable String roomId) {
+    public Response deleteUser(@Parameter(hidden = true) @User UserDto user,
+                               @PathVariable String roomId) {
 
         return null;
     }
@@ -70,5 +78,20 @@ public class ChatController {
             @Valid @RequestBody CreateRoomRequest createRoomRequest) {
         chatService.createRoom(user.getUserId(), createRoomRequest);
         return Response.of("ok");
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/upload/profile-image")
+    public Response<String> uploadFile(
+            @Parameter(hidden = true) @User UserDto user,
+            @ValidImage @RequestParam("image") MultipartFile multipartFile) throws IOException {
+        return Response.of(
+                HttpStatus.CREATED.value(),
+                chatService.upload(
+                        user.getUserId(),
+                        multipartFile.getInputStream(),
+                        multipartFile.getOriginalFilename(),
+                        multipartFile.getContentType())
+        );
     }
 }

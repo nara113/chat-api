@@ -26,7 +26,7 @@
             ON g.room_id = msg.room_id
            AND msg.message_id = (select MAX(message_id) from chat_message m where m.room_id = g.room_id)
          WHERE g.user_id = #{userId}
-         ORDER BY msg.created_date DESC
+         ORDER BY lastMessageTime DESC
     </select>
 
     <select id="selectUsers" parameterType="map" resultType="userDto">

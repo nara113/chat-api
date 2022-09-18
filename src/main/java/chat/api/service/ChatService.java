@@ -1,5 +1,6 @@
 package chat.api.service;
 
+import chat.api.aws.AwsS3Uploader;
 import chat.api.entity.*;
 import chat.api.mapper.ChatGroupMapper;
 import chat.api.mapper.ChatMapper;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static java.util.stream.Collectors.*;
@@ -31,6 +34,8 @@ public class ChatService {
     private final ChatFriendRepository chatFriendRepository;
 
     private final ChatGroupMapper chatGroupMapper;
+
+    private final AwsS3Uploader awsS3Uploader;
 
     public List<ChatRoomDto> getAllRoom(Long userId) {
         return chatMapper.selectAllRoomsByUserId(userId);
@@ -122,5 +127,17 @@ public class ChatService {
         chatRoomRepository.save(room);
 
         chatGroupMapper.insertChatGroups(room.getId(), request.getParticipantUserIds());
+    }
+
+    @Transactional
+    public String upload(Long userId, InputStream inputStream, String originalFilename, String contentType) throws IOException {
+        String objectUrl = awsS3Uploader.upload(inputStream, originalFilename, contentType);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId));
+
+        user.changeProfileImageUrl(objectUrl);
+
+        return objectUrl;
     }
 }

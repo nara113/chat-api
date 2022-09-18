@@ -21,11 +21,12 @@ spring:
   redis:
     host: localhost
     port: 6379
+  profiles:
+    include: aws
 
 springdoc:
   swagger-ui:
     path: swagger.html
-  version: v1
   paths-to-match: /api/v1/**,/auth/**
 
 logging:
@@ -40,3 +41,12 @@ mybatis:
 jwt:
   secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
   token-validity-in-seconds: 86400
+
+cloud:
+  aws:
+    s3:
+      bucket: dong-chat-bucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
