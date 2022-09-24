@@ -15,7 +15,7 @@ import java.util.List;
 public class User extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
 
@@ -28,7 +28,9 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    private String profileUrl;
+    @OneToOne
+    @JoinColumn(name = "profile_image_id")
+    private UploadFile profileImage;
 
     private String statusMessage;
 
@@ -39,15 +41,14 @@ public class User extends BaseTimeEntity {
     private List<ChatMessage> message = new ArrayList<>();
 
     @Builder
-    private User(String email, String name, String password, String profileUrl, String statusMessage) {
+    private User(String email, String name, String password, String statusMessage) {
         this.email = email;
         this.name = name;
         this.password = password;
-        this.profileUrl = profileUrl;
         this.statusMessage = statusMessage;
     }
 
-    public void changeProfileImageUrl(String profileUrl) {
-        this.profileUrl = profileUrl;
+    public void changeProfileImage(UploadFile uploadFile) {
+        this.profileImage = uploadFile;
     }
 }

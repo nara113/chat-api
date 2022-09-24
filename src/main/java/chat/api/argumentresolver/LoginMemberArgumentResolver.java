@@ -27,10 +27,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         String currentUserEmail = SecurityUtil.getCurrentUserId()
                 .orElseThrow(() -> new IllegalStateException("current user id does not exist."));
 
-        return new UserDto(userService.getUser(currentUserEmail));
+        return new UserDto(userService.getUserByEmail(currentUserEmail));
     }
 }

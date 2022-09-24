@@ -33,10 +33,12 @@
         SELECT u.user_id AS userId
                , u.email AS email
                , u.name AS name
-               , u.profile_url AS profileUrl
+               , f.url AS profileUrl
           FROM chat_group g
          INNER JOIN users u
             ON g.user_id = u.user_id
+          LEFT JOIN upload_file f
+            ON u.profile_image_id = f.file_id
          WHERE g.room_id = #{roomId}
            AND g.user_id != #{userId}
     </select>

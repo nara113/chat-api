@@ -6,6 +6,7 @@ import chat.api.model.Login;
 import chat.api.model.SignupUser;
 import chat.api.model.TokenConst;
 import chat.api.repository.UserRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.concurrent.TimeUnit;
+
+import static chat.api.entity.QUploadFile.uploadFile;
+import static chat.api.entity.QUser.user;
 
 @Transactional(readOnly = true)
 @Service
@@ -32,13 +37,16 @@ public class UserService {
 
     private final long tokenValidityInMilliseconds;
 
+    private final JPAQueryFactory query;
+
     public UserService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
             AuthenticationManagerBuilder authenticationManagerBuilder,
             TokenProvider tokenProvider,
             StringRedisTemplate redisTemplate,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds
+            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
+            EntityManager em
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -46,6 +54,7 @@ public class UserService {
         this.tokenProvider = tokenProvider;
         this.redisTemplate = redisTemplate;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000L;
+        this.query = new JPAQueryFactory(em);
     }
 
     @Transactional
@@ -74,9 +83,12 @@ public class UserService {
         return tokenProvider.createToken(authenticate);
     }
 
-    public User getUser(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("user does not exist. user email : " + email));
+    public User getUserByEmail(String email) {
+        return query
+                .selectFrom(user)
+                .leftJoin(user.profileImage, uploadFile).fetchJoin()
+                .where(user.email.eq(email))
+                .fetchOne();
     }
 
     public void logout(String token) {

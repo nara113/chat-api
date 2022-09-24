@@ -16,7 +16,8 @@ import javax.persistence.*;
 @Entity
 public class ChatFriend extends BaseTimeEntity {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_friend_id")
     private Long id;
 

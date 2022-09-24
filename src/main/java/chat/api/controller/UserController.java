@@ -35,7 +35,7 @@ public class UserController {
         return Response.of(
                 LoginResponseData.builder()
                 .token(userService.getToken(login))
-                .user(new UserDto(userService.getUser(login.getEmail())))
+                .user(new UserDto(userService.getUserByEmail(login.getEmail())))
                 .build());
     }
 

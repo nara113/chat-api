@@ -91,6 +91,7 @@ public class ChatController {
                         user.getUserId(),
                         multipartFile.getInputStream(),
                         multipartFile.getOriginalFilename(),
+                        multipartFile.getSize(),
                         multipartFile.getContentType())
         );
     }

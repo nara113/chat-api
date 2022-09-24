@@ -7,17 +7,19 @@ import chat.api.mapper.ChatMapper;
 import chat.api.model.*;
 import chat.api.model.request.CreateRoomRequest;
 import chat.api.repository.*;
-import lombok.RequiredArgsConstructor;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import static chat.api.entity.QChatFriend.*;
+import static chat.api.entity.QUploadFile.*;
 import static java.util.stream.Collectors.*;
 
-@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class ChatService {
@@ -31,11 +33,33 @@ public class ChatService {
 
     private final ChatGroupRepository chatGroupRepository;
 
-    private final ChatFriendRepository chatFriendRepository;
+    private final UploadFileRepository uploadFileRepository;
 
     private final ChatGroupMapper chatGroupMapper;
 
     private final AwsS3Uploader awsS3Uploader;
+
+    private final JPAQueryFactory query;
+
+    public ChatService(ChatMapper chatMapper,
+                       ChatMessageRepository chatMessageRepository,
+                       UserRepository userRepository,
+                       ChatRoomRepository chatRoomRepository,
+                       ChatGroupRepository chatGroupRepository,
+                       UploadFileRepository uploadFileRepository,
+                       ChatGroupMapper chatGroupMapper,
+                       AwsS3Uploader awsS3Uploader,
+                       EntityManager em) {
+        this.chatMapper = chatMapper;
+        this.chatMessageRepository = chatMessageRepository;
+        this.userRepository = userRepository;
+        this.chatRoomRepository = chatRoomRepository;
+        this.chatGroupRepository = chatGroupRepository;
+        this.uploadFileRepository = uploadFileRepository;
+        this.chatGroupMapper = chatGroupMapper;
+        this.awsS3Uploader = awsS3Uploader;
+        this.query = new JPAQueryFactory(em);
+    }
 
     public List<ChatRoomDto> getAllRoom(Long userId) {
         return chatMapper.selectAllRoomsByUserId(userId);
@@ -76,7 +100,14 @@ public class ChatService {
     }
 
     public List<UserDto> getFriends(Long userId) {
-        return chatFriendRepository.findFriendByUserIdAndBlockYn(userId, "N")
+        List<User> friends = query
+                .select(chatFriend.friend)
+                .from(chatFriend)
+                .leftJoin(chatFriend.friend.profileImage, uploadFile).fetchJoin()
+                .where(chatFriend.user.id.eq(userId).and(chatFriend.blockYn.eq("N")))
+                .fetch();
+
+        return friends
                 .stream()
                 .map(UserDto::new)
                 .collect(toList());
@@ -130,13 +161,27 @@ public class ChatService {
     }
 
     @Transactional
-    public String upload(Long userId, InputStream inputStream, String originalFilename, String contentType) throws IOException {
-        String objectUrl = awsS3Uploader.upload(inputStream, originalFilename, contentType);
-
+    public String upload(Long userId,
+                         InputStream inputStream,
+                         String originalFilename,
+                         long size,
+                         String contentType) throws IOException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId));
 
-        user.changeProfileImageUrl(objectUrl);
+        String objectUrl = awsS3Uploader.upload(inputStream, originalFilename, contentType);
+
+        UploadFile uploadFile = UploadFile.builder()
+                .originalFileName(originalFilename)
+                .url(objectUrl)
+                .size(size)
+                .contentType(contentType)
+                .user(user)
+                .build();
+
+        uploadFileRepository.save(uploadFile);
+
+        user.changeProfileImage(uploadFile);
 
         return objectUrl;
     }

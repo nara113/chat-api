@@ -22,6 +22,6 @@ public class UserDto {
         this.email = user.getEmail();
         this.name = user.getName();
         this.statusMessage = user.getStatusMessage();
-        this.profileUrl = user.getProfileUrl();
+        this.profileUrl = user.getProfileImage() != null ? user.getProfileImage().getUrl() : null;
     }
 }
