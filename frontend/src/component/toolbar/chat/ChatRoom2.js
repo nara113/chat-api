@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import 'dayjs/locale/ko';
 
 import React from "react";
-import ChatContainer2 from "./ChatContainer2";
+import ChatContainer2 from "../../ChatContainer2";
 import AvatarGroup from "@mui/material/AvatarGroup";
 
 dayjs.locale('ko');
