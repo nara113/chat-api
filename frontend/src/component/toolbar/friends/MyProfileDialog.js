@@ -3,29 +3,27 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import Box from '@mui/material/Box';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import EditIcon from '@mui/icons-material/Edit';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import {useState} from "react";
 import axios from "axios";
+import IconButton from "@mui/material/IconButton";
 
 export default function MyProfileDialog({open, handleClose, currentUser}) {
-    const [image, setImage] = useState();
+    const [profileUrl, setProfileUrl] = useState(currentUser.profileUrl);
 
     const handleChange = e => {
         if (e.target.files) {
             const uploadFile = e.target.files[0]
-            setImage(uploadFile);
 
             const requestProfile = new FormData()
             requestProfile.append('image', uploadFile)
 
             axios.post("/api/v1/upload/profile-image", requestProfile)
                 .then((r) => {
-                    console.log(r)
+                    setProfileUrl(r.data.data);
                 })
         }
     };
@@ -40,10 +38,11 @@ export default function MyProfileDialog({open, handleClose, currentUser}) {
             {/*<DialogTitle id="alert-dialog-title">*/}
             {/*</DialogTitle>*/}
             <DialogContent
-                sx={{height: 500,
+                sx={{
+                    height: 500,
                     width: 350,
                     backgroundColor: 'gray'
-            }}
+                }}
             >
                 <Box
                     noValidate
@@ -60,32 +59,52 @@ export default function MyProfileDialog({open, handleClose, currentUser}) {
                     }}
                 >
                     <div>
-                        <Avatar sx={{ width: 100, height: 100, borderRadius: 9 }}
-                                src={currentUser.profileUrl} />
-                        <h3 style={{color: "white", mt: 0,}}>{currentUser.name}</h3>
+                        <Avatar sx={{width: 100, height: 100, borderRadius: 9}}
+                                src={profileUrl}/>
+                        <h3 style={{
+                            color: "white",
+                            mt: 0,
+                            display: "flex",
+                            justifyContent: 'center'
+                        }}>{currentUser.name}</h3>
                     </div>
                 </Box>
             </DialogContent>
-            <Divider />
+            <Divider/>
             <DialogActions sx={{
                 backgroundColor: 'gray'
             }}>
-                <Box sx={{ width: '100%',
-                    borderTop: '' }}>
-                    <BottomNavigation
-                        showLabels
-                        sx={{ width: '100%',
-                            backgroundColor: 'inherit',
-                            borderTop: '' }}
-                    >
-                        <BottomNavigationAction label="나와의 채팅"
-                                                sx={{color: 'white'}}
-                                                icon={<ChatBubbleIcon />} />
-                        <BottomNavigationAction label="프로필 편집"
-                                                sx={{color: 'white'}}
-                                                icon={<EditIcon />}
-                        />
-                    </BottomNavigation>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-around',
+                        width: '100%',
+                        height: '100%',
+                    }}
+                >
+                    <IconButton sx={{
+                        color: 'white',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                                aria-label="upload picture" component="label">
+                        <input hidden accept="image/*" type="file"/>
+                        <ChatBubbleIcon/>
+                        <span style={{fontSize: 13}}>나와의 채팅</span>
+                    </IconButton>
+                    <IconButton sx={{
+                        color: 'white',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                                aria-label="upload picture"
+                                component="label">
+                        <input hidden accept="image/*"
+                               onChange={handleChange}
+                               type="file"/>
+                        <EditIcon/>
+                        <span style={{fontSize: 13}}>프로필 편집</span>
+                    </IconButton>
                 </Box>
             </DialogActions>
         </Dialog>
