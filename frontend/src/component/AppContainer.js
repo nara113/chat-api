@@ -15,46 +15,8 @@ import {Badge} from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import ChatRoom2 from "./toolbar/chat/ChatRoom2";
-import Stack from '@mui/material/Stack';
 import ChatFriends from "./toolbar/friends/ChatFriends";
-import Button from "@mui/material/Button";
 import CreateRoomButton from "./createRoom/CreateRoomButton";
-
-const UploadButtons = () => {
-    const [image, setImage] = useState();
-
-    const handleChange = e => {
-        if (e.target.files) {
-            const uploadFile = e.target.files[0]
-            setImage(uploadFile);
-
-            const requestProfile = new FormData()
-            requestProfile.append('image', uploadFile)
-
-            axios.post("/api/v1/upload/profile-image", requestProfile)
-                .then((r) => {
-                    console.log(r)
-                })
-        }
-    };
-
-    return (
-        <Stack direction="row" alignItems="center" spacing={2}>
-            <Button variant="contained"
-                    component="label">
-                Upload
-                <input hidden
-                    accept="image/*"
-                       onChange={handleChange}
-                       multiple type="file"/>
-            </Button>
-            <IconButton color="primary" aria-label="upload picture" component="label">
-                <input hidden accept="image/*" type="file"/>
-                {image && image.name}
-            </IconButton>
-        </Stack>
-    );
-}
 
 export default function AppContainer() {
     const [rooms, setRooms] = useState();
@@ -167,7 +129,6 @@ export default function AppContainer() {
             display: 'flex',
             justifyContent: 'center',
         }}>
-            <UploadButtons/>
             <Box sx={{display: 'flex'}}>
                 <AppBar component="nav">
                     <Toolbar>

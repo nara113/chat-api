@@ -35,8 +35,8 @@ export default function ChatFriends({currentUser}) {
             <Toolbar/>
             {myProfileDialogOpen && <MyProfileDialog
                 open={myProfileDialogOpen}
-                setOpen={setMyProfileDialogOpen}
                 handleClose={handleProfileModalClose}
+                currentUser={currentUser}
             />}
             <List
                 sx={{
@@ -49,7 +49,7 @@ export default function ChatFriends({currentUser}) {
                           onDoubleClick={handleProfileModalOpen}
                           sx={{pl: 0}}>
                     <ListItemAvatar>
-                        <Avatar key={currentUser.userId} src={currentUser.profileUrl}/>
+                        <Avatar sx={{borderRadius: 4}} key={currentUser.userId} src={currentUser.profileUrl}/>
                     </ListItemAvatar>
                     <ListItemText
                         primary={currentUser.name}
@@ -83,10 +83,9 @@ export default function ChatFriends({currentUser}) {
                     friends && friends.length > 0 &&
                     friends.map((_friend) => {
                         return (
-                            // <List sx={{width: '800', maxWidth: 800, bgcolor: 'background.paper'}}>
                             <ListItem alignItems="flex-start" sx={{pl: 0}}>
                                 <ListItemAvatar>
-                                    <Avatar key={_friend.userId} src={_friend.profileUrl}/>
+                                    <Avatar sx={{borderRadius: 4}} key={_friend.userId} src={_friend.profileUrl}/>
                                 </ListItemAvatar>
                                 <ListItemText
                                     primary={_friend.name}
@@ -98,7 +97,6 @@ export default function ChatFriends({currentUser}) {
                                                 variant="body2"
                                                 color="text.primary"
                                             >
-                                                {/*{_friend.statusMessage}*/}
                                             </Typography>
                                             {_friend.statusMessage}
                                         </React.Fragment>
@@ -106,39 +104,9 @@ export default function ChatFriends({currentUser}) {
                                     sx={{width: 500}}
                                 />
                             </ListItem>
-                            // </List>
                         )
                     })}
             </List>
-            {/*{friends && friends.length > 0 &&*/}
-            {/*    friends.map((_friend) => {*/}
-            {/*        return (*/}
-            {/*            <StyledPaper*/}
-            {/*                sx={{*/}
-            {/*                    my: 1,*/}
-            {/*                    mx: 'auto',*/}
-            {/*                    p: 2,*/}
-            {/*                    width: 800*/}
-            {/*                }}*/}
-            {/*            >*/}
-            {/*                <Grid container wrap="nowrap" spacing={2}>*/}
-            {/*                    <Grid item>*/}
-            {/*                        <Avatar key={_friend.userId} src={_friend.profileUrl}/>*/}
-            {/*                    </Grid>*/}
-            {/*                    <Grid item xs={12} sm container zeroMinWidth>*/}
-            {/*                        <Grid item xs zeroMinWidth>*/}
-            {/*                            <Typography*/}
-            {/*                                noWrap>{_friend.name}</Typography>*/}
-            {/*                            <Typography variant="body2" color="text.secondary">*/}
-            {/*                                {_friend.statusMessage}*/}
-            {/*                            </Typography>*/}
-            {/*                        </Grid>*/}
-            {/*                    </Grid>*/}
-            {/*                </Grid>*/}
-            {/*            </StyledPaper>*/}
-            {/*        )*/}
-            {/*    })*/}
-            {/*}*/}
         </Box>
     )
 }
