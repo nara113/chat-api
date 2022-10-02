@@ -88,7 +88,6 @@ export default function MyProfileDialog({open, handleClose, currentUser}) {
                         flexDirection: 'column',
                     }}
                                 aria-label="upload picture" component="label">
-                        <input hidden accept="image/*" type="file"/>
                         <ChatBubbleIcon/>
                         <span style={{fontSize: 13}}>나와의 채팅</span>
                     </IconButton>

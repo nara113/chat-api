@@ -10,6 +10,16 @@ import {
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import Divider from "@mui/material/Divider";
+import ListItemText from "@mui/material/ListItemText";
+import MenuIcon from '@mui/icons-material/Menu';
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
 
 const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessage, setRooms}) => {
     const img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAAAXNSR0IArs4c6QAAATpJREFUWEdjvPm+8T/DEACMow6lciyNhiiVA5RhNERHQ5TaIUBt80bT6GiIUjsEqG0e0WlUhb+SgYmRFWz/i2/rGT79uoziFkW+PAZWJgGw2Pufxxlef9+N1a3CHA4Mwhx2YLk//z4z3PvUT5SfiHaoqkA1AyMDM9jQl982MXz8dQHFAiW+IgYWJh6w2IefZxhefd+G1QGinC4MguxWYLm//78x3P3YM+rQ0RDFlwaGdxqF+By9B8MID5BBk5kIZdNRhxIKIZA8cjkKKuy//rmNok2c04uBiZFjtBwd3rl+tArFk1mGd9Rja+Yp8RUysDDxQnP9KYZX33dgDR8RDkcGIQ5baOvpK8Pdj73EFDqj/XqiQokURUSnUVIMpYXaUYdSO1RHQ3Q0RKkdAtQ2bzSNjoYotUOA2uYBAI6umQqSmDikAAAAAElFTkSuQmCC";
@@ -168,31 +178,89 @@ const MyChatContainer2 = ({client, currentRoom, roomUsers, currentUser, newMessa
         loadMessages();
     };
 
+    const [state, setState] = useState(false);
+
+    const toggleDrawer = (open) => (event) => {
+        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+            return;
+        }
+
+        setState(open);
+    };
+
+    const list = () => (
+        <Box
+            sx={{width: 250}}
+            role="presentation"
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
+        >
+            <List>
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemText primary={'톡게시판'}/>
+                    </ListItemButton>
+                </ListItem>
+            </List>
+            <Divider/>
+            <List>
+                <Typography
+                    sx={{mt: 1}}
+                    color="text.auto"
+                    display="block"
+                    variant="caption"
+                >
+                    대화상대
+                </Typography>
+                <ListItem disablePadding>
+                    <ListItemButton>
+                        <ListItemText primary={'대화상대 초대'}/>
+                    </ListItemButton>
+                </ListItem>
+            </List>
+        </Box>
+    );
+
     return (
-        <div style={{
-            width: "600px",
-            height: "400px",
-            position: "relative"
-        }}>
-            <MainContainer responsive>
-                <ChatContainer>
-                    <ConversationHeader>
-                        <ConversationHeader.Back/>
-                        <Avatar src={img} name="Zoe"/>
-                        <ConversationHeader.Content userName={roomUsers.map(_user => _user.name).join(', ')}/>
-                    </ConversationHeader>
-                    <MessageList loadingMore={loadingMore} onYReachStart={onYReachStart}>
-                        {chatMessages &&
-                            chatMessages.map((_chatMessage) => makeMessage(_chatMessage))
-                        }
-                    </MessageList>
-                    <MessageInput placeholder="Type message here"
-                                  value={message}
-                                  onSend={() => publish(message)}
-                                  onChange={val => setMessage(val)}/>
-                </ChatContainer>
-            </MainContainer>
-        </div>
+        <>
+            <IconButton
+                color="inherit"
+                onClick={toggleDrawer(true)}
+            >
+                <MenuIcon sx={{color: "inherit"}}/>
+            </IconButton>
+            <Drawer
+                anchor={'right'}
+                open={state}
+                onClose={toggleDrawer(false)}
+            >
+                {list()}
+            </Drawer>
+            <div style={{
+                width: "600px",
+                height: "400px",
+                position: "relative"
+            }}>
+                <MainContainer responsive>
+                    <ChatContainer>
+                        <ConversationHeader>
+                            <ConversationHeader.Back/>
+                            <Avatar src={img} name="Zoe"/>
+                            <ConversationHeader.Content userName={roomUsers.map(_user => _user.name).join(', ')}/>
+                        </ConversationHeader>
+                        <MessageList loadingMore={loadingMore} onYReachStart={onYReachStart}>
+                            {chatMessages &&
+                                chatMessages.map((_chatMessage) => makeMessage(_chatMessage))
+                            }
+                        </MessageList>
+                        <MessageInput placeholder="Type message here"
+                                      value={message}
+                                      onSend={() => publish(message)}
+                                      onChange={val => setMessage(val)}/>
+                    </ChatContainer>
+                </MainContainer>
+            </div>
+        </>
     )
 }
 
