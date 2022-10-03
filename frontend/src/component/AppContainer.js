@@ -14,7 +14,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import {Badge} from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
-import ChatRoom2 from "./toolbar/chat/ChatRoom2";
+import ChatRoom from "./toolbar/chat/ChatRoom";
 import ChatFriends from "./toolbar/friends/ChatFriends";
 import CreateRoomButton from "./createRoom/CreateRoomButton";
 
@@ -152,14 +152,14 @@ export default function AppContainer() {
                 </AppBar>
                 {
                     toolbar === 'FRIENDS'
-                        ? <ChatFriends currentUser={currentUser[0]}/>
-                        : <ChatRoom2 client={client}
-                                     currentUser={currentUser}
-                                     newMessage={newMessage}
-                                     rooms={rooms}
-                                     setRooms={setRooms}
-                                     selectedRoom={selectedRoom}
-                                     setSelectedRoom={setSelectedRoom}/>
+                        ? <ChatFriends />
+                        : <ChatRoom client={client}
+                                    currentUser={currentUser}
+                                    newMessage={newMessage}
+                                    rooms={rooms}
+                                    setRooms={setRooms}
+                                    selectedRoom={selectedRoom}
+                                    setSelectedRoom={setSelectedRoom}/>
                 }
             </Box>
             <AppBar position="fixed" color="primary" sx={{top: 'auto', bottom: 0}}>

@@ -59,20 +59,29 @@ export default function MyProfileDialog({open, handleClose, currentUser}) {
                     }}
                 >
                     <div>
-                        <Avatar sx={{width: 100, height: 100, borderRadius: 9}}
-                                src={profileUrl}/>
+                        <div style={{display: "flex", justifyContent: 'center'}}>
+                            <Avatar sx={{width: 100, height: 100, borderRadius: 9}}
+                                    src={profileUrl}/>
+                        </div>
                         <h3 style={{
                             color: "white",
                             mt: 0,
                             display: "flex",
                             justifyContent: 'center'
                         }}>{currentUser.name}</h3>
+                        <p style={{
+                            color: "white",
+                            mt: 0,
+                            display: "flex",
+                            justifyContent: 'center'
+                        }}>{currentUser.statusMessage}</p>
                     </div>
                 </Box>
             </DialogContent>
             <Divider/>
             <DialogActions sx={{
-                backgroundColor: 'gray'
+                backgroundColor: 'gray',
+                height: 100
             }}>
                 <Box
                     sx={{

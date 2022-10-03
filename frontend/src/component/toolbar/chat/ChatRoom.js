@@ -10,8 +10,8 @@ import dayjs from "dayjs";
 import 'dayjs/locale/ko';
 
 import React from "react";
-import ChatContainer2 from "../../ChatContainer2";
 import AvatarGroup from "@mui/material/AvatarGroup";
+import MyChatContainer from "../../ChatContainer";
 
 dayjs.locale('ko');
 
@@ -23,7 +23,7 @@ const StyledPaper = styled(Paper)(({theme}) => ({
     color: theme.palette.text.primary,
 }));
 
-export default function ChatRoom2({
+export default function ChatRoom({
                                      client,
                                      currentUser,
                                      newMessage,
@@ -104,7 +104,7 @@ export default function ChatRoom2({
             {selectedRoom &&
                 <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
                     <Toolbar/>
-                    <ChatContainer2
+                    <MyChatContainer
                         client={client}
                         currentRoom={selectedRoom}
                         roomUsers={selectedRoom.users}

@@ -10,13 +10,29 @@ import Divider from '@mui/material/Divider';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import MyProfileDialog from "./MyProfileDialog";
+import ProfileDialog from "./ProfileDialog";
+import ListItemButton from "@mui/material/ListItemButton";
 
-export default function ChatFriends({currentUser}) {
+export default function ChatFriends() {
     const [friends, setFriends] = useState();
     const [myProfileDialogOpen, setMyProfileDialogOpen] = useState(false);
+    const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+    const [selectedFriend, setSelectedFriend] = useState();
+    const [currentUser, setCurrentUser] = useState({
+        name: '',
+        userId: '',
+        profileUrl: '',
+        statusMessage: ''
+    });
 
-    const handleProfileModalOpen = () => setMyProfileDialogOpen(true);
-    const handleProfileModalClose = () => setMyProfileDialogOpen(false);
+    const handleMyProfileDialogOpen = () => setMyProfileDialogOpen(true);
+    const handleMyProfileDialogClose = () => setMyProfileDialogOpen(false);
+
+    const handleProfileDialogOpen = (friend) => {
+        setProfileDialogOpen(true);
+        setSelectedFriend(friend)
+    }
+    const handleProfileDialogClose = () => setProfileDialogOpen(false);
 
     const getFriends = () => {
         axios.get(`/api/v1/friends`)
@@ -25,9 +41,16 @@ export default function ChatFriends({currentUser}) {
             })
     }
 
+    const getCurrentUser = () => {
+        axios.get(`/api/users/current`)
+            .then(res => {
+                setCurrentUser(res.data.data);
+            })
+    }
+
     useEffect(() => {
         getFriends();
-        console.log(currentUser)
+        getCurrentUser();
     }, []);
 
     return (
@@ -35,7 +58,7 @@ export default function ChatFriends({currentUser}) {
             <Toolbar/>
             {myProfileDialogOpen && <MyProfileDialog
                 open={myProfileDialogOpen}
-                handleClose={handleProfileModalClose}
+                handleClose={handleMyProfileDialogClose}
                 currentUser={currentUser}
             />}
             <List
@@ -46,27 +69,30 @@ export default function ChatFriends({currentUser}) {
                 }}
             >
                 <ListItem alignItems="flex-start"
-                          onDoubleClick={handleProfileModalOpen}
                           sx={{pl: 0}}>
-                    <ListItemAvatar>
-                        <Avatar sx={{borderRadius: 4}} key={currentUser.userId} src={currentUser.profileUrl}/>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary={currentUser.name}
-                        secondary={
-                            <React.Fragment>
-                                <Typography
-                                    sx={{display: 'inline'}}
-                                    component="span"
-                                    variant="body2"
-                                    color="text.primary"
-                                >
-                                </Typography>
-                                {currentUser.statusMessage}
-                            </React.Fragment>
-                        }
-                        sx={{width: 500}}
-                    />
+                    <ListItemButton
+                        sx={{p: 0}}
+                        onClick={handleMyProfileDialogOpen}>
+                        <ListItemAvatar>
+                            <Avatar sx={{borderRadius: 4}} key={currentUser.userId} src={currentUser.profileUrl}/>
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={currentUser.name}
+                            secondary={
+                                <React.Fragment>
+                                    <Typography
+                                        sx={{display: 'inline'}}
+                                        component="span"
+                                        variant="body2"
+                                        color="text.primary"
+                                    >
+                                    </Typography>
+                                    {currentUser.statusMessage}
+                                </React.Fragment>
+                            }
+                            sx={{width: 500}}
+                        />
+                    </ListItemButton>
                 </ListItem>
                 <Divider component="li"/>
                 <li>
@@ -79,30 +105,40 @@ export default function ChatFriends({currentUser}) {
                         친구 {friends && friends.length}
                     </Typography>
                 </li>
+                {profileDialogOpen && <ProfileDialog
+                    open={profileDialogOpen}
+                    handleClose={handleProfileDialogClose}
+                    user={selectedFriend}
+                />}
                 {
                     friends && friends.length > 0 &&
                     friends.map((_friend) => {
                         return (
-                            <ListItem alignItems="flex-start" sx={{pl: 0}}>
-                                <ListItemAvatar>
-                                    <Avatar sx={{borderRadius: 4}} key={_friend.userId} src={_friend.profileUrl}/>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={_friend.name}
-                                    secondary={
-                                        <React.Fragment>
-                                            <Typography
-                                                sx={{display: 'inline'}}
-                                                component="span"
-                                                variant="body2"
-                                                color="text.primary"
-                                            >
-                                            </Typography>
-                                            {_friend.statusMessage}
-                                        </React.Fragment>
-                                    }
-                                    sx={{width: 500}}
-                                />
+                            <ListItem alignItems="flex-start"
+                                      sx={{pl: 0}}>
+                                <ListItemButton
+                                    sx={{p: 0}}
+                                    onClick={() => handleProfileDialogOpen(_friend)}>
+                                    <ListItemAvatar>
+                                        <Avatar sx={{borderRadius: 4}} key={_friend.userId} src={_friend.profileUrl}/>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={_friend.name}
+                                        secondary={
+                                            <React.Fragment>
+                                                <Typography
+                                                    sx={{display: 'inline'}}
+                                                    component="span"
+                                                    variant="body2"
+                                                    color="text.primary"
+                                                >
+                                                </Typography>
+                                                {_friend.statusMessage}
+                                            </React.Fragment>
+                                        }
+                                        sx={{width: 500}}
+                                    />
+                                </ListItemButton>
                             </ListItem>
                         )
                     })}
