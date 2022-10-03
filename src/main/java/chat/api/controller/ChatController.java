@@ -33,6 +33,13 @@ public class ChatController {
         return Response.of(chatService.getAllRoom(user.getUserId()));
     }
 
+    @Operation(summary = "채팅방 정보")
+    @GetMapping("/rooms/{roomId}")
+    public Response<ChatRoomDto> getRoom(@Parameter(hidden = true) @User UserDto user,
+                                               @PathVariable Long roomId) {
+        return Response.of(chatService.getRoom(user.getUserId(), roomId));
+    }
+
     @Operation(summary = "채팅방 메시지 목록")
     @GetMapping("/rooms/{roomId}/messages")
     public Response<List<ChatMessageDto>> getMessages(@PathVariable Long roomId,
@@ -54,12 +61,10 @@ public class ChatController {
 
     @Operation(summary = "채팅방 입장")
     @PostMapping("/rooms/{roomId}/user")
-    public Response addUser(@AuthenticationPrincipal UserDetails user,
-                            @Parameter(hidden = true) @User UserDto user2,
-                            @PathVariable String roomId) {
-        System.out.println("user = " + user.getUsername());
-        System.out.println("user2 = " + user2);
-
+    public Response addUser(@AuthenticationPrincipal UserDetails user2,
+                            @Parameter(hidden = true) @User UserDto user,
+                            @PathVariable Long roomId) {
+        chatService.enterRoom(roomId, user.getUserId());
         return null;
     }
 
@@ -80,6 +85,7 @@ public class ChatController {
         return Response.of("ok");
     }
 
+    @Operation(summary = "프로필 이미지 업로드")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/upload/profile-image")
     public Response<String> uploadFile(

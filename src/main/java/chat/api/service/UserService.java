@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.concurrent.TimeUnit;
 
 import static chat.api.entity.QUploadFile.uploadFile;
@@ -46,7 +45,7 @@ public class UserService {
             TokenProvider tokenProvider,
             StringRedisTemplate redisTemplate,
             @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds,
-            EntityManager em
+            JPAQueryFactory query
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -54,7 +53,7 @@ public class UserService {
         this.tokenProvider = tokenProvider;
         this.redisTemplate = redisTemplate;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000L;
-        this.query = new JPAQueryFactory(em);
+        this.query = query;
     }
 
     @Transactional

@@ -3,27 +3,25 @@ package chat.api.service;
 import chat.api.aws.AwsS3Uploader;
 import chat.api.entity.*;
 import chat.api.mapper.ChatGroupMapper;
-import chat.api.mapper.ChatMapper;
+import chat.api.mapper.RoomMapper;
 import chat.api.model.*;
 import chat.api.model.request.CreateRoomRequest;
 import chat.api.repository.*;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static chat.api.entity.QChatFriend.*;
-import static chat.api.entity.QUploadFile.*;
 import static java.util.stream.Collectors.*;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ChatService {
-    private final ChatMapper chatMapper;
+    private final RoomMapper roomMapper;
 
     private final ChatMessageRepository chatMessageRepository;
 
@@ -35,34 +33,19 @@ public class ChatService {
 
     private final UploadFileRepository uploadFileRepository;
 
+    private final ChatFriendQueryRepository chatFriendQueryRepository;
+
     private final ChatGroupMapper chatGroupMapper;
 
     private final AwsS3Uploader awsS3Uploader;
 
-    private final JPAQueryFactory query;
-
-    public ChatService(ChatMapper chatMapper,
-                       ChatMessageRepository chatMessageRepository,
-                       UserRepository userRepository,
-                       ChatRoomRepository chatRoomRepository,
-                       ChatGroupRepository chatGroupRepository,
-                       UploadFileRepository uploadFileRepository,
-                       ChatGroupMapper chatGroupMapper,
-                       AwsS3Uploader awsS3Uploader,
-                       EntityManager em) {
-        this.chatMapper = chatMapper;
-        this.chatMessageRepository = chatMessageRepository;
-        this.userRepository = userRepository;
-        this.chatRoomRepository = chatRoomRepository;
-        this.chatGroupRepository = chatGroupRepository;
-        this.uploadFileRepository = uploadFileRepository;
-        this.chatGroupMapper = chatGroupMapper;
-        this.awsS3Uploader = awsS3Uploader;
-        this.query = new JPAQueryFactory(em);
+    public List<ChatRoomDto> getAllRoom(Long userId) {
+        return roomMapper.selectAllRoomsByUserId(userId);
     }
 
-    public List<ChatRoomDto> getAllRoom(Long userId) {
-        return chatMapper.selectAllRoomsByUserId(userId);
+    public ChatRoomDto getRoom(Long userId, Long roomId) {
+        return roomMapper.selectRoomByUserIdAndRoomId(userId, roomId)
+                .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id : " + roomId + " user id : " + userId));
     }
 
     @Transactional
@@ -100,12 +83,7 @@ public class ChatService {
     }
 
     public List<UserDto> getFriends(Long userId) {
-        List<User> friends = query
-                .select(chatFriend.friend)
-                .from(chatFriend)
-                .leftJoin(chatFriend.friend.profileImage, uploadFile).fetchJoin()
-                .where(chatFriend.user.id.eq(userId).and(chatFriend.blockYn.eq("N")))
-                .fetch();
+        List<User> friends = chatFriendQueryRepository.selectFriendsByUserId(userId);
 
         return friends
                 .stream()
@@ -143,6 +121,20 @@ public class ChatService {
                 readMessageDto.getRoomId(),
                 readMessageDto.getUserId(),
                 readMessageDto.getMessageId());
+    }
+
+    @Transactional
+    public void enterRoom(Long roomId, Long userId) {
+        ChatRoom chatRoom = chatRoomRepository.getReferenceById(roomId);
+        User user = userRepository.getReferenceById(userId);
+
+        ChatGroup chatGroup = ChatGroup
+                .builder()
+                .chatRoom(chatRoom)
+                .user(user)
+                .build();
+
+        chatGroupRepository.save(chatGroup);
     }
 
     @Transactional

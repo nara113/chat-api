@@ -1,6 +1,9 @@
 package chat.api.model;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
@@ -8,8 +11,6 @@ import java.util.List;
 
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
 @Setter
 @Alias("chatRoomDto")

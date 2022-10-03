@@ -38,8 +38,6 @@ export default function AppContainer() {
     useEffect(() => {
         connect();
 
-        console.log("currentUser", currentUser)
-
         return () => disconnect();
     }, []);
 
@@ -97,6 +95,16 @@ export default function AppContainer() {
                     destination: "/app/chat/message/read",
                     body: JSON.stringify({roomId: message.roomId, userId: userId, messageId: message.messageId}),
                 });
+            } else if (isNewRoom(message.roomId)) {
+
+                // todo
+                axios.get(`/api/v1/rooms/${message.roomId}`)
+                    .then(res => {
+                    const newRoom = res.data.data;
+                    setRooms(current => [newRoom, ...current]);
+                });
+
+                return;
             }
 
             setRooms(prevState => {
@@ -123,6 +131,10 @@ export default function AppContainer() {
             });
         });
     };
+
+    const isNewRoom = (roomId) => {
+        return !rooms.map(room => room.roomId).includes(roomId);
+    }
 
     return (
         <Container sx={{

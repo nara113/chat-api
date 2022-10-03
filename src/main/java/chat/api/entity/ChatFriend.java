@@ -7,10 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 
-@ToString
-@Getter @Setter
-@Builder
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @Entity
@@ -31,4 +28,10 @@ public class ChatFriend extends BaseTimeEntity {
 
     @ColumnDefault("'N'")
     private String blockYn;
+
+    @Builder
+    private ChatFriend(User user, User friend) {
+        this.user = user;
+        this.friend = friend;
+    }
 }
