@@ -6,10 +6,8 @@ import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
 
-@ToString
+@Data
 @Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Alias("chatMessageDto")

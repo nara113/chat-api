@@ -25,6 +25,8 @@ import static chat.api.entity.QUser.user;
 @Transactional(readOnly = true)
 @Service
 public class UserService {
+    private final long tokenValidityInMilliseconds;
+
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -34,8 +36,6 @@ public class UserService {
     private final TokenProvider tokenProvider;
 
     private final StringRedisTemplate redisTemplate;
-
-    private final long tokenValidityInMilliseconds;
 
     private final JPAQueryFactory query;
 

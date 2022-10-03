@@ -2,57 +2,44 @@ package chat.api.controller;
 
 import chat.api.model.ChatMessageDto;
 import chat.api.model.ReadMessageDto;
-import chat.api.service.ChatService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 public class MessageController {
+    private final String messageTopic;
 
-    private final SimpMessagingTemplate template;
+    private final String readTopic;
 
-    private final ChatService chatService;
+    private final String enterTopic;
 
-    @MessageMapping("/chat/message")
-    public void send(ChatMessageDto chatMessage) {
-        long messageId = chatService.saveChatMessage(chatMessage);
-        chatMessage.setMessageId(messageId);
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-        template.convertAndSend("/topic/chat/room/" + chatMessage.getRoomId(), chatMessage);
+    public MessageController(@Value("${spring.kafka.topic.message-topic}") String messageTopic,
+                             @Value("${spring.kafka.topic.read-topic}") String readTopic,
+                             @Value("${spring.kafka.topic.enter-topic}") String enterTopic,
+                             KafkaTemplate<String, Object> kafkaTemplate) {
+        this.messageTopic = messageTopic;
+        this.readTopic = readTopic;
+        this.enterTopic = enterTopic;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @MessageMapping("/chat/message/users")
     public void sendToUsers(ChatMessageDto chatMessage) {
-        long messageId = chatService.saveChatMessage(chatMessage);
-        chatMessage.setMessageId(messageId);
-
-        chatService.getGroupsByRoomId(chatMessage.getRoomId())
-                .forEach(group -> template.convertAndSend("/queue/user/" + group.getUser().getId(), chatMessage));
+        kafkaTemplate.send(messageTopic, chatMessage);
     }
 
     @MessageMapping("/chat/message/read")
     public void readMessage(ReadMessageDto readMessageDto) {
-        chatService.markAsRead(readMessageDto);
-
-        template.convertAndSend("/topic/room/" + readMessageDto.getRoomId(), readMessageDto);
+        kafkaTemplate.send(readTopic, readMessageDto);
     }
 
     @MessageMapping("/chat/enter")
     public void enter(ChatMessageDto chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("chatMessage", chatMessage);
-
-        Long lastMessageId = chatService.updateToLastMessage(chatMessage.getRoomId(), chatMessage.getSenderId());
-
-        ReadMessageDto readMessageDto = ReadMessageDto.builder()
-                .messageId(lastMessageId)
-                .roomId(chatMessage.getRoomId())
-                .userId(chatMessage.getSenderId())
-                .build();
-
-        template.convertAndSend("/topic/room/" + chatMessage.getRoomId(), readMessageDto);
+        kafkaTemplate.send(enterTopic, chatMessage);
     }
 }
