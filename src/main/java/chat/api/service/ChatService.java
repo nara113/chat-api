@@ -50,11 +50,8 @@ public class ChatService {
 
     @Transactional
     public long saveChatMessage(ChatMessageDto messageDto) {
-        User user = userRepository.findById(messageDto.getSenderId())
-                .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + messageDto.getSenderId()));
-
-        ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id : " + messageDto.getRoomId()));
+        ChatRoom chatRoom = chatRoomRepository.getReferenceById(messageDto.getRoomId());
+        User user = userRepository.getReferenceById(messageDto.getSenderId());
 
         ChatMessage chatMessage = ChatMessage.builder()
                 .senderName(messageDto.getSenderName())

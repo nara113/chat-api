@@ -21,7 +21,7 @@ public class ChatRoom extends BaseEntity {
     private String name;
 
     @OneToMany(mappedBy = "chatRoom")
-    private List<ChatGroup> users = new ArrayList<>();
+    private List<ChatGroup> groups = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatRoom")
     private List<ChatMessage> messages = new ArrayList<>();

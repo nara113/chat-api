@@ -4,22 +4,16 @@ import chat.api.argumentresolver.User;
 import chat.api.model.*;
 import chat.api.model.request.CreateRoomRequest;
 import chat.api.service.ChatService;
-import chat.api.validator.ValidImage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 
-@Validated
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 @RestController
@@ -61,11 +55,11 @@ public class ChatController {
 
     @Operation(summary = "채팅방 입장")
     @PostMapping("/rooms/{roomId}/user")
-    public Response addUser(@AuthenticationPrincipal UserDetails user2,
+    public Response<String> addUser(@AuthenticationPrincipal UserDetails user2,
                             @Parameter(hidden = true) @User UserDto user,
                             @PathVariable Long roomId) {
         chatService.enterRoom(roomId, user.getUserId());
-        return null;
+        return Response.of("ok");
     }
 
     @Operation(summary = "채팅방 퇴장")
@@ -83,22 +77,5 @@ public class ChatController {
             @Valid @RequestBody CreateRoomRequest createRoomRequest) {
         chatService.createRoom(user.getUserId(), createRoomRequest);
         return Response.of("ok");
-    }
-
-    @Operation(summary = "프로필 이미지 업로드")
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/upload/profile-image")
-    public Response<String> uploadFile(
-            @Parameter(hidden = true) @User UserDto user,
-            @ValidImage @RequestParam("image") MultipartFile multipartFile) throws IOException {
-        return Response.of(
-                HttpStatus.CREATED.value(),
-                chatService.upload(
-                        user.getUserId(),
-                        multipartFile.getInputStream(),
-                        multipartFile.getOriginalFilename(),
-                        multipartFile.getSize(),
-                        multipartFile.getContentType())
-        );
     }
 }

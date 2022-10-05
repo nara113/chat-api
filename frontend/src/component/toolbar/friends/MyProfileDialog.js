@@ -21,7 +21,7 @@ export default function MyProfileDialog({open, handleClose, currentUser}) {
             const requestProfile = new FormData()
             requestProfile.append('image', uploadFile)
 
-            axios.post("/api/v1/upload/profile-image", requestProfile)
+            axios.post("/api/upload/profile-image", requestProfile)
                 .then((r) => {
                     setProfileUrl(r.data.data);
                 })
