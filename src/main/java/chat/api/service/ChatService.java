@@ -7,6 +7,7 @@ import chat.api.mapper.RoomMapper;
 import chat.api.model.*;
 import chat.api.model.request.CreateRoomRequest;
 import chat.api.repository.*;
+import chat.api.repository.query.ChatFriendQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +119,22 @@ public class ChatService {
                 readMessageDto.getRoomId(),
                 readMessageDto.getUserId(),
                 readMessageDto.getMessageId());
+    }
+
+    @Transactional
+    public void inviteUsersToRoom(Long roomId, Long userId, List<Long> invitedUserIds) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id: " + roomId));
+
+        chatGroupRepository.findByChatRoomIdAndUserId(roomId, userId)
+                        .orElseThrow(() -> new IllegalArgumentException("chatGroup does not exist. room id : " + roomId));
+
+        List<User> users = invitedUserIds
+                .stream()
+                .map(userRepository::getReferenceById)
+                .collect(toList());
+
+        chatRoom.addUsers(users);
     }
 
     @Transactional

@@ -82,8 +82,7 @@ const GroupChatInfo = ({handleClose, participantUsers, currentUserId, setDialogC
     const createRoom = () => {
         const name = (roomName || placeholder);
 
-        axios
-            .post("/api/v1/rooms", {
+        axios.post("/api/rooms", {
                 roomName: name,
                 'participantUserIds': [...participantUsers.map(user => user.userId), currentUserId]
             }).then(r => {
@@ -223,7 +222,7 @@ const RegularChatModal = ({modalOpen, handleModalClose, friends}) => {
     )
 }
 
-const RegularChatDialog = ({open, handleClose, friends, currentUserId}) => {
+const RegularChatDialog = ({open, handleClose, currentUserId}) => {
     const [participantUsers, setParticipantUsers] = useState([]);
     const [dialogContent, setDialogContent] = useState();
 

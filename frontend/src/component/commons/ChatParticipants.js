@@ -55,7 +55,7 @@ export default function ChatParticipants({
     const isFriendsFirstRender = useRef(true);
 
     const getFriends = () => {
-        axios.get(`/api/v1/friends`)
+        axios.get(`/api/friends`)
             .then(res => {
                 setFriends(res.data.data);
             })

@@ -20,7 +20,7 @@ public class ChatRoom extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<ChatGroup> groups = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatRoom")
@@ -29,5 +29,11 @@ public class ChatRoom extends BaseEntity {
     @Builder
     private ChatRoom(String name) {
         this.name = name;
+    }
+
+    public void addUsers(List<User> users) {
+        users.forEach(user -> {
+            groups.add(ChatGroup.builder().user(user).chatRoom(this).build());
+        });
     }
 }

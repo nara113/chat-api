@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import ChatParticipants from "../../commons/ChatParticipants";
 import {styled} from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
+import axios from "axios";
 
 const BootstrapDialog = styled(Dialog)(({theme}) => ({
     '& .MuiDialogContent-root': {
@@ -14,9 +15,20 @@ const BootstrapDialog = styled(Dialog)(({theme}) => ({
 
 export default function InvitationDialog({
                                              invitationDialogOpen,
-                                             handleInvitationDialogClose
+                                             handleInvitationDialogClose,
+                                             currentRoom
                                          }) {
     const [participantUsers, setParticipantUsers] = useState([]);
+
+    const inviteUsers = () => {
+        const invitedUserIds = participantUsers.map(user => user.userId);
+
+        axios.post(`/api/rooms/${currentRoom.roomId}/users`, invitedUserIds)
+            .then(r => {
+                handleInvitationDialogClose();
+                window.location.reload(false);
+            })
+    }
 
     return (
         <BootstrapDialog
@@ -28,7 +40,7 @@ export default function InvitationDialog({
                               handleClose={handleInvitationDialogClose}
                               participantUsers={participantUsers}
                               setParticipantUsers={setParticipantUsers}
-                              handleNext={() => 'invite'}/>
+                              handleNext={inviteUsers}/>
         </BootstrapDialog>
     )
 }

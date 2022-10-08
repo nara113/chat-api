@@ -74,7 +74,7 @@ export default function ChatRoom({
                                             {
                                                 _room.users
                                                     .map(user => {
-                                                        return <Avatar key={user.userId} src={user.profileUrl}>{user.name}</Avatar>
+                                                        return <Avatar key={user.userId} src={user.profileUrl} />
                                                     })
                                             }
                                         </AvatarGroup>

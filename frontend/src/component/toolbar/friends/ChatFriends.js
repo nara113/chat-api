@@ -35,7 +35,7 @@ export default function ChatFriends() {
     const handleProfileDialogClose = () => setProfileDialogOpen(false);
 
     const getFriends = () => {
-        axios.get(`/api/v1/friends`)
+        axios.get(`/api/friends`)
             .then(res => {
                 setFriends(res.data.data);
             })

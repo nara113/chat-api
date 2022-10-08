@@ -11,6 +11,9 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "room_id"})
+})
 public class ChatGroup extends BaseTimeEntity {
 
     @Id

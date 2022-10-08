@@ -68,7 +68,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
             });
         });
 
-        axios.get(`/api/v1/rooms/${currentRoom.roomId}/last-read`)
+        axios.get(`/api/rooms/${currentRoom.roomId}/last-read`)
             .then(res => {
                 setUsers(res.data.data);
             })
@@ -108,7 +108,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     const loadMessages = () => {
         setLoadingMore(true);
 
-        axios.get(`/api/v1/rooms/${currentRoom.roomId}/messages${oldestMessageId ? `?messageId=${oldestMessageId}` : ''}`)
+        axios.get(`/api/rooms/${currentRoom.roomId}/messages${oldestMessageId ? `?messageId=${oldestMessageId}` : ''}`)
             .then(res => {
                 const data = res.data.data.reverse();
 
@@ -318,7 +318,9 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
             />}
             {invitationDialogOpen &&
                 <InvitationDialog invitationDialogOpen={invitationDialogOpen}
-                                  handleInvitationDialogClose={handleInvitationDialogClose}/>
+                                  handleInvitationDialogClose={handleInvitationDialogClose}
+                                  currentRoom={currentRoom}
+                />
             }
             <IconButton
                 color="inherit"

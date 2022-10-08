@@ -30,7 +30,7 @@ export default function AppContainer() {
     stateRef.current = selectedRoom;
 
     const getAllRooms = () => {
-        axios.get("/api/v1/rooms").then(res => {
+        axios.get("/api/rooms").then(res => {
             setRooms(res.data.data);
         })
     }
@@ -98,7 +98,7 @@ export default function AppContainer() {
             } else if (isNewRoom(message.roomId)) {
 
                 // todo
-                axios.get(`/api/v1/rooms/${message.roomId}`)
+                axios.get(`/api/rooms/${message.roomId}`)
                     .then(res => {
                     const newRoom = res.data.data;
                     setRooms(current => [newRoom, ...current]);

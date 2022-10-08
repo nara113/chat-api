@@ -1,4 +1,4 @@
-package chat.api.repository;
+package chat.api.repository.query;
 
 import chat.api.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
