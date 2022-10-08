@@ -1,7 +1,7 @@
 import './App.css';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import React, {useState} from "react";
-import SignIn from "./component/SignIn";
+import SignIn from "./component/auth/SignIn";
 import AppContainer from "./component/AppContainer";
 
 import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";

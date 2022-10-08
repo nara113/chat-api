@@ -11,7 +11,7 @@ import 'dayjs/locale/ko';
 
 import React from "react";
 import AvatarGroup from "@mui/material/AvatarGroup";
-import MyChatContainer from "../../ChatContainer";
+import MyChatContainer from "./ChatContainer";
 
 dayjs.locale('ko');
 

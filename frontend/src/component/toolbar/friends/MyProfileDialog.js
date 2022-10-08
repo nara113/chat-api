@@ -35,8 +35,6 @@ export default function MyProfileDialog({open, handleClose, currentUser}) {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            {/*<DialogTitle id="alert-dialog-title">*/}
-            {/*</DialogTitle>*/}
             <DialogContent
                 sx={{
                     height: 500,

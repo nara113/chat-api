@@ -19,7 +19,13 @@ import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from "@mui/material/IconButton";
+import {ListSubheader} from "@mui/material";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import Avatar2 from "../../commons/Avatar2";
 import Typography from "@mui/material/Typography";
+import ProfileDialog from "../friends/ProfileDialog";
+import AddIcon from '@mui/icons-material/Add';
+import InvitationDialog from "./InvitationDialog";
 
 const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessage, setRooms}) => {
     const img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAAAXNSR0IArs4c6QAAATpJREFUWEdjvPm+8T/DEACMow6lciyNhiiVA5RhNERHQ5TaIUBt80bT6GiIUjsEqG0e0WlUhb+SgYmRFWz/i2/rGT79uoziFkW+PAZWJgGw2Pufxxlef9+N1a3CHA4Mwhx2YLk//z4z3PvUT5SfiHaoqkA1AyMDM9jQl982MXz8dQHFAiW+IgYWJh6w2IefZxhefd+G1QGinC4MguxWYLm//78x3P3YM+rQ0RDFlwaGdxqF+By9B8MID5BBk5kIZdNRhxIKIZA8cjkKKuy//rmNok2c04uBiZFjtBwd3rl+tArFk1mGd9Rja+Yp8RUysDDxQnP9KYZX33dgDR8RDkcGIQ5baOvpK8Pdj73EFDqj/XqiQokURUSnUVIMpYXaUYdSO1RHQ3Q0RKkdAtQ2bzSNjoYotUOA2uYBAI6umQqSmDikAAAAAElFTkSuQmCC";
@@ -188,6 +194,23 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
         setState(open);
     };
 
+    const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+    const [selectedFriend, setSelectedFriend] = useState();
+
+    const handleProfileDialogOpen = (friend) => {
+        setProfileDialogOpen(true);
+        setSelectedFriend(friend)
+    }
+    const handleProfileDialogClose = () => setProfileDialogOpen(false);
+
+    const [invitationDialogOpen, setInvitationDialogOpen] = useState(false);
+    const handleInvitationDialogOpen = () => setInvitationDialogOpen(true);
+    const handleInvitationDialogClose = (event, reason) => {
+        if (reason && reason === "backdropClick") return;
+
+        setInvitationDialogOpen(false);
+    }
+
     const list = () => (
         <Box
             sx={{width: 250}}
@@ -203,26 +226,100 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                 </ListItem>
             </List>
             <Divider/>
-            <List>
-                <Typography
-                    sx={{mt: 1}}
-                    color="text.auto"
-                    display="block"
-                    variant="caption"
-                >
-                    대화상대
-                </Typography>
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemText primary={'대화상대 초대'}/>
+            <List
+                sx={{
+                    width: '100%',
+                    maxWidth: 360,
+                    bgcolor: 'background.paper',
+                }}
+                component="nav"
+                aria-labelledby="nested-list-subheader"
+                subheader={
+                    <ListSubheader component="div" id="nested-list-subheader">
+                        대화상대
+                    </ListSubheader>
+                }
+            >
+                <ListItem>
+                    <ListItemButton
+                        sx={{p: 0}}
+                        onClick={handleInvitationDialogOpen}>
+                        <ListItemAvatar>
+                            <Avatar2 sx={{borderRadius: 4}}>
+                                <AddIcon/>
+                            </Avatar2>
+                        </ListItemAvatar>
+                        <ListItemText primary="대화상대 초대"/>
                     </ListItemButton>
                 </ListItem>
+                <ListItem>
+                    <ListItemButton
+                        sx={{p: 0}}>
+                        <ListItemAvatar>
+                            <Avatar2 sx={{borderRadius: 4}} key={currentUser.userId} src={currentUser.profileUrl}/>
+                        </ListItemAvatar>
+                        <ListItemText
+                            primary={'(나) ' + currentUser.name}
+                            secondary={
+                                <React.Fragment>
+                                    <Typography
+                                        sx={{display: 'inline'}}
+                                        component="span"
+                                        variant="body2"
+                                        color="text.primary"
+                                    >
+                                    </Typography>
+                                </React.Fragment>
+                            }
+                            sx={{width: 500}}
+                        />
+                    </ListItemButton>
+                </ListItem>
+                {
+                    roomUsers && roomUsers.length > 0 &&
+                    roomUsers.map((_friend) => {
+                        return (
+                            <ListItem>
+                                <ListItemButton
+                                    sx={{p: 0}}
+                                    onClick={() => handleProfileDialogOpen(_friend)}>
+                                    <ListItemAvatar>
+                                        <Avatar2 sx={{borderRadius: 4}} key={_friend.userId} src={_friend.profileUrl}/>
+                                    </ListItemAvatar>
+                                    <ListItemText
+                                        primary={_friend.name}
+                                        secondary={
+                                            <React.Fragment>
+                                                <Typography
+                                                    sx={{display: 'inline'}}
+                                                    component="span"
+                                                    variant="body2"
+                                                    color="text.primary"
+                                                >
+                                                </Typography>
+                                            </React.Fragment>
+                                        }
+                                        sx={{width: 500}}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        )
+                    })}
             </List>
         </Box>
     );
 
     return (
         <>
+            {profileDialogOpen && <ProfileDialog
+                open={profileDialogOpen}
+                handleClose={handleProfileDialogClose}
+                user={selectedFriend}
+            />}
+            {invitationDialogOpen &&
+                <InvitationDialog invitationDialogOpen={invitationDialogOpen}
+                                  handleInvitationDialogClose={handleInvitationDialogClose}/>
+            }
             <IconButton
                 color="inherit"
                 onClick={toggleDrawer(true)}

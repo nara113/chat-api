@@ -12,7 +12,6 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
 
 const CreateRoomButton = ({currentUserId}) => {
-    const [friends, setFriends] = useState()
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {
@@ -25,24 +24,13 @@ const CreateRoomButton = ({currentUserId}) => {
 
     const open = Boolean(anchorEl);
 
-    const [modalOpen, setModalOpen] = React.useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
     const handleModalOpen = () => setModalOpen(true);
     const handleModalClose = (event, reason) => {
         if (reason && reason === "backdropClick") return;
 
         setModalOpen(false);
     }
-
-    const getFriends = () => {
-        axios.get(`/api/v1/friends`)
-            .then(res => {
-                setFriends(res.data.data);
-            })
-    }
-
-    useEffect(() => {
-        getFriends();
-    }, []);
 
     return (
         <>
@@ -73,7 +61,6 @@ const CreateRoomButton = ({currentUserId}) => {
                 {modalOpen && <RegularChatDialog
                     open={modalOpen}
                     handleClose={handleModalClose}
-                    friends={friends}
                     currentUserId={currentUserId}
                 />}
                 {/*<RegularChatModal*/}

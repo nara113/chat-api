@@ -13,11 +13,9 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import {Badge, DialogContentText, FormControl} from "@mui/material";
+import {DialogContentText, FormControl} from "@mui/material";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import CancelIcon from "@mui/icons-material/Cancel";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
@@ -29,6 +27,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Modal from "@mui/material/Modal";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import Favorite from "@mui/icons-material/Favorite";
+import ChatParticipants from "../commons/ChatParticipants";
 
 const BootstrapDialog = styled(Dialog)(({theme}) => ({
     '& .MuiDialogContent-root': {
@@ -156,105 +155,6 @@ const GroupChatInfo = ({handleClose, participantUsers, currentUserId, setDialogC
     );
 }
 
-const ChatParticipants = ({handleClose, friends, participantUsers, setParticipantUsers, setDialogContent}) => {
-    const friendsMap = new Map(
-        friends.map(f => {
-            return [f.userId, f];
-        }),
-    );
-
-    const addUser = (id) => {
-        setParticipantUsers([friendsMap.get(Number(id)), ...participantUsers]);
-    }
-
-    const removeUser = (id) => {
-        setParticipantUsers(participantUsers.filter(user => user.userId !== Number(id)));
-    }
-
-    const handleChange = (event) => {
-        const {checked, id} = event.target;
-
-        if (checked) {
-            addUser(id);
-        } else {
-            removeUser(id);
-        }
-    };
-
-    const handleNext = () => {
-        setDialogContent("GroupChatInfo")
-    }
-
-    return (
-        <>
-            <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-                대화상대 선택
-            </BootstrapDialogTitle>
-            <DialogContent>
-                <Stack direction="row" spacing={1}
-                       sx={{width: '100%', maxWidth: 400, overflow: "auto"}}>
-                    {
-                        participantUsers
-                            .map(user => {
-                                return (
-                                    <IconButton sx={{px: 0}} onClick={() => removeUser(user.userId)}>
-                                        <Badge
-                                            overlap="circular"
-                                            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-                                            badgeContent={
-                                                <CancelIcon/>
-                                            }
-                                        >
-                                            <Avatar key={user.userId} src={user.profileUrl}>{user.name}</Avatar>
-                                        </Badge>
-                                    </IconButton>
-                                )
-                            })
-                    }
-                </Stack>
-                <Typography id="modal-modal-description" sx={{mt: 2}}>
-                    <Paper
-                        component="form"
-                        sx={{p: '2px 4px', display: 'flex', alignItems: 'center', width: 400}}
-                    >
-                        <InputBase
-                            sx={{ml: 1, flex: 1}}
-                            placeholder="이름(초성), 전화번호 검색"
-                        />
-                        <IconButton type="button" sx={{p: '10px'}} aria-label="search">
-                            <SearchIcon/>
-                        </IconButton>
-                    </Paper>
-                    <FormControl sx={{pt: 2}}>
-                        <FormLabel id="demo-radio-buttons-group-label" sx={{pt: 2}}>친구</FormLabel>
-                        <FormGroup>
-                            {friends && friends.length > 0 &&
-                                friends.map((_friend) => {
-                                    return (
-                                        <FormControlLabel
-                                            control={<Checkbox
-                                                id={_friend.userId.toString()}
-                                                checked={participantUsers.map(user => user.userId)
-                                                    .includes(_friend.userId)}
-                                                onChange={handleChange}/>}
-                                            label={_friend.name}/>
-                                    )
-                                })
-                            }
-                        </FormGroup>
-                    </FormControl>
-                </Typography>
-            </DialogContent>
-            <DialogActions>
-                <Button autoFocus disabled={participantUsers.length === 0}
-                        onClick={handleNext}>
-                    {participantUsers.length} 확인
-                </Button>
-            </DialogActions>
-        </>
-    )
-}
-
 const modalStyle = {
     position: 'absolute',
     top: '50%',
@@ -328,11 +228,11 @@ const RegularChatDialog = ({open, handleClose, friends, currentUserId}) => {
     const [dialogContent, setDialogContent] = useState();
 
     const dialogContentMap = {
-        "ChatParticipants": <ChatParticipants handleClose={handleClose}
-                                              friends={friends}
+        "ChatParticipants": <ChatParticipants dialogTitle={'대화상대 선택'}
+                                              handleClose={handleClose}
                                               participantUsers={participantUsers}
                                               setParticipantUsers={setParticipantUsers}
-                                              setDialogContent={setDialogContent}
+                                              handleNext={() => setDialogContent("GroupChatInfo")}
         />,
         "GroupChatInfo": <GroupChatInfo currentUserId={currentUserId}
                                         handleClose={handleClose}
