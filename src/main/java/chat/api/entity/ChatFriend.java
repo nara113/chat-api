@@ -1,5 +1,6 @@
 package chat.api.entity;
 
+import chat.api.converter.BooleanToYNConverter;
 import chat.api.entity.base.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -26,8 +27,9 @@ public class ChatFriend extends BaseTimeEntity {
     @JoinColumn(name = "friend_user_id")
     private User friend;
 
+    @Convert(converter = BooleanToYNConverter.class)
     @ColumnDefault("'N'")
-    private String blockYn;
+    private boolean isBlocked;
 
     @Builder
     private ChatFriend(User user, User friend) {

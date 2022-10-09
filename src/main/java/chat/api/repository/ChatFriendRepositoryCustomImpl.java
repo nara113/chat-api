@@ -22,7 +22,7 @@ public class ChatFriendRepositoryCustomImpl implements ChatFriendRepositoryCusto
                 .leftJoin(chatFriend.friend.profileImage, uploadFile)
                 .fetchJoin()
                 .where(chatFriend.user.id.eq(userId)
-                        .and(chatFriend.blockYn.eq("N")))
+                        .and(chatFriend.isBlocked.isFalse()))
                 .fetch();
     }
 }
