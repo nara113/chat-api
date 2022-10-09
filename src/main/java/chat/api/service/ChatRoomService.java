@@ -7,7 +7,6 @@ import chat.api.mapper.RoomMapper;
 import chat.api.model.*;
 import chat.api.model.request.CreateRoomRequest;
 import chat.api.repository.*;
-import chat.api.repository.query.ChatFriendQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,7 @@ import static java.util.stream.Collectors.*;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ChatService {
+public class ChatRoomService {
     private final RoomMapper roomMapper;
 
     private final ChatMessageRepository chatMessageRepository;
@@ -32,13 +31,7 @@ public class ChatService {
 
     private final ChatGroupRepository chatGroupRepository;
 
-    private final UploadFileRepository uploadFileRepository;
-
-    private final ChatFriendQueryRepository chatFriendQueryRepository;
-
     private final ChatGroupMapper chatGroupMapper;
-
-    private final AwsS3Uploader awsS3Uploader;
 
     public List<ChatRoomDto> getAllRoom(Long userId) {
         return roomMapper.selectAllRoomsByUserId(userId);
@@ -77,15 +70,6 @@ public class ChatService {
 
         return messages.stream()
                 .map(ChatMessageDto::new)
-                .collect(toList());
-    }
-
-    public List<UserDto> getFriends(Long userId) {
-        List<User> friends = chatFriendQueryRepository.selectFriendsByUserId(userId);
-
-        return friends
-                .stream()
-                .map(UserDto::new)
                 .collect(toList());
     }
 
@@ -166,29 +150,4 @@ public class ChatService {
         chatGroupMapper.insertChatGroups(room.getId(), request.getParticipantUserIds());
     }
 
-    @Transactional
-    public String upload(Long userId,
-                         InputStream inputStream,
-                         String originalFilename,
-                         long size,
-                         String contentType) throws IOException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId));
-
-        String objectUrl = awsS3Uploader.upload(inputStream, originalFilename, contentType);
-
-        UploadFile uploadFile = UploadFile.builder()
-                .originalFileName(originalFilename)
-                .url(objectUrl)
-                .size(size)
-                .contentType(contentType)
-                .user(user)
-                .build();
-
-        uploadFileRepository.save(uploadFile);
-
-        user.changeProfileImage(uploadFile);
-
-        return objectUrl;
-    }
 }

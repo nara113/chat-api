@@ -3,7 +3,7 @@ package chat.api.controller;
 import chat.api.argumentresolver.User;
 import chat.api.model.Response;
 import chat.api.model.UserDto;
-import chat.api.service.ChatService;
+import chat.api.service.ChatFriendService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -16,13 +16,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/friends")
 @RestController
-public class FriendsController {
+public class ChatFriendController {
 
-    private final ChatService chatService;
+    private final ChatFriendService chatFriendService;
 
     @Operation(summary = "친구 목록")
     @GetMapping
     public Response<List<UserDto>> getFriends(@Parameter(hidden = true) @User UserDto user) {
-        return Response.of(chatService.getFriends(user.getUserId()));
+        return Response.of(chatFriendService.getFriends(user.getUserId()));
     }
 }

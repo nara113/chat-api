@@ -3,7 +3,7 @@ package chat.api.controller;
 import chat.api.argumentresolver.User;
 import chat.api.model.*;
 import chat.api.model.request.CreateRoomRequest;
-import chat.api.service.ChatService;
+import chat.api.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +21,19 @@ import java.util.List;
 @RestController
 public class RoomController {
 
-    private final ChatService chatService;
+    private final ChatRoomService chatRoomService;
 
     @Operation(summary = "채팅방 목록")
     @GetMapping
     public Response<List<ChatRoomDto>> getRooms(@Parameter(hidden = true) @User UserDto user) {
-        return Response.of(chatService.getAllRoom(user.getUserId()));
+        return Response.of(chatRoomService.getAllRoom(user.getUserId()));
     }
 
     @Operation(summary = "채팅방 정보")
     @GetMapping("/{roomId}")
     public Response<ChatRoomDto> getRoom(@Parameter(hidden = true) @User UserDto user,
                                          @PathVariable Long roomId) {
-        return Response.of(chatService.getRoom(user.getUserId(), roomId));
+        return Response.of(chatRoomService.getRoom(user.getUserId(), roomId));
     }
 
     @Operation(summary = "채팅방 생성")
@@ -41,7 +41,7 @@ public class RoomController {
     public Response<String> createRoom(
             @Parameter(hidden = true) @User UserDto user,
             @Valid @RequestBody CreateRoomRequest createRoomRequest) {
-        chatService.createRoom(user.getUserId(), createRoomRequest);
+        chatRoomService.createRoom(user.getUserId(), createRoomRequest);
         return Response.of("ok");
     }
 
@@ -49,13 +49,13 @@ public class RoomController {
     @GetMapping("/{roomId}/messages")
     public Response<List<ChatMessageDto>> getMessages(@PathVariable Long roomId,
                                                       @RequestParam(required = false) Long messageId) {
-        return Response.of(chatService.getMessages(roomId, messageId));
+        return Response.of(chatRoomService.getMessages(roomId, messageId));
     }
 
     @Operation(summary = "채팅방 유저별 마지막 읽은 메시지 아이디 목록")
     @GetMapping("/{roomId}/last-read")
     public Response<List<LastReadMessageDto>> getUsersByRoom(@PathVariable Long roomId) {
-        return Response.of(chatService.getLastReadMessagesByRoomId(roomId));
+        return Response.of(chatRoomService.getLastReadMessagesByRoomId(roomId));
     }
 
     @Operation(summary = "채팅방 대화상대 추가")
@@ -63,7 +63,7 @@ public class RoomController {
     public Response<String> addUsers(@Parameter(hidden = true) @User UserDto user,
                                      @PathVariable Long roomId,
                                      @RequestBody List<Long> invitedUserIds) {
-        chatService.inviteUsersToRoom(roomId, user.getUserId(), invitedUserIds);
+        chatRoomService.inviteUsersToRoom(roomId, user.getUserId(), invitedUserIds);
         return Response.of("ok");
     }
 
@@ -72,7 +72,7 @@ public class RoomController {
     public Response<String> addUser(@AuthenticationPrincipal UserDetails user2,
                                     @Parameter(hidden = true) @User UserDto user,
                                     @PathVariable Long roomId) {
-        chatService.enterRoom(roomId, user.getUserId());
+        chatRoomService.enterRoom(roomId, user.getUserId());
         return Response.of("ok");
     }
 

@@ -13,21 +13,10 @@ import AvatarGroup from "@mui/material/AvatarGroup";
 import Avatar from "@mui/material/Avatar";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import {DialogContentText, FormControl} from "@mui/material";
+import {DialogContentText} from "@mui/material";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import InputBase from "@mui/material/InputBase";
-import SearchIcon from "@mui/icons-material/Search";
-import FormLabel from "@mui/material/FormLabel";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Modal from "@mui/material/Modal";
-import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
-import Favorite from "@mui/icons-material/Favorite";
-import ChatParticipants from "../commons/ChatParticipants";
+import ChatParticipantsDialogContent from "../commons/ChatParticipantsDialogContent";
 
 const BootstrapDialog = styled(Dialog)(({theme}) => ({
     '& .MuiDialogContent-root': {
@@ -67,7 +56,7 @@ BootstrapDialogTitle.propTypes = {
     onClose: PropTypes.func.isRequired,
 };
 
-const GroupChatInfo = ({handleClose, participantUsers, currentUserId, setDialogContent}) => {
+const GroupChatInfoDialogContent = ({handleClose, participantUsers, currentUserId, setDialogContent}) => {
     const [roomName, setRoomName] = useState('');
     const placeholder = participantUsers.slice(0, 5).map(user => user.name).join(', ');
 
@@ -154,86 +143,18 @@ const GroupChatInfo = ({handleClose, participantUsers, currentUserId, setDialogC
     );
 }
 
-const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    maxHeight: 600,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-    overflow: 'scroll'
-};
-
-const RegularChatModal = ({modalOpen, handleModalClose, friends}) => {
-    const handleChange = (event) => {
-        console.log(event.target.value)
-        console.log(event.target.checked)
-    };
-
-    return (
-        <Modal
-            open={modalOpen}
-            onClose={handleModalClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <Box sx={modalStyle}>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    대화상대 선택
-                </Typography>
-                <Typography id="modal-modal-description" sx={{mt: 2}}>
-                    <Paper
-                        component="form"
-                        sx={{p: '2px 4px', display: 'flex', alignItems: 'center', width: 400}}
-                    >
-                        <InputBase
-                            sx={{ml: 1, flex: 1}}
-                            placeholder="이름(초성), 전화번호 검색"
-                        />
-                        <IconButton type="button" sx={{p: '10px'}} aria-label="search">
-                            <SearchIcon/>
-                        </IconButton>
-                    </Paper>
-                    <FormControl sx={{pt: 2}}>
-                        <FormLabel id="demo-radio-buttons-group-label" sx={{pt: 2}}>친구</FormLabel>
-                        <FormGroup>
-                            {friends && friends.length > 0 &&
-                                friends.map((_friend) => {
-                                    return (
-                                        <FormControlLabel
-                                            control={<Checkbox
-                                                value={_friend.userId}
-                                                onChange={handleChange}
-                                                icon={<FavoriteBorder/>}
-                                                checkedIcon={<Favorite/>}/>}
-                                            label={_friend.name}/>
-                                    )
-                                })
-                            }
-                        </FormGroup>
-                    </FormControl>
-                </Typography>
-            </Box>
-        </Modal>
-    )
-}
-
 const RegularChatDialog = ({open, handleClose, currentUserId}) => {
     const [participantUsers, setParticipantUsers] = useState([]);
     const [dialogContent, setDialogContent] = useState();
 
     const dialogContentMap = {
-        "ChatParticipants": <ChatParticipants dialogTitle={'대화상대 선택'}
-                                              handleClose={handleClose}
-                                              participantUsers={participantUsers}
-                                              setParticipantUsers={setParticipantUsers}
-                                              handleNext={() => setDialogContent("GroupChatInfo")}
+        "ChatParticipants": <ChatParticipantsDialogContent dialogTitle={'대화상대 선택'}
+                                                           handleClose={handleClose}
+                                                           participantUsers={participantUsers}
+                                                           setParticipantUsers={setParticipantUsers}
+                                                           handleNext={() => setDialogContent("GroupChatInfo")}
         />,
-        "GroupChatInfo": <GroupChatInfo currentUserId={currentUserId}
+        "GroupChatInfo": <GroupChatInfoDialogContent currentUserId={currentUserId}
                                         handleClose={handleClose}
                                         participantUsers={participantUsers}
                                         setDialogContent={setDialogContent}

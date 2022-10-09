@@ -3,7 +3,7 @@ package chat.api.controller;
 import chat.api.argumentresolver.User;
 import chat.api.model.Response;
 import chat.api.model.UserDto;
-import chat.api.service.ChatService;
+import chat.api.service.ProfileService;
 import chat.api.validator.ValidImage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +21,7 @@ import java.io.IOException;
 @RestController
 public class ProfileController {
 
-    private final ChatService chatService;
+    private final ProfileService profileService;
 
     @Operation(summary = "프로필 이미지 업로드")
     @ResponseStatus(HttpStatus.CREATED)
@@ -31,7 +31,7 @@ public class ProfileController {
             @ValidImage @RequestParam("image") MultipartFile multipartFile) throws IOException {
         return Response.of(
                 HttpStatus.CREATED.value(),
-                chatService.upload(
+                profileService.upload(
                         user.getUserId(),
                         multipartFile.getInputStream(),
                         multipartFile.getOriginalFilename(),

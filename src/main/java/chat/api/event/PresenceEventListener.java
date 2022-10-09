@@ -1,11 +1,10 @@
 package chat.api.event;
 
 import chat.api.model.ChatMessageDto;
-import chat.api.service.ChatService;
+import chat.api.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.Optional;
@@ -14,7 +13,7 @@ import java.util.Optional;
 //@Component
 public class PresenceEventListener {
 
-    private final ChatService chatService;
+    private final ChatRoomService chatRoomService;
 
     @EventListener
     private void handleSessionDisconnect(SessionDisconnectEvent event) {
@@ -22,6 +21,6 @@ public class PresenceEventListener {
 
         Optional.ofNullable(headerAccessor.getSessionAttributes())
                 .map(attributes -> (ChatMessageDto) attributes.get("chatMessage"))
-                .ifPresent(message -> chatService.updateToLastMessage(message.getRoomId(), message.getSenderId()));
+                .ifPresent(message -> chatRoomService.updateToLastMessage(message.getRoomId(), message.getSenderId()));
     }
 }

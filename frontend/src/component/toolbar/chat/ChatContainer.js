@@ -10,22 +10,12 @@ import {
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import dayjs from "dayjs";
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import Divider from "@mui/material/Divider";
-import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from "@mui/material/IconButton";
-import {ListSubheader} from "@mui/material";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar2 from "../../commons/Avatar2";
-import Typography from "@mui/material/Typography";
 import ProfileDialog from "../friends/ProfileDialog";
-import AddIcon from '@mui/icons-material/Add';
 import InvitationDialog from "./InvitationDialog";
+import ChatRoomDrawer from "./ChatRoomDrawer";
+import MyProfileDialog from "../friends/MyProfileDialog";
 
 const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessage, setRooms}) => {
     const img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAAAXNSR0IArs4c6QAAATpJREFUWEdjvPm+8T/DEACMow6lciyNhiiVA5RhNERHQ5TaIUBt80bT6GiIUjsEqG0e0WlUhb+SgYmRFWz/i2/rGT79uoziFkW+PAZWJgGw2Pufxxlef9+N1a3CHA4Mwhx2YLk//z4z3PvUT5SfiHaoqkA1AyMDM9jQl982MXz8dQHFAiW+IgYWJh6w2IefZxhefd+G1QGinC4MguxWYLm//78x3P3YM+rQ0RDFlwaGdxqF+By9B8MID5BBk5kIZdNRhxIKIZA8cjkKKuy//rmNok2c04uBiZFjtBwd3rl+tArFk1mGd9Rja+Yp8RUysDDxQnP9KYZX33dgDR8RDkcGIQ5baOvpK8Pdj73EFDqj/XqiQokURUSnUVIMpYXaUYdSO1RHQ3Q0RKkdAtQ2bzSNjoYotUOA2uYBAI6umQqSmDikAAAAAElFTkSuQmCC";
@@ -184,18 +174,22 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
         loadMessages();
     };
 
-    const [state, setState] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const toggleDrawer = (open) => (event) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
 
-        setState(open);
+        setDrawerOpen(open);
     };
 
+    const [myProfileDialogOpen, setMyProfileDialogOpen] = useState(false);
     const [profileDialogOpen, setProfileDialogOpen] = useState(false);
     const [selectedFriend, setSelectedFriend] = useState();
+
+    const handleMyProfileDialogOpen = () => setMyProfileDialogOpen(true);
+    const handleMyProfileDialogClose = () => setMyProfileDialogOpen(false);
 
     const handleProfileDialogOpen = (friend) => {
         setProfileDialogOpen(true);
@@ -211,106 +205,13 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
         setInvitationDialogOpen(false);
     }
 
-    const list = () => (
-        <Box
-            sx={{width: 250}}
-            role="presentation"
-            onClick={toggleDrawer(false)}
-            onKeyDown={toggleDrawer(false)}
-        >
-            <List>
-                <ListItem disablePadding>
-                    <ListItemButton>
-                        <ListItemText primary={'톡게시판'}/>
-                    </ListItemButton>
-                </ListItem>
-            </List>
-            <Divider/>
-            <List
-                sx={{
-                    width: '100%',
-                    maxWidth: 360,
-                    bgcolor: 'background.paper',
-                }}
-                component="nav"
-                aria-labelledby="nested-list-subheader"
-                subheader={
-                    <ListSubheader component="div" id="nested-list-subheader">
-                        대화상대
-                    </ListSubheader>
-                }
-            >
-                <ListItem>
-                    <ListItemButton
-                        sx={{p: 0}}
-                        onClick={handleInvitationDialogOpen}>
-                        <ListItemAvatar>
-                            <Avatar2 sx={{borderRadius: 4}}>
-                                <AddIcon/>
-                            </Avatar2>
-                        </ListItemAvatar>
-                        <ListItemText primary="대화상대 초대"/>
-                    </ListItemButton>
-                </ListItem>
-                <ListItem>
-                    <ListItemButton
-                        sx={{p: 0}}>
-                        <ListItemAvatar>
-                            <Avatar2 sx={{borderRadius: 4}} key={currentUser.userId} src={currentUser.profileUrl}/>
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={'(나) ' + currentUser.name}
-                            secondary={
-                                <React.Fragment>
-                                    <Typography
-                                        sx={{display: 'inline'}}
-                                        component="span"
-                                        variant="body2"
-                                        color="text.primary"
-                                    >
-                                    </Typography>
-                                </React.Fragment>
-                            }
-                            sx={{width: 500}}
-                        />
-                    </ListItemButton>
-                </ListItem>
-                {
-                    roomUsers && roomUsers.length > 0 &&
-                    roomUsers.map((_friend) => {
-                        return (
-                            <ListItem>
-                                <ListItemButton
-                                    sx={{p: 0}}
-                                    onClick={() => handleProfileDialogOpen(_friend)}>
-                                    <ListItemAvatar>
-                                        <Avatar2 sx={{borderRadius: 4}} key={_friend.userId} src={_friend.profileUrl}/>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={_friend.name}
-                                        secondary={
-                                            <React.Fragment>
-                                                <Typography
-                                                    sx={{display: 'inline'}}
-                                                    component="span"
-                                                    variant="body2"
-                                                    color="text.primary"
-                                                >
-                                                </Typography>
-                                            </React.Fragment>
-                                        }
-                                        sx={{width: 500}}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                        )
-                    })}
-            </List>
-        </Box>
-    );
-
     return (
         <>
+            {myProfileDialogOpen && <MyProfileDialog
+                open={myProfileDialogOpen}
+                handleClose={handleMyProfileDialogClose}
+                currentUser={currentUser}
+            />}
             {profileDialogOpen && <ProfileDialog
                 open={profileDialogOpen}
                 handleClose={handleProfileDialogClose}
@@ -320,6 +221,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                 <InvitationDialog invitationDialogOpen={invitationDialogOpen}
                                   handleInvitationDialogClose={handleInvitationDialogClose}
                                   currentRoom={currentRoom}
+                                  roomUsers={roomUsers}
                 />
             }
             <IconButton
@@ -328,13 +230,14 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
             >
                 <MenuIcon sx={{color: "inherit"}}/>
             </IconButton>
-            <Drawer
-                anchor={'right'}
-                open={state}
-                onClose={toggleDrawer(false)}
-            >
-                {list()}
-            </Drawer>
+            <ChatRoomDrawer drawerOpen={drawerOpen}
+                            toggleDrawer={toggleDrawer}
+                            currentUser={currentUser}
+                            roomUsers={roomUsers}
+                            handleMyProfileDialogOpen={handleMyProfileDialogOpen}
+                            handleProfileDialogOpen={handleProfileDialogOpen}
+                            handleInvitationDialogOpen={handleInvitationDialogOpen}
+            />
             <div style={{
                 width: "600px",
                 height: "400px",

@@ -43,21 +43,25 @@ const BootstrapDialogTitle = (props) => {
     );
 };
 
-export default function ChatParticipants({
+export default function ChatParticipantsDialogContent({
                                              dialogTitle,
                                              handleClose,
                                              participantUsers,
                                              setParticipantUsers,
-                                             handleNext
+                                             handleNext,
+                                                          participatingUserIds = []
                                          }) {
     const [friends, setFriends] = useState()
+    const [filteredFriends, setFilteredFriends] = useState()
     const [friendsMap, setFriendsMap] = useState()
+    const [searchText, setSearchText] = useState('')
     const isFriendsFirstRender = useRef(true);
 
     const getFriends = () => {
         axios.get(`/api/friends`)
             .then(res => {
                 setFriends(res.data.data);
+                setFilteredFriends(res.data.data);
             })
     }
 
@@ -95,6 +99,14 @@ export default function ChatParticipants({
         }
     };
 
+    const handleSearchTextChange = (event) => {
+        const value = event.target.value;
+
+        setFilteredFriends(friends.filter(friend => friend.name.toLowerCase().includes(value.toLowerCase())));
+
+        setSearchText(value);
+    };
+
     return (
         <>
             <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
@@ -130,6 +142,8 @@ export default function ChatParticipants({
                         <InputBase
                             sx={{ml: 1, flex: 1}}
                             placeholder="이름(초성), 전화번호 검색"
+                            value={searchText}
+                            onChange={handleSearchTextChange}
                         />
                         <IconButton type="button" sx={{p: '10px'}} aria-label="search">
                             <SearchIcon/>
@@ -138,12 +152,13 @@ export default function ChatParticipants({
                     <FormControl sx={{pt: 2}}>
                         <FormLabel id="demo-radio-buttons-group-label" sx={{pt: 2}}>친구</FormLabel>
                         <FormGroup>
-                            {friends && friends.length > 0 &&
-                                friends.map((_friend) => {
+                            {filteredFriends && filteredFriends.length > 0 &&
+                                filteredFriends.map((_friend) => {
                                     return (
                                         <FormControlLabel
                                             control={<Checkbox
                                                 id={_friend.userId.toString()}
+                                                disabled={participatingUserIds.includes(_friend.userId.toString())}
                                                 checked={participantUsers.map(user => user.userId)
                                                     .includes(_friend.userId)}
                                                 onChange={handleChange}/>}

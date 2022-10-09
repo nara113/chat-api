@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import ChatParticipants from "../../commons/ChatParticipants";
+import ChatParticipantsDialogContent from "../../commons/ChatParticipantsDialogContent";
 import {styled} from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
 import axios from "axios";
@@ -16,7 +16,8 @@ const BootstrapDialog = styled(Dialog)(({theme}) => ({
 export default function InvitationDialog({
                                              invitationDialogOpen,
                                              handleInvitationDialogClose,
-                                             currentRoom
+                                             currentRoom,
+                                             roomUsers
                                          }) {
     const [participantUsers, setParticipantUsers] = useState([]);
 
@@ -36,11 +37,13 @@ export default function InvitationDialog({
             aria-labelledby="customized-dialog-title"
             open={invitationDialogOpen}
         >
-            <ChatParticipants dialogTitle={'대화상대 초대'}
-                              handleClose={handleInvitationDialogClose}
-                              participantUsers={participantUsers}
-                              setParticipantUsers={setParticipantUsers}
-                              handleNext={inviteUsers}/>
+            <ChatParticipantsDialogContent dialogTitle={'대화상대 초대'}
+                                           handleClose={handleInvitationDialogClose}
+                                           participantUsers={participantUsers}
+                                           setParticipantUsers={setParticipantUsers}
+                                           handleNext={inviteUsers}
+                                           participatingUserIds={roomUsers.map(user => user.userId.toString())}
+            />
         </BootstrapDialog>
     )
 }
