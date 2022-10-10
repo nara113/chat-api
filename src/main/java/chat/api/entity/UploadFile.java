@@ -32,7 +32,7 @@ public class UploadFile extends BaseTimeEntity {
     private User user;
 
     @ColumnDefault("'N'")
-    private String deletedYn;
+    private boolean isDeleted;
 
     @Builder
     private UploadFile(String url, String originalFileName, Long size, String contentType, User user) {

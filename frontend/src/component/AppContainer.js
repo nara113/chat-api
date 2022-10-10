@@ -11,12 +11,17 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {Badge} from "@mui/material";
-import PersonIcon from "@mui/icons-material/Person";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import ChatRoom from "./toolbar/chat/ChatRoom";
 import ChatFriends from "./toolbar/friends/ChatFriends";
 import CreateRoomButton from "./createRoom/CreateRoomButton";
+import CssBaseline from '@mui/material/CssBaseline';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import {Badge} from "@mui/material";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import PersonIcon from "@mui/icons-material/Person";
+import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
+import Paper from '@mui/material/Paper';
 
 export default function AppContainer() {
     const [rooms, setRooms] = useState();
@@ -141,7 +146,8 @@ export default function AppContainer() {
             display: 'flex',
             justifyContent: 'center',
         }}>
-            <Box sx={{display: 'flex'}}>
+            <Box sx={{ pb: 7 }}>
+                <CssBaseline />
                 <AppBar component="nav">
                     <Toolbar>
                         <Typography
@@ -173,29 +179,29 @@ export default function AppContainer() {
                                     selectedRoom={selectedRoom}
                                     setSelectedRoom={setSelectedRoom}/>
                 }
+                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+                    <BottomNavigation
+                        showLabels
+                        value={toolbar}
+                        onChange={(event, newValue) => {
+                            setToolbar(newValue);
+                        }}
+                    >
+                        <BottomNavigationAction value="FRIENDS" icon={<PersonIcon />} />
+                        <BottomNavigationAction value="ROOMS" icon={
+                            <Badge badgeContent={
+                                rooms
+                                && rooms.length > 0
+                                && rooms.map(room => room.unreadMessagesCount)
+                                    .reduce((accumulator, curr) => accumulator + curr)}
+                                   color="error">
+                                <ChatBubbleIcon/>
+                            </Badge>
+                        } />
+                        <BottomNavigationAction value="MORE" icon={<MoreHorizIcon />} />
+                    </BottomNavigation>
+                </Paper>
             </Box>
-            <AppBar position="fixed" color="primary" sx={{top: 'auto', bottom: 0}}>
-                <Toolbar>
-                    <Box sx={{flexGrow: 1}}/>
-                    <IconButton
-                        onClick={() => setToolbar('FRIENDS')}
-                        color="inherit">
-                        <PersonIcon/>
-                    </IconButton>
-                    <IconButton
-                        onClick={() => setToolbar('ROOMS')}
-                        color="inherit">
-                        <Badge badgeContent={
-                            rooms
-                            && rooms.length > 0
-                            && rooms.map(room => room.unreadMessagesCount)
-                                .reduce((accumulator, curr) => accumulator + curr)}
-                               color="error">
-                            <ChatBubbleIcon/>
-                        </Badge>
-                    </IconButton>
-                </Toolbar>
-            </AppBar>
         </Container>
     );
 }

@@ -27,7 +27,6 @@ public class ChatFriend extends BaseTimeEntity {
     @JoinColumn(name = "friend_user_id")
     private User friend;
 
-    @Convert(converter = BooleanToYNConverter.class)
     @ColumnDefault("'N'")
     private boolean isBlocked;
 

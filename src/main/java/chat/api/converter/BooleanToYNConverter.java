@@ -3,7 +3,7 @@ package chat.api.converter;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-@Converter
+@Converter(autoApply = true)
 public class BooleanToYNConverter implements AttributeConverter<Boolean, String> {
 
     @Override

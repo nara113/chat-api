@@ -54,55 +54,8 @@ export default function ChatRoom({
 
     return (
         <>
-            <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
-                <Toolbar/>
-                {rooms && rooms.length > 0 &&
-                    rooms.map((_room) => {
-                        return (
-                            <StyledPaper
-                                sx={{
-                                    my: 1,
-                                    mx: 'auto',
-                                    p: 2,
-                                    width: 800
-                                }}
-                            >
-                                <Grid container wrap="nowrap" spacing={2} onClick={() => onClickRoom(_room)}>
-                                    <Grid item>
-                                        <AvatarGroup
-                                            max={4}>
-                                            {
-                                                _room.users
-                                                    .map(user => {
-                                                        return <Avatar key={user.userId} src={user.profileUrl} />
-                                                    })
-                                            }
-                                        </AvatarGroup>
-                                    </Grid>
-                                    <Grid item xs={12} sm container zeroMinWidth>
-                                        <Grid item xs zeroMinWidth>
-                                            <Typography
-                                                noWrap>{_room.roomName}</Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {_room.lastMessage}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item>
-                                            <Typography variant="body2" component="div" color="text.secondary">
-                                                {formatDate(_room.lastMessageTime)}
-                                            </Typography>
-                                            <Badge badgeContent={_room.unreadMessagesCount} max={999}
-                                                   color="error"/>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                            </StyledPaper>
-                        )
-                    })
-                }
-            </Box>
-            {selectedRoom &&
-                <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
+            {selectedRoom
+                ? <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
                     <Toolbar/>
                     <MyChatContainer
                         client={client}
@@ -112,6 +65,53 @@ export default function ChatRoom({
                         newMessage={newMessage}
                         setRooms={setRooms}
                     />
+                </Box>
+                : <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
+                    <Toolbar/>
+                    {rooms && rooms.length > 0 &&
+                        rooms.map((_room) => {
+                            return (
+                                <StyledPaper
+                                    sx={{
+                                        my: 1,
+                                        mx: 'auto',
+                                        p: 2,
+                                        width: 800
+                                    }}
+                                >
+                                    <Grid container wrap="nowrap" spacing={2} onClick={() => onClickRoom(_room)}>
+                                        <Grid item>
+                                            <AvatarGroup
+                                                max={4}>
+                                                {
+                                                    _room.users
+                                                        .map(user => {
+                                                            return <Avatar key={user.userId} src={user.profileUrl} />
+                                                        })
+                                                }
+                                            </AvatarGroup>
+                                        </Grid>
+                                        <Grid item xs={12} sm container zeroMinWidth>
+                                            <Grid item xs zeroMinWidth>
+                                                <Typography
+                                                    noWrap>{_room.roomName}</Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {_room.lastMessage}
+                                                </Typography>
+                                            </Grid>
+                                            <Grid item>
+                                                <Typography variant="body2" component="div" color="text.secondary">
+                                                    {formatDate(_room.lastMessageTime)}
+                                                </Typography>
+                                                <Badge badgeContent={_room.unreadMessagesCount} max={999}
+                                                       color="error"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </StyledPaper>
+                            )
+                        })
+                    }
                 </Box>
             }
         </>
