@@ -96,7 +96,7 @@ const GroupChatInfoDialogContent = ({handleClose, participantUsers, currentUserI
                 </IconButton>
                 그룹채팅방 정보 설정
             </BootstrapDialogTitle>
-            <DialogContent sx={{width: 400}}>
+            <DialogContent sx={{width: 440}}>
                 <Box
                     noValidate
                     component="form"
@@ -119,7 +119,7 @@ const GroupChatInfoDialogContent = ({handleClose, participantUsers, currentUserI
                 </Box>
                 <TextField
                     id="standard-start-adornment"
-                    sx={{width: 400, py: 3}}
+                    sx={{width: '100%', py: 3}}
                     multiline
                     placeholder={placeholder}
                     InputProps={{

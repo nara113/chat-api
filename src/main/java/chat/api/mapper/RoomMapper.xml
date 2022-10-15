@@ -60,6 +60,5 @@
           LEFT JOIN upload_file f
             ON u.profile_image_id = f.file_id
          WHERE g.room_id = #{roomId}
-           AND g.user_id != #{userId}
     </select>
 </mapper>

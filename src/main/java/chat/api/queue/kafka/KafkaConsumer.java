@@ -1,4 +1,4 @@
-package chat.api.consumer;
+package chat.api.queue.kafka;
 
 import chat.api.model.ChatMessageDto;
 import chat.api.model.ReadMessageDto;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ChatMessageConsumer {
+public class KafkaConsumer {
     private final ChatRoomService chatRoomService;
 
     private final SimpMessagingTemplate template;
@@ -21,7 +21,7 @@ public class ChatMessageConsumer {
     public void sendMessage(ChatMessageDto chatMessage) {
         log.info("sendMessage : {}", chatMessage);
 
-        long messageId = chatRoomService.saveChatMessage(chatMessage);
+        Long messageId = chatRoomService.saveChatMessage(chatMessage);
         chatMessage.setMessageId(messageId);
 
         chatRoomService.getGroupsByRoomId(chatMessage.getRoomId())
@@ -45,7 +45,7 @@ public class ChatMessageConsumer {
         Long lastMessageId = chatRoomService.updateToLastMessage(chatMessage.getRoomId(), chatMessage.getSenderId());
 
         ReadMessageDto readMessageDto = ReadMessageDto.builder()
-                .messageId(lastMessageId)
+                .lastMessageId(lastMessageId)
                 .roomId(chatMessage.getRoomId())
                 .userId(chatMessage.getSenderId())
                 .build();

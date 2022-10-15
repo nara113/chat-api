@@ -18,7 +18,7 @@ public class ChatRoomDto {
     private Long roomId;
     private String roomName;
     private List<UserDto> users;
-    private int unreadMessagesCount;
+    private Long unreadMessagesCount;
     private String lastMessage;
     private LocalDateTime lastMessageTime;
 }

@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -48,8 +46,8 @@ public class RoomController {
     @Operation(summary = "채팅방 메시지 목록")
     @GetMapping("/{roomId}/messages")
     public Response<List<ChatMessageDto>> getMessages(@PathVariable Long roomId,
-                                                      @RequestParam(required = false) Long messageId) {
-        return Response.of(chatRoomService.getMessages(roomId, messageId));
+                                                      @RequestParam(required = false) Long lastMessageId) {
+        return Response.of(chatRoomService.getMessages(roomId, lastMessageId));
     }
 
     @Operation(summary = "채팅방 유저별 마지막 읽은 메시지 아이디 목록")
@@ -63,16 +61,7 @@ public class RoomController {
     public Response<String> addUsers(@Parameter(hidden = true) @User UserDto user,
                                      @PathVariable Long roomId,
                                      @RequestBody List<Long> invitedUserIds) {
-        chatRoomService.inviteUsersToRoom(roomId, user.getUserId(), invitedUserIds);
-        return Response.of("ok");
-    }
-
-    @Operation(summary = "채팅방 입장")
-    @PostMapping("/{roomId}/user")
-    public Response<String> addUser(@AuthenticationPrincipal UserDetails user2,
-                                    @Parameter(hidden = true) @User UserDto user,
-                                    @PathVariable Long roomId) {
-        chatRoomService.enterRoom(roomId, user.getUserId());
+        chatRoomService.join(roomId, user.getUserId(), invitedUserIds);
         return Response.of("ok");
     }
 

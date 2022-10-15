@@ -41,6 +41,13 @@ spring:
       message-topic: message
       read-topic: read
       enter-topic: enter
+      join-topic: join
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: dong_chat
 
 springdoc:
   swagger-ui:
@@ -52,6 +59,7 @@ logging:
     org.hibernate.SQL: debug
     reactor.netty.http.client: DEBUG
     chat.api.mapper: debug
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 
 mybatis:
   type-aliases-package: chat.api

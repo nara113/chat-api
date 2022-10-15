@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ReadMessageDto {
-    private long roomId;
-    private long userId;
-    private long messageId;
+    private Long roomId;
+    private Long userId;
+    private Long lastMessageId;
 }

@@ -26,6 +26,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     const [oldestMessageId, setOldestMessageId] = useState();
     const [loadingMore, setLoadingMore] = useState(false);
     const [last, setLast] = useState(false)
+    const [roomUserMap, setRoomUserMap] = useState();
     const isUsersFirstRender = useRef(true);
 
     useEffect(() => {
@@ -44,6 +45,18 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                 })
             })
         })
+
+        setRoomUserMap(new Map(
+            roomUsers.map(user => {
+                return [user.userId, user];
+            })
+        ))
+
+        const m = new Map(
+            roomUsers.map(user => {
+                return [user.userId, user];
+            })
+        )
 
         setRooms(prevState => {
             return prevState.map(room => {
@@ -98,7 +111,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     const loadMessages = () => {
         setLoadingMore(true);
 
-        axios.get(`/api/rooms/${currentRoom.roomId}/messages${oldestMessageId ? `?messageId=${oldestMessageId}` : ''}`)
+        axios.get(`/api/rooms/${currentRoom.roomId}/messages${oldestMessageId ? `?lastMessageId=${oldestMessageId}` : ''}`)
             .then(res => {
                 const data = res.data.data.reverse();
 
@@ -120,7 +133,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                        model={{
                            message: _chatMessage.message,
                            sentTime: "15 mins ago",
-                           sender: _chatMessage.senderName,
+                           sender: roomUserMap.get(_chatMessage.senderId).name,
                            direction: "outgoing",
                            position: "last"
                        }}>
@@ -130,12 +143,12 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                        model={{
                            message: _chatMessage.message,
                            sentTime: "15 mins ago",
-                           sender: _chatMessage.senderName,
+                           sender: roomUserMap.get(_chatMessage.senderId).name,
                            direction: "incoming",
                            position: "first"
                        }}>
-                <Message.Header sender={_chatMessage.senderName}/>
-                <Avatar src={img} name={_chatMessage.senderName}/>
+                <Message.Header sender={roomUserMap.get(_chatMessage.senderId).name}/>
+                <Avatar src={img} name={roomUserMap.get(_chatMessage.senderId).name}/>
                 <Message.Footer
                     sender={getUnreadCount(_chatMessage)}
                     sentTime={dayjs(_chatMessage.createdDate).format("A hh:mm")}/>
@@ -158,7 +171,6 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
             body: JSON.stringify({
                 roomId: currentRoom.roomId,
                 senderId: currentUser.userId,
-                senderName: currentUser.name,
                 message
             }),
         });

@@ -8,7 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@ToString(of = {"id", "senderName", "message", "chatType", "createdDate"})
+@ToString(of = {"id", "message", "chatType", "createdDate"})
 @Getter
 @Builder
 @AllArgsConstructor
@@ -16,15 +16,12 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 public class ChatMessage {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "message_id")
     private Long id;
 
-    private String senderName;
-
-    @Column
+    @Lob
     private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -35,7 +32,6 @@ public class ChatMessage {
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
 
-    @Column
     @Enumerated(EnumType.STRING)
     private ChatType chatType;
 

@@ -6,6 +6,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,7 +39,7 @@ public class ChatGroup extends BaseTimeEntity {
         this.chatRoom = chatRoom;
     }
 
-    public void setLastReadMessageId(Long lastReadMessageId) {
+    public void changeLastReadMessageId(Long lastReadMessageId) {
         this.lastReadMessageId = lastReadMessageId;
     }
 }

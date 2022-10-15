@@ -16,5 +16,5 @@ public interface ChatGroupRepository extends JpaRepository<ChatGroup, Long> {
 
     @Modifying(flushAutomatically = true)
     @Query("update ChatGroup g set g.lastReadMessageId = :lastReadMessageId where g.chatRoom.id = :roomId and g.user.id = :userId")
-    void updateLastReadMessageId(long roomId, long userId, long lastReadMessageId);
+    void updateLastReadMessageId(Long roomId, Long userId, Long lastReadMessageId);
 }

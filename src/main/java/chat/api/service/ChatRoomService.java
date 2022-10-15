@@ -1,6 +1,5 @@
 package chat.api.service;
 
-import chat.api.aws.AwsS3Uploader;
 import chat.api.entity.*;
 import chat.api.mapper.ChatGroupMapper;
 import chat.api.mapper.RoomMapper;
@@ -8,14 +7,13 @@ import chat.api.model.*;
 import chat.api.model.request.CreateRoomRequest;
 import chat.api.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,22 +31,24 @@ public class ChatRoomService {
 
     private final ChatGroupMapper chatGroupMapper;
 
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
     public List<ChatRoomDto> getAllRoom(Long userId) {
         return roomMapper.selectAllRoomsByUserId(userId);
     }
 
     public ChatRoomDto getRoom(Long userId, Long roomId) {
         return roomMapper.selectRoomByUserIdAndRoomId(userId, roomId)
-                .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id : " + roomId + " user id : " + userId));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("room does not exist. room id : " + roomId + " user id : " + userId));
     }
 
     @Transactional
-    public long saveChatMessage(ChatMessageDto messageDto) {
+    public Long saveChatMessage(ChatMessageDto messageDto) {
         ChatRoom chatRoom = chatRoomRepository.getReferenceById(messageDto.getRoomId());
         User user = userRepository.getReferenceById(messageDto.getSenderId());
 
         ChatMessage chatMessage = ChatMessage.builder()
-                .senderName(messageDto.getSenderName())
                 .message(messageDto.getMessage())
                 .user(user)
                 .chatRoom(chatRoom)
@@ -59,13 +59,13 @@ public class ChatRoomService {
         return chatMessage.getId();
     }
 
-    public List<ChatMessageDto> getMessages(Long roomId, Long messageId) {
+    public List<ChatMessageDto> getMessages(Long roomId, Long lastMessageId) {
         List<ChatMessage> messages;
 
-        if (messageId == null) {
+        if (lastMessageId == null) {
             messages = chatMessageRepository.findTop30ByChatRoomIdOrderByIdDesc(roomId);
         } else {
-            messages = chatMessageRepository.findTop30ByChatRoomIdAndIdIsLessThanOrderByIdDesc(roomId, messageId);
+            messages = chatMessageRepository.findTop30ByChatRoomIdAndIdIsLessThanOrderByIdDesc(roomId, lastMessageId);
         }
 
         return messages.stream()
@@ -93,7 +93,7 @@ public class ChatRoomService {
         Long lastMessageId = chatMessageRepository.findLastMessageByRoomId(roomId)
                 .orElse(0L);
 
-        chatGroup.setLastReadMessageId(lastMessageId);
+        chatGroup.changeLastReadMessageId(lastMessageId);
 
         return lastMessageId;
     }
@@ -102,16 +102,16 @@ public class ChatRoomService {
         chatGroupRepository.updateLastReadMessageId(
                 readMessageDto.getRoomId(),
                 readMessageDto.getUserId(),
-                readMessageDto.getMessageId());
+                readMessageDto.getLastMessageId());
     }
 
     @Transactional
-    public void inviteUsersToRoom(Long roomId, Long userId, List<Long> invitedUserIds) {
+    public void join(Long roomId, Long inviterId, List<Long> invitedUserIds) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id: " + roomId));
 
-        chatGroupRepository.findByChatRoomIdAndUserId(roomId, userId)
-                        .orElseThrow(() -> new IllegalArgumentException("chatGroup does not exist. room id : " + roomId));
+        chatGroupRepository.findByChatRoomIdAndUserId(roomId, inviterId)
+                .orElseThrow(() -> new IllegalArgumentException("chatGroup does not exist. room id : " + roomId));
 
         List<User> users = invitedUserIds
                 .stream()
@@ -122,7 +122,7 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void enterRoom(Long roomId, Long userId) {
+    public void enter(Long roomId, Long userId) {
         ChatRoom chatRoom = chatRoomRepository.getReferenceById(roomId);
         User user = userRepository.getReferenceById(userId);
 
