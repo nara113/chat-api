@@ -18,7 +18,7 @@ public class ChatMessageDto {
     private long senderId;
     private long messageId;
     private String message;
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     public ChatMessageDto(ChatMessage chatMessage) {
         this.roomId = chatMessage.getChatRoom().getId();

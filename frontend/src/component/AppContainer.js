@@ -121,7 +121,7 @@ export default function AppContainer() {
                                 ? room.unreadMessagesCount
                                 : room.unreadMessagesCount + 1,
                             lastMessage: message.message,
-                            lastMessageTime: message.createdDate
+                            lastMessageTime: message.timestamp
                         }
                     }
 

@@ -151,7 +151,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                 <Avatar src={img} name={roomUserMap.get(_chatMessage.senderId).name}/>
                 <Message.Footer
                     sender={getUnreadCount(_chatMessage)}
-                    sentTime={dayjs(_chatMessage.createdDate).format("A hh:mm")}/>
+                    sentTime={dayjs(_chatMessage.timestamp).format("A hh:mm")}/>
             </Message>
     }
 
