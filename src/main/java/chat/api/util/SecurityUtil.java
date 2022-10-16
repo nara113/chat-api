@@ -12,7 +12,7 @@ import java.util.Optional;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SecurityUtil {
-    public static Optional<String> getCurrentUserId() {
+    public static Optional<String> getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
@@ -20,8 +20,8 @@ public final class SecurityUtil {
             return Optional.empty();
         }
 
-        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+        String userEmail = ((UserDetails) authentication.getPrincipal()).getUsername();
 
-        return Optional.ofNullable(username);
+        return Optional.ofNullable(userEmail);
     }
 }

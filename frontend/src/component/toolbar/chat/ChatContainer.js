@@ -13,8 +13,8 @@ import dayjs from "dayjs";
 import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from "@mui/material/IconButton";
 import ProfileDialog from "../friends/ProfileDialog";
-import InvitationDialog from "./InvitationDialog";
-import ChatRoomDrawer from "./ChatRoomDrawer";
+import InvitationDialog from "./drawer/InvitationDialog";
+import ChatRoomDrawer from "./drawer/ChatRoomDrawer";
 import MyProfileDialog from "../friends/MyProfileDialog";
 
 const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessage, setRooms}) => {
@@ -27,7 +27,8 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     const [loadingMore, setLoadingMore] = useState(false);
     const [last, setLast] = useState(false)
     const [roomUserMap, setRoomUserMap] = useState();
-    const isUsersFirstRender = useRef(true);
+    const isUsersFirstRender = useRef(true);;
+    const isNewMessageFirstRender = useRef(true);
 
     useEffect(() => {
         const subscription = client.current.subscribe(`/topic/room/${currentRoom.roomId}`, ({body}) => {
@@ -37,7 +38,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                     if (user.userId === message.userId) {
                         return {
                             ...user,
-                            lastReadMessageId: message.messageId
+                            lastReadMessageId: message.lastReadMessageId
                         }
                     }
 
@@ -51,12 +52,6 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                 return [user.userId, user];
             })
         ))
-
-        const m = new Map(
-            roomUsers.map(user => {
-                return [user.userId, user];
-            })
-        )
 
         setRooms(prevState => {
             return prevState.map(room => {
@@ -101,9 +96,12 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     }, [users])
 
     useEffect(() => {
-        if (!newMessage) {
+        if (isNewMessageFirstRender.current) {
+            isNewMessageFirstRender.current = false;
             return;
         }
+
+        if (!newMessage) return;
 
         setChatMessages((_chatMessages) => [..._chatMessages, newMessage]);
     }, [newMessage])
@@ -137,7 +135,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                            direction: "outgoing",
                            position: "last"
                        }}>
-                <Message.Footer sentTime={getUnreadCount(_chatMessage)}/>
+                <Message.Footer sentTime={getUnreadCount(_chatMessage).toString()}/>
             </Message>
             : <Message key={_chatMessage.messageId}
                        model={{
@@ -186,70 +184,8 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
         loadMessages();
     };
 
-    const [drawerOpen, setDrawerOpen] = useState(false);
-
-    const toggleDrawer = (open) => (event) => {
-        if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
-        }
-
-        setDrawerOpen(open);
-    };
-
-    const [myProfileDialogOpen, setMyProfileDialogOpen] = useState(false);
-    const [profileDialogOpen, setProfileDialogOpen] = useState(false);
-    const [selectedFriend, setSelectedFriend] = useState();
-
-    const handleMyProfileDialogOpen = () => setMyProfileDialogOpen(true);
-    const handleMyProfileDialogClose = () => setMyProfileDialogOpen(false);
-
-    const handleProfileDialogOpen = (friend) => {
-        setProfileDialogOpen(true);
-        setSelectedFriend(friend)
-    }
-    const handleProfileDialogClose = () => setProfileDialogOpen(false);
-
-    const [invitationDialogOpen, setInvitationDialogOpen] = useState(false);
-    const handleInvitationDialogOpen = () => setInvitationDialogOpen(true);
-    const handleInvitationDialogClose = (event, reason) => {
-        if (reason && reason === "backdropClick") return;
-
-        setInvitationDialogOpen(false);
-    }
-
     return (
         <>
-            {myProfileDialogOpen && <MyProfileDialog
-                open={myProfileDialogOpen}
-                handleClose={handleMyProfileDialogClose}
-                currentUser={currentUser}
-            />}
-            {profileDialogOpen && <ProfileDialog
-                open={profileDialogOpen}
-                handleClose={handleProfileDialogClose}
-                user={selectedFriend}
-            />}
-            {invitationDialogOpen &&
-                <InvitationDialog invitationDialogOpen={invitationDialogOpen}
-                                  handleInvitationDialogClose={handleInvitationDialogClose}
-                                  currentRoom={currentRoom}
-                                  roomUsers={roomUsers}
-                />
-            }
-            <IconButton
-                color="inherit"
-                onClick={toggleDrawer(true)}
-            >
-                <MenuIcon sx={{color: "inherit"}}/>
-            </IconButton>
-            <ChatRoomDrawer drawerOpen={drawerOpen}
-                            toggleDrawer={toggleDrawer}
-                            currentUser={currentUser}
-                            roomUsers={roomUsers}
-                            handleMyProfileDialogOpen={handleMyProfileDialogOpen}
-                            handleProfileDialogOpen={handleProfileDialogOpen}
-                            handleInvitationDialogOpen={handleInvitationDialogOpen}
-            />
             <div style={{
                 width: "600px",
                 height: "400px",

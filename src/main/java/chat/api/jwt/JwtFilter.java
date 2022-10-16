@@ -4,6 +4,7 @@ import chat.api.util.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,7 +23,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = TokenUtil.resolveToken(request);
+        String jwt = TokenUtil.resolveToken(request.getHeader(HttpHeaders.AUTHORIZATION));
 
         if (StringUtils.isNotEmpty(jwt) && tokenProvider.validateToken(jwt) && !tokenProvider.isLogout(jwt)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);

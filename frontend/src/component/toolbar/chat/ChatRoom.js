@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import Grid from '@mui/material/Grid';
 import {styled} from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
-import Toolbar from '@mui/material/Toolbar';
 import {Badge} from "@mui/material";
 import dayjs from "dayjs";
 import 'dayjs/locale/ko';
@@ -56,7 +55,7 @@ export default function ChatRoom({
         <>
             {selectedRoom
                 ? <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
-                    <Toolbar/>
+                    {/*<Toolbar/>*/}
                     <MyChatContainer
                         client={client}
                         currentRoom={selectedRoom}
@@ -67,7 +66,7 @@ export default function ChatRoom({
                     />
                 </Box>
                 : <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
-                    <Toolbar/>
+                    {/*<Toolbar/>*/}
                     {rooms && rooms.length > 0 &&
                         rooms.map((_room) => {
                             return (

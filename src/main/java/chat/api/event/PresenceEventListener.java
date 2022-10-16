@@ -1,7 +1,7 @@
 package chat.api.event;
 
-import chat.api.model.ChatMessageDto;
-import chat.api.service.ChatRoomService;
+import chat.api.message.dto.ChatMessageDto;
+import chat.api.room.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;

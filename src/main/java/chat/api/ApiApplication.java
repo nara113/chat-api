@@ -1,16 +1,25 @@
 package chat.api;
 
-import chat.api.entity.*;
-import chat.api.repository.*;
+import chat.api.friend.entity.ChatFriend;
+import chat.api.friend.repository.ChatFriendRepository;
+import chat.api.room.entity.ChatGroup;
+import chat.api.room.repository.ChatGroupRepository;
+import chat.api.message.entity.ChatMessage;
+import chat.api.message.repository.ChatMessageRepository;
+import chat.api.message.repository.MessageRepository;
+import chat.api.room.entity.ChatRoom;
+import chat.api.room.repository.ChatRoomRepository;
+import chat.api.user.entity.User;
+import chat.api.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
 @SpringBootApplication
@@ -29,6 +38,9 @@ public class ApiApplication {
 
     @Autowired
     ChatMessageRepository chatMessageRepository;
+
+    @Autowired
+    MessageRepository messageRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -132,17 +144,31 @@ public class ApiApplication {
             chatRoomRepository.save(room3);
             chatRoomRepository.save(room4);
 
+            LocalDateTime time = LocalDateTime.now().minusDays(300);
+
             IntStream.rangeClosed(0, 300)
                     .forEach(i -> {
                         ChatMessage chatMessage = ChatMessage.builder()
                                 .message("hello " + i)
-                                .senderName(user1.getName())
                                 .user(user1)
                                 .chatRoom(room1)
+                                .createdDate(time.plusDays(1))
                                 .build();
 
                         chatMessageRepository.save(chatMessage);
                     });
+
+//            IntStream.rangeClosed(0, 300)
+//                    .forEach(i -> {
+//                        Message chatMessage = Message.createMessage(
+//                                "message " + i,
+//                                user1.getId(),
+//                                room1.getId(),
+//                                ChatType.TALK
+//                        );
+//
+//                        messageRepository.save(chatMessage);
+//                    });
 
             ChatGroup chatGroup = ChatGroup.builder()
                     .chatRoom(room1)

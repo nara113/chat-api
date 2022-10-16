@@ -22,6 +22,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from "@mui/icons-material/Person";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Paper from '@mui/material/Paper';
+import DrawerButton from "./toolbar/chat/drawer/DrawerButton";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 export default function AppContainer() {
     const [rooms, setRooms] = useState();
@@ -141,6 +143,13 @@ export default function AppContainer() {
         return !rooms.map(room => room.roomId).includes(roomId);
     }
 
+    const getTotalUnreadCount = () => {
+        return rooms
+        && rooms.length > 0
+        && rooms.map(room => room.unreadMessagesCount)
+            .reduce((accumulator, curr) => accumulator + curr)
+    }
+
     return (
         <Container sx={{
             display: 'flex',
@@ -148,25 +157,43 @@ export default function AppContainer() {
         }}>
             <Box sx={{ pb: 7 }}>
                 <CssBaseline />
-                <AppBar component="nav">
-                    <Toolbar>
-                        <Typography
-                            variant="h6"
-                            component="div"
-                            sx={{flexGrow: 1, display: {xs: 'none', sm: 'block'}}}
-                        >
-                            {toolbar === 'FRIENDS' ? "친구" : "채팅"}
-                        </Typography>
-                        <Box sx={{display: {xs: 'none', sm: 'block'}}}>
-                            <IconButton color="inherit">
-                                <SearchIcon/>
-                            </IconButton>
-                            <CreateRoomButton currentUserId={currentUser[0].userId}/>
-                            <IconButton color="inherit">
-                                <SettingsIcon/>
-                            </IconButton>
-                        </Box>
-                    </Toolbar>
+                <AppBar component="nav" position="static">
+                    {
+                        selectedRoom
+                            ? <Toolbar>
+                                <IconButton
+                                    color="inherit"
+                                    onClick={() => setSelectedRoom(null)}
+                                >
+                                    <ArrowBackIosIcon sx={{color: "inherit"}} />{getTotalUnreadCount()}
+                                </IconButton>
+                                <Box sx={{ flexGrow: 1 }} />
+                                <Box sx={{display: {xs: 'none', sm: 'block'}}}>
+                                    <DrawerButton currentUser={currentUser}
+                                                  currentRoom={selectedRoom}
+                                                  roomUsers={selectedRoom.users}
+                                    />
+                                </Box>
+                            </Toolbar>
+                            : <Toolbar>
+                                <Typography
+                                    variant="h6"
+                                    component="div"
+                                    sx={{flexGrow: 1, display: {xs: 'none', sm: 'block'}}}
+                                >
+                                    {toolbar === 'FRIENDS' ? "친구" : "채팅"}
+                                </Typography>
+                                <Box sx={{display: {xs: 'none', sm: 'block'}}}>
+                                    <IconButton color="inherit">
+                                        <SearchIcon/>
+                                    </IconButton>
+                                    <CreateRoomButton currentUserId={currentUser[0].userId}/>
+                                    <IconButton color="inherit">
+                                        <SettingsIcon/>
+                                    </IconButton>
+                                </Box>
+                            </Toolbar>
+                    }
                 </AppBar>
                 {
                     toolbar === 'FRIENDS'
@@ -179,7 +206,7 @@ export default function AppContainer() {
                                     selectedRoom={selectedRoom}
                                     setSelectedRoom={setSelectedRoom}/>
                 }
-                <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+                <Paper sx={{ position: 'static', bottom: 0, left: 0, right: 0 }} elevation={3} position="static">
                     <BottomNavigation
                         showLabels
                         value={toolbar}
@@ -189,11 +216,7 @@ export default function AppContainer() {
                     >
                         <BottomNavigationAction value="FRIENDS" icon={<PersonIcon />} />
                         <BottomNavigationAction value="ROOMS" icon={
-                            <Badge badgeContent={
-                                rooms
-                                && rooms.length > 0
-                                && rooms.map(room => room.unreadMessagesCount)
-                                    .reduce((accumulator, curr) => accumulator + curr)}
+                            <Badge badgeContent={getTotalUnreadCount()}
                                    color="error">
                                 <ChatBubbleIcon/>
                             </Badge>

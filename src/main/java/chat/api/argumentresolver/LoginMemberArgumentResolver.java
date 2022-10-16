@@ -1,7 +1,7 @@
 package chat.api.argumentresolver;
 
-import chat.api.model.UserDto;
-import chat.api.service.UserService;
+import chat.api.user.dto.UserDto;
+import chat.api.user.service.UserService;
 import chat.api.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-        String currentUserEmail = SecurityUtil.getCurrentUserId()
+        String currentUserEmail = SecurityUtil.getCurrentUserEmail()
                 .orElseThrow(() -> new IllegalStateException("current user id does not exist."));
 
         return new UserDto(userService.getUserByEmail(currentUserEmail));

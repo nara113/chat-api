@@ -1,6 +1,6 @@
 package chat.api.config;
 
-import chat.api.entity.User;
+import chat.api.user.entity.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;

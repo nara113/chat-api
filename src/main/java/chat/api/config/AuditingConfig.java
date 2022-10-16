@@ -13,6 +13,6 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 public class AuditingConfig {
     @Bean
     public AuditorAware<String> auditorProvider() {
-        return SecurityUtil::getCurrentUserId;
+        return SecurityUtil::getCurrentUserEmail;
     }
 }

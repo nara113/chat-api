@@ -1,8 +1,8 @@
 package chat.api.queue.kafka;
 
-import chat.api.model.ChatMessageDto;
-import chat.api.model.ReadMessageDto;
-import chat.api.service.ChatRoomService;
+import chat.api.message.dto.ChatMessageDto;
+import chat.api.message.dto.ReadMessageDto;
+import chat.api.room.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -30,12 +30,12 @@ public class KafkaConsumer {
     }
 
     @KafkaListener(topics = "${spring.kafka.topic.read-topic}", containerFactory = "ChatMessageDtoKafkaListenerContainerFactory")
-    public void read(ReadMessageDto readMessage) {
-        log.info("read : {}", readMessage);
+    public void read(ReadMessageDto readMessageDto) {
+        log.info("read : {}", readMessageDto);
 
-        chatRoomService.markAsRead(readMessage);
+        chatRoomService.markAsRead(readMessageDto);
 
-        template.convertAndSend("/topic/room/" + readMessage.getRoomId(), readMessage);
+        template.convertAndSend("/topic/room/" + readMessageDto.getRoomId(), readMessageDto);
     }
 
     @KafkaListener(topics = "${spring.kafka.topic.enter-topic}", containerFactory = "ChatMessageDtoKafkaListenerContainerFactory")
@@ -45,7 +45,7 @@ public class KafkaConsumer {
         Long lastMessageId = chatRoomService.updateToLastMessage(chatMessage.getRoomId(), chatMessage.getSenderId());
 
         ReadMessageDto readMessageDto = ReadMessageDto.builder()
-                .lastMessageId(lastMessageId)
+                .lastReadMessageId(lastMessageId)
                 .roomId(chatMessage.getRoomId())
                 .userId(chatMessage.getSenderId())
                 .build();

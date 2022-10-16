@@ -55,7 +55,7 @@ export default function ChatFriends() {
 
     return (
         <Box sx={{flexGrow: 1, overflow: 'hidden', px: 3}}>
-            <Toolbar/>
+            {/*<Toolbar/>*/}
             {myProfileDialogOpen && <MyProfileDialog
                 open={myProfileDialogOpen}
                 handleClose={handleMyProfileDialogClose}
