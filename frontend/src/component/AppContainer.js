@@ -24,8 +24,10 @@ import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Paper from '@mui/material/Paper';
 import DrawerButton from "./toolbar/chat/drawer/DrawerButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import {useNavigate} from "react-router-dom";
 
 export default function AppContainer() {
+    let navigate = useNavigate();
     const [rooms, setRooms] = useState();
     const [selectedRoom, setSelectedRoom] = useState();
     const [newMessage, setNewMessage] = useState();
@@ -39,6 +41,11 @@ export default function AppContainer() {
     const getAllRooms = () => {
         axios.get("/api/rooms").then(res => {
             setRooms(res.data.data);
+        }).catch(error => {
+            if (error.response.status === 401) {
+                navigate('/');
+            }
+            return error;
         })
     }
 
@@ -107,9 +114,9 @@ export default function AppContainer() {
                 // todo
                 axios.get(`/api/rooms/${message.roomId}`)
                     .then(res => {
-                    const newRoom = res.data.data;
-                    setRooms(current => [newRoom, ...current]);
-                });
+                        const newRoom = res.data.data;
+                        setRooms(current => [newRoom, ...current]);
+                    });
 
                 return;
             }
@@ -145,9 +152,9 @@ export default function AppContainer() {
 
     const getTotalUnreadCount = () => {
         return rooms
-        && rooms.length > 0
-        && rooms.map(room => room.unreadMessagesCount)
-            .reduce((accumulator, curr) => accumulator + curr)
+            && rooms.length > 0
+            && rooms.map(room => room.unreadMessagesCount)
+                .reduce((accumulator, curr) => accumulator + curr)
     }
 
     return (
@@ -155,8 +162,8 @@ export default function AppContainer() {
             display: 'flex',
             justifyContent: 'center',
         }}>
-            <Box sx={{ pb: 7 }}>
-                <CssBaseline />
+            <Box sx={{pb: 7}}>
+                <CssBaseline/>
                 <AppBar component="nav" position="static">
                     {
                         selectedRoom
@@ -165,9 +172,9 @@ export default function AppContainer() {
                                     color="inherit"
                                     onClick={() => setSelectedRoom(null)}
                                 >
-                                    <ArrowBackIosIcon sx={{color: "inherit"}} />{getTotalUnreadCount()}
+                                    <ArrowBackIosIcon sx={{color: "inherit"}}/>{getTotalUnreadCount()}
                                 </IconButton>
-                                <Box sx={{ flexGrow: 1 }} />
+                                <Box sx={{flexGrow: 1}}/>
                                 <Box sx={{display: {xs: 'none', sm: 'block'}}}>
                                     <DrawerButton currentUser={currentUser}
                                                   currentRoom={selectedRoom}
@@ -197,7 +204,7 @@ export default function AppContainer() {
                 </AppBar>
                 {
                     toolbar === 'FRIENDS'
-                        ? <ChatFriends />
+                        ? <ChatFriends/>
                         : <ChatRoom client={client}
                                     currentUser={currentUser}
                                     newMessage={newMessage}
@@ -206,7 +213,7 @@ export default function AppContainer() {
                                     selectedRoom={selectedRoom}
                                     setSelectedRoom={setSelectedRoom}/>
                 }
-                <Paper sx={{ position: 'static', bottom: 0, left: 0, right: 0 }} elevation={3} position="static">
+                <Paper sx={{position: 'static', bottom: 0, left: 0, right: 0}} elevation={3} position="static">
                     <BottomNavigation
                         showLabels
                         value={toolbar}
@@ -214,14 +221,14 @@ export default function AppContainer() {
                             setToolbar(newValue);
                         }}
                     >
-                        <BottomNavigationAction value="FRIENDS" icon={<PersonIcon />} />
+                        <BottomNavigationAction value="FRIENDS" icon={<PersonIcon/>}/>
                         <BottomNavigationAction value="ROOMS" icon={
                             <Badge badgeContent={getTotalUnreadCount()}
                                    color="error">
                                 <ChatBubbleIcon/>
                             </Badge>
-                        } />
-                        <BottomNavigationAction value="MORE" icon={<MoreHorizIcon />} />
+                        }/>
+                        <BottomNavigationAction value="MORE" icon={<MoreHorizIcon/>}/>
                     </BottomNavigation>
                 </Paper>
             </Box>
