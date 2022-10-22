@@ -1,6 +1,5 @@
-package chat.api.message.entity;
+package chat.api.room.entity;
 
-import chat.api.room.entity.ChatRoom;
 import chat.api.user.entity.User;
 import chat.api.message.dto.ChatType;
 import lombok.*;
@@ -12,7 +11,6 @@ import java.time.LocalDateTime;
 
 @ToString(of = {"id", "message", "chatType", "createdDate"})
 @Getter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
@@ -39,4 +37,16 @@ public class ChatMessage {
 
     @CreatedDate
     private LocalDateTime createdDate;
+
+    public static ChatMessage createMessage(String messageContent,
+                                            User user,
+                                            ChatRoom chatRoom,
+                                            ChatType chatType) {
+        ChatMessage message = new ChatMessage();
+        message.message = messageContent;
+        message.user = user;
+        message.chatRoom = chatRoom;
+        message.chatType = chatType;
+        return message;
+    }
 }

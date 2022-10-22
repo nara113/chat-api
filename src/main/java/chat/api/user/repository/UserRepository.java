@@ -4,11 +4,14 @@ import chat.api.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
-    Optional<User> findByEmail(String email);
+    @Query("select u from User u left join fetch u.profileImage where u.id = :id")
+    Optional<User> findByIdWithProfile(Long id);
 
-    @Query("select u.id from User u where u.email = :email")
-    Long findUserIdByEmail(String email);
+    List<User> findByIdIn(List<Long> userIds);
+
+    Optional<User> findByEmail(String email);
 }

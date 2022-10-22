@@ -1,6 +1,6 @@
-package chat.api.message.repository;
+package chat.api.room.repository;
 
-import chat.api.message.entity.ChatMessage;
+import chat.api.room.entity.ChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -1,12 +1,13 @@
 package chat.api.room.service;
 
+import chat.api.message.dto.ChatType;
 import chat.api.room.entity.ChatGroup;
 import chat.api.room.repository.ChatGroupRepository;
 import chat.api.room.repository.mapper.ChatGroupMapper;
 import chat.api.message.dto.ChatMessageDto;
 import chat.api.message.dto.ReadMessageDto;
-import chat.api.message.entity.ChatMessage;
-import chat.api.message.repository.ChatMessageRepository;
+import chat.api.room.entity.ChatMessage;
+import chat.api.room.repository.ChatMessageRepository;
 import chat.api.room.dto.ChatRoomDto;
 import chat.api.room.entity.ChatRoom;
 import chat.api.room.repository.mapper.RoomMapper;
@@ -15,13 +16,11 @@ import chat.api.room.repository.ChatRoomRepository;
 import chat.api.user.entity.User;
 import chat.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional(readOnly = true)
@@ -39,7 +38,7 @@ public class ChatRoomService {
 
     private final ChatGroupMapper chatGroupMapper;
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final SimpMessagingTemplate template;
 
     public List<ChatRoomDto> getAllRoom(Long userId) {
         return roomMapper.selectAllRoomsByUserId(userId);
@@ -56,11 +55,12 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.getReferenceById(messageDto.getRoomId());
         User user = userRepository.getReferenceById(messageDto.getSenderId());
 
-        ChatMessage chatMessage = ChatMessage.builder()
-                .message(messageDto.getMessage())
-                .user(user)
-                .chatRoom(chatRoom)
-                .build();
+        ChatMessage chatMessage = ChatMessage.createMessage(
+                messageDto.getMessage(),
+                user,
+                chatRoom,
+                ChatType.TALK
+        );
 
         chatMessageRepository.save(chatMessage);
 
@@ -78,7 +78,7 @@ public class ChatRoomService {
 
         return messages.stream()
                 .map(ChatMessageDto::new)
-                .collect(toList());
+                .toList();
     }
 
     public List<ChatGroup> getGroupsByRoomId(Long roomId) {
@@ -89,7 +89,7 @@ public class ChatRoomService {
         return chatGroupRepository.findByChatRoomId(roomId)
                 .stream()
                 .map(ReadMessageDto::new)
-                .collect(toList());
+                .toList();
     }
 
     @Transactional
@@ -114,48 +114,64 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void join(Long roomId, Long inviterId, List<Long> invitedUserIds) {
+    public void join(Long roomId, Long userId, List<Long> invitedUserIds) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id: " + roomId));
 
-        chatGroupRepository.findByChatRoomIdAndUserId(roomId, inviterId)
-                .orElseThrow(() -> new IllegalArgumentException("chatGroup does not exist. room id : " + roomId));
+        chatGroupRepository.findByChatRoomIdAndUserId(roomId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("The inviter doesn't exist in the chat room." +
+                        " room id : " + roomId + " user id : " + userId));
 
-        List<User> users = invitedUserIds
-                .stream()
-                .map(userRepository::getReferenceById)
-                .collect(toList());
+        List<User> users = userRepository.findByIdIn(invitedUserIds);
+
+        if (users.size() != invitedUserIds.size()) {
+            throw new IllegalArgumentException("There are users who do not exist.");
+        }
 
         chatRoom.addUsers(users);
-    }
 
-    @Transactional
-    public void enter(Long roomId, Long userId) {
-        ChatRoom chatRoom = chatRoomRepository.getReferenceById(roomId);
-        User user = userRepository.getReferenceById(userId);
-
-        ChatGroup chatGroup = ChatGroup
-                .builder()
-                .chatRoom(chatRoom)
-                .user(user)
-                .build();
-
-        chatGroupRepository.save(chatGroup);
+        sendMessageToUsers(userId, chatRoom, users);
     }
 
     @Transactional
     public void createRoom(Long userId, CreateRoomRequest request) {
-        if (!request.getParticipantUserIds().contains(userId)) {
-            throw new IllegalArgumentException("Room creator must always be included as a participant.");
-        }
-
-        ChatRoom room = ChatRoom.builder()
+        ChatRoom chatRoom = ChatRoom.builder()
                 .name(request.getRoomName())
                 .build();
 
-        chatRoomRepository.save(room);
+        chatRoomRepository.save(chatRoom);
 
-        chatGroupMapper.insertChatGroups(room.getId(), request.getParticipantUserIds());
+        List<User> users = userRepository.findByIdIn(request.getParticipantUserIds());
+
+        if (users.size() != request.getParticipantUserIds().size()) {
+            throw new IllegalArgumentException("There are users who do not exist.");
+        }
+
+        chatGroupMapper.insertChatGroups(chatRoom.getId(), request.getParticipantUserIds());
+
+        sendMessageToUsers(userId, chatRoom, users);
     }
 
+    private void sendMessageToUsers(Long userId, ChatRoom chatRoom, List<User> users) {
+        User inviter = users.stream().filter(user -> user.getId().equals(userId)).findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Room creator must always be included as a participant."));
+
+        ChatMessage chatMessage = ChatMessage.createMessage(
+                createInvitationMessage(inviter.getName(), users.stream().map(User::getName).toList()),
+                inviter,
+                chatRoom,
+                ChatType.JOIN
+        );
+
+        chatMessageRepository.save(chatMessage);
+
+        getGroupsByRoomId(chatRoom.getId())
+                .forEach(group ->
+                        template.convertAndSend("/queue/user/" + group.getUser().getId(),
+                                new ChatMessageDto(chatMessage)));
+    }
+
+    private String createInvitationMessage(String inviterName, List<String> inviteeNames) {
+        return inviterName + "님이 " + String.join(", ", inviteeNames) + "님을 초대했습니다.";
+    }
 }

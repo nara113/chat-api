@@ -1,6 +1,6 @@
 package chat.api.message.dto;
 
-import chat.api.message.entity.ChatMessage;
+import chat.api.room.entity.ChatMessage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +21,7 @@ public class ChatMessageDto {
     private LocalDateTime timestamp = LocalDateTime.now();
 
     public ChatMessageDto(ChatMessage chatMessage) {
+        this.chatType = chatMessage.getChatType();
         this.roomId = chatMessage.getChatRoom().getId();
         this.senderId = chatMessage.getUser().getId();
         this.messageId = chatMessage.getId();

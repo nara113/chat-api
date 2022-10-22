@@ -1,6 +1,6 @@
-package chat.api.message.repository;
+package chat.api.room.repository;
 
-import chat.api.message.entity.Message;
+import chat.api.room.entity.Message;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.LocalDateTime;

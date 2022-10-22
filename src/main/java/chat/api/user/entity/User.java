@@ -3,7 +3,7 @@ package chat.api.user.entity;
 import chat.api.profile.entity.UploadFile;
 import chat.api.entity.base.BaseTimeEntity;
 import chat.api.room.entity.ChatGroup;
-import chat.api.message.entity.ChatMessage;
+import chat.api.room.entity.ChatMessage;
 import lombok.*;
 
 import javax.persistence.*;
@@ -52,6 +52,13 @@ public class User extends BaseTimeEntity {
     }
 
     public void changeProfileImage(UploadFile uploadFile) {
+        if (isProfileImageExist()) {
+            profileImage.deleteFile();
+        }
         this.profileImage = uploadFile;
+    }
+
+    private boolean isProfileImageExist() {
+        return profileImage != null;
     }
 }

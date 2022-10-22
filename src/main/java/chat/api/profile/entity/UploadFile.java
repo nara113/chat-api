@@ -43,4 +43,8 @@ public class UploadFile extends BaseTimeEntity {
         this.contentType = contentType;
         this.user = user;
     }
+
+    public void deleteFile() {
+        this.isDeleted = true;
+    }
 }

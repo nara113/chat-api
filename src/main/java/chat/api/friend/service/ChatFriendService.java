@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -24,6 +22,6 @@ public class ChatFriendService {
         return friends
                 .stream()
                 .map(UserDto::new)
-                .collect(toList());
+                .toList();
     }
 }

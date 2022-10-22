@@ -1,4 +1,4 @@
-package chat.api.message.entity;
+package chat.api.room.entity;
 
 import chat.api.message.dto.ChatType;
 import lombok.Getter;

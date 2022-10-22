@@ -1,9 +1,9 @@
 package chat.api.room.service;
 
-import chat.api.message.entity.Message;
+import chat.api.room.entity.Message;
 import chat.api.message.dto.ChatMessageDto;
 import chat.api.message.dto.ChatType;
-import chat.api.message.repository.MessageRepository;
+import chat.api.room.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;

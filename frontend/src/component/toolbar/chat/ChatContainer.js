@@ -5,17 +5,12 @@ import {
     MainContainer,
     Message,
     MessageInput,
-    MessageList
+    MessageList,
+    MessageSeparator
 } from "@chatscope/chat-ui-kit-react";
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import dayjs from "dayjs";
-import MenuIcon from '@mui/icons-material/Menu';
-import IconButton from "@mui/material/IconButton";
-import ProfileDialog from "../friends/ProfileDialog";
-import InvitationDialog from "./drawer/InvitationDialog";
-import ChatRoomDrawer from "./drawer/ChatRoomDrawer";
-import MyProfileDialog from "../friends/MyProfileDialog";
 
 const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessage, setRooms}) => {
     const img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAAAXNSR0IArs4c6QAAATpJREFUWEdjvPm+8T/DEACMow6lciyNhiiVA5RhNERHQ5TaIUBt80bT6GiIUjsEqG0e0WlUhb+SgYmRFWz/i2/rGT79uoziFkW+PAZWJgGw2Pufxxlef9+N1a3CHA4Mwhx2YLk//z4z3PvUT5SfiHaoqkA1AyMDM9jQl982MXz8dQHFAiW+IgYWJh6w2IefZxhefd+G1QGinC4MguxWYLm//78x3P3YM+rQ0RDFlwaGdxqF+By9B8MID5BBk5kIZdNRhxIKIZA8cjkKKuy//rmNok2c04uBiZFjtBwd3rl+tArFk1mGd9Rja+Yp8RUysDDxQnP9KYZX33dgDR8RDkcGIQ5baOvpK8Pdj73EFDqj/XqiQokURUSnUVIMpYXaUYdSO1RHQ3Q0RKkdAtQ2bzSNjoYotUOA2uYBAI6umQqSmDikAAAAAElFTkSuQmCC";
@@ -126,7 +121,9 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     }
 
     const makeMessage = (_chatMessage) => {
-        return _chatMessage.senderId === currentUser.userId
+        return _chatMessage.chatType === 'JOIN'
+            ? <MessageSeparator>{_chatMessage.message}</MessageSeparator>
+            : (_chatMessage.senderId === currentUser.userId
             ? <Message key={_chatMessage.messageId}
                        model={{
                            message: _chatMessage.message,
@@ -150,7 +147,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                 <Message.Footer
                     sender={getUnreadCount(_chatMessage)}
                     sentTime={dayjs(_chatMessage.timestamp).format("A hh:mm")}/>
-            </Message>
+            </Message>)
     }
 
     const getUnreadCount = (_chatMessage) => {

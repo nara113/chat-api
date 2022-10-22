@@ -29,7 +29,7 @@ public class ProfileService {
                          String originalFilename,
                          long size,
                          String contentType) throws IOException {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdWithProfile(userId)
                 .orElseThrow(() -> new IllegalArgumentException("user does not exist. user id : " + userId));
 
         String objectUrl = awsS3Uploader.upload(inputStream, originalFilename, contentType);
