@@ -1,4 +1,4 @@
-package chat.api.event;
+package chat.api.common.event;
 
 import chat.api.message.dto.ChatMessageDto;
 import chat.api.room.service.ChatRoomService;

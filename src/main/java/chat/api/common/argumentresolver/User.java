@@ -1,4 +1,4 @@
-package chat.api.argumentresolver;
+package chat.api.common.argumentresolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

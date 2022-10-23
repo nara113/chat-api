@@ -1,6 +1,6 @@
-package chat.api.config;
+package chat.api.common.config;
 
-import chat.api.argumentresolver.LoginMemberArgumentResolver;
+import chat.api.common.argumentresolver.LoginMemberArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

@@ -15,6 +15,10 @@ public final class SecurityUtil {
     public static Optional<String> getCurrentUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        return getCurrentUserEmail(authentication);
+    }
+
+    public static Optional<String> getCurrentUserEmail(Authentication authentication) {
         if (authentication == null) {
             log.debug("No credentials found.");
             return Optional.empty();

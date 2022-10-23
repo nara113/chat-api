@@ -14,7 +14,7 @@
                , room.name AS roomName
                , g.user_id AS userId
                , msg.message AS lastMessage
-               , IFNULL(msg.created_date, room.created_date) AS lastMessageTime
+               , msg.created_date AS lastMessageTime
                , (select count(*)
                     from chat_message mm
                     where mm.room_id = g.room_id
@@ -22,7 +22,7 @@
           FROM chat_group g
          INNER JOIN chat_room room
             ON g.room_id = room.room_id
-          LEFT JOIN chat_message msg
+         INNER JOIN chat_message msg
             ON g.room_id = msg.room_id
            AND msg.message_id = (select MAX(message_id) from chat_message m where m.room_id = g.room_id)
          WHERE g.user_id = #{userId}
@@ -34,7 +34,7 @@
              , room.name AS roomName
              , g.user_id AS userId
              , msg.message AS lastMessage
-             , IFNULL(msg.created_date, room.created_date) AS lastMessageTime
+             , msg.created_date AS lastMessageTime
              , (select count(*)
                   from chat_message mm
                  where mm.room_id = g.room_id
@@ -42,7 +42,7 @@
           FROM chat_group g
          INNER JOIN chat_room room
             ON g.room_id = room.room_id
-          LEFT JOIN chat_message msg
+         INNER JOIN chat_message msg
             ON g.room_id = msg.room_id
            AND msg.message_id = (select MAX(message_id) from chat_message m where m.room_id = g.room_id)
          WHERE g.user_id = #{userId}

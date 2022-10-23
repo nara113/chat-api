@@ -1,4 +1,4 @@
-package chat.api.config;
+package chat.api.common.config;
 
 import chat.api.jwt.JwtAccessDeniedHandler;
 import chat.api.jwt.JwtAuthenticationEntryPoint;

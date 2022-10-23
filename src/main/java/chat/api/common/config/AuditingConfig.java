@@ -1,4 +1,4 @@
-package chat.api.config;
+package chat.api.common.config;
 
 import chat.api.util.SecurityUtil;
 import org.springframework.context.annotation.Bean;

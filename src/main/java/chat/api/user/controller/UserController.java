@@ -1,6 +1,6 @@
 package chat.api.user.controller;
 
-import chat.api.argumentresolver.User;
+import chat.api.common.argumentresolver.User;
 import chat.api.model.Response;
 import chat.api.user.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;

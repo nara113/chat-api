@@ -1,6 +1,6 @@
 package chat.api.room.controller;
 
-import chat.api.argumentresolver.User;
+import chat.api.common.argumentresolver.User;
 import chat.api.message.dto.ChatMessageDto;
 import chat.api.message.dto.ReadMessageDto;
 import chat.api.model.*;

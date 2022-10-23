@@ -2,11 +2,12 @@ package chat.api;
 
 import chat.api.friend.entity.ChatFriend;
 import chat.api.friend.repository.ChatFriendRepository;
+import chat.api.message.dto.ChatType;
 import chat.api.room.entity.ChatGroup;
 import chat.api.room.repository.ChatGroupRepository;
-import chat.api.message.entity.ChatMessage;
-import chat.api.message.repository.ChatMessageRepository;
-import chat.api.message.repository.MessageRepository;
+import chat.api.room.entity.ChatMessage;
+import chat.api.room.repository.ChatMessageRepository;
+import chat.api.room.repository.MessageRepository;
 import chat.api.room.entity.ChatRoom;
 import chat.api.room.repository.ChatRoomRepository;
 import chat.api.user.entity.User;
@@ -144,19 +145,42 @@ public class ApiApplication {
             chatRoomRepository.save(room3);
             chatRoomRepository.save(room4);
 
-            LocalDateTime time = LocalDateTime.now().minusDays(300);
-
             IntStream.rangeClosed(0, 300)
                     .forEach(i -> {
-                        ChatMessage chatMessage = ChatMessage.builder()
-                                .message("hello " + i)
-                                .user(user1)
-                                .chatRoom(room1)
-                                .createdDate(time.plusDays(1))
-                                .build();
+                        ChatMessage chatMessage = ChatMessage.createMessage(
+                                "message " + i,
+                                user1,
+                                room1,
+                                ChatType.TALK
+                        );
 
                         chatMessageRepository.save(chatMessage);
                     });
+
+            ChatMessage chatMessage1 = ChatMessage.createMessage(
+                    "message",
+                    user1,
+                    room2,
+                    ChatType.TALK
+            );
+
+            ChatMessage chatMessage2 = ChatMessage.createMessage(
+                    "message",
+                    user1,
+                    room3,
+                    ChatType.TALK
+            );
+
+            ChatMessage chatMessage3 = ChatMessage.createMessage(
+                    "message",
+                    user1,
+                    room4,
+                    ChatType.TALK
+            );
+
+            chatMessageRepository.save(chatMessage1);
+            chatMessageRepository.save(chatMessage2);
+            chatMessageRepository.save(chatMessage3);
 
 //            IntStream.rangeClosed(0, 300)
 //                    .forEach(i -> {

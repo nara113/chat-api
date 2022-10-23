@@ -1,7 +1,7 @@
 package chat.api.friend.entity;
 
 import chat.api.user.entity.User;
-import chat.api.entity.base.BaseTimeEntity;
+import chat.api.common.entity.base.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;

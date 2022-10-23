@@ -1,4 +1,4 @@
-package chat.api.argumentresolver;
+package chat.api.common.argumentresolver;
 
 import chat.api.user.dto.UserDto;
 import chat.api.user.service.UserService;

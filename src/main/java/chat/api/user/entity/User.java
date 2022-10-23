@@ -1,7 +1,7 @@
 package chat.api.user.entity;
 
 import chat.api.profile.entity.UploadFile;
-import chat.api.entity.base.BaseTimeEntity;
+import chat.api.common.entity.base.BaseTimeEntity;
 import chat.api.room.entity.ChatGroup;
 import chat.api.room.entity.ChatMessage;
 import lombok.*;

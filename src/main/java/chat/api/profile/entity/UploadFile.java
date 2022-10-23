@@ -1,6 +1,6 @@
 package chat.api.profile.entity;
 
-import chat.api.entity.base.BaseTimeEntity;
+import chat.api.common.entity.base.BaseTimeEntity;
 import chat.api.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;

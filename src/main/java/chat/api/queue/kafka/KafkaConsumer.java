@@ -1,5 +1,6 @@
 package chat.api.queue.kafka;
 
+import chat.api.common.interceptor.MessageDestination;
 import chat.api.message.dto.ChatMessageDto;
 import chat.api.message.dto.ReadMessageDto;
 import chat.api.room.service.ChatRoomService;
@@ -26,7 +27,7 @@ public class KafkaConsumer {
 
         chatRoomService.getGroupsByRoomId(chatMessage.getRoomId())
                 .forEach(group ->
-                        template.convertAndSend("/queue/user/" + group.getUser().getId(), chatMessage));
+                        template.convertAndSend(MessageDestination.USER.getPrefix() + group.getUser().getId(), chatMessage));
     }
 
     @KafkaListener(topics = "${spring.kafka.topic.read-topic}", containerFactory = "ChatMessageDtoKafkaListenerContainerFactory")
@@ -35,7 +36,7 @@ public class KafkaConsumer {
 
         chatRoomService.markAsRead(readMessageDto);
 
-        template.convertAndSend("/topic/room/" + readMessageDto.getRoomId(), readMessageDto);
+        template.convertAndSend(MessageDestination.ROOM.getPrefix() + readMessageDto.getRoomId(), readMessageDto);
     }
 
     @KafkaListener(topics = "${spring.kafka.topic.enter-topic}", containerFactory = "ChatMessageDtoKafkaListenerContainerFactory")
@@ -50,6 +51,6 @@ public class KafkaConsumer {
                 .userId(chatMessage.getSenderId())
                 .build();
 
-        template.convertAndSend("/topic/room/" + chatMessage.getRoomId(), readMessageDto);
+        template.convertAndSend(MessageDestination.ROOM.getPrefix() + chatMessage.getRoomId(), readMessageDto);
     }
 }

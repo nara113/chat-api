@@ -71,7 +71,7 @@ export default function AppContainer() {
         client.current = new StompJs.Client({
             webSocketFactory: () => new SockJS("/ws/chat"),
             connectHeaders: {
-                "auth-token": "spring-chat-auth-token",
+                "auth-token": localStorage.getItem('jwt'),
             },
             debug: function (str) {
                 console.log(str);
@@ -143,7 +143,7 @@ export default function AppContainer() {
                     return 1;
                 });
             });
-        });
+        }, {"auth-token": localStorage.getItem('jwt')});
     };
 
     const isNewRoom = (roomId) => {

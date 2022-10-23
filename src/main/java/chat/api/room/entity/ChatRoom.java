@@ -1,7 +1,7 @@
 package chat.api.room.entity;
 
 import chat.api.user.entity.User;
-import chat.api.entity.base.BaseEntity;
+import chat.api.common.entity.base.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;

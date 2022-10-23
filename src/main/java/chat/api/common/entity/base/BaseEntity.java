@@ -1,4 +1,4 @@
-package chat.api.entity.base;
+package chat.api.common.entity.base;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedBy;

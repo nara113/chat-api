@@ -26,7 +26,8 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     const isNewMessageFirstRender = useRef(true);
 
     useEffect(() => {
-        const subscription = client.current.subscribe(`/topic/room/${currentRoom.roomId}`, ({body}) => {
+        const subscription = client.current.subscribe(`/topic/room/${currentRoom.roomId}`
+            , ({body}) => {
             const message = JSON.parse(body);
             setUsers(prevState => {
                 return prevState.map(user => {
@@ -40,7 +41,7 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
                     return user;
                 })
             })
-        })
+        }, {"auth-token": localStorage.getItem('jwt')})
 
         setRoomUserMap(new Map(
             roomUsers.map(user => {
