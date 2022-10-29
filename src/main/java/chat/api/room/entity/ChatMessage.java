@@ -38,15 +38,17 @@ public class ChatMessage {
     @CreatedDate
     private LocalDateTime createdDate;
 
-    public static ChatMessage createMessage(String messageContent,
+    private ChatMessage(String message, User user, ChatRoom chatRoom, ChatType chatType) {
+        this.message = message;
+        this.user = user;
+        this.chatRoom = chatRoom;
+        this.chatType = chatType;
+    }
+
+    public static ChatMessage createMessage(String message,
                                             User user,
                                             ChatRoom chatRoom,
                                             ChatType chatType) {
-        ChatMessage message = new ChatMessage();
-        message.message = messageContent;
-        message.user = user;
-        message.chatRoom = chatRoom;
-        message.chatType = chatType;
-        return message;
+        return new ChatMessage(message, user, chatRoom, chatType);
     }
 }

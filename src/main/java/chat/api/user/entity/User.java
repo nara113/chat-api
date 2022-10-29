@@ -43,12 +43,19 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user")
     private List<ChatMessage> message = new ArrayList<>();
 
-    @Builder
     private User(String email, String name, String password, String statusMessage) {
         this.email = email;
         this.name = name;
         this.password = password;
         this.statusMessage = statusMessage;
+    }
+
+    public static User createUser(String email, String name, String password, String statusMessage) {
+        return new User(email, name, password, statusMessage);
+    }
+
+    public static User createUser(String email, String name, String password) {
+        return new User(email, name, password, null);
     }
 
     public void changeProfileImage(UploadFile uploadFile) {

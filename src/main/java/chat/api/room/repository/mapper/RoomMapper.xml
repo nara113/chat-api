@@ -11,7 +11,7 @@
 
     <select id="selectAllRoomsByUserId" parameterType="Long" resultMap="chatRoomMap">
         SELECT room.room_id AS roomId
-               , room.name AS roomName
+               , room.room_name AS roomName
                , g.user_id AS userId
                , msg.message AS lastMessage
                , msg.created_date AS lastMessageTime
@@ -31,7 +31,7 @@
 
     <select id="selectRoomByUserIdAndRoomId" parameterType="Long" resultMap="chatRoomMap">
         SELECT room.room_id AS roomId
-             , room.name AS roomName
+             , room.room_name AS roomName
              , g.user_id AS userId
              , msg.message AS lastMessage
              , msg.created_date AS lastMessageTime

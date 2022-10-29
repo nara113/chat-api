@@ -1,6 +1,6 @@
 package chat.api.user.controller;
 
-import chat.api.model.*;
+import chat.api.common.model.Response;
 import chat.api.user.dto.Login;
 import chat.api.user.dto.LoginResponseData;
 import chat.api.user.dto.SignupUser;

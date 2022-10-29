@@ -18,20 +18,23 @@ public class ChatRoom extends BaseEntity {
     @Column(name = "room_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "room_name", nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<ChatGroup> groups = new ArrayList<>();
 
-    @Builder
     private ChatRoom(String name) {
         this.name = name;
     }
 
+    public static ChatRoom createChatRoom(String name) {
+        return new ChatRoom(name);
+    }
+
     public void addUsers(List<User> users) {
         users.forEach(user -> {
-            groups.add(ChatGroup.builder().user(user).chatRoom(this).build());
+            groups.add(ChatGroup.createChatGroup(user, this));
         });
     }
 }

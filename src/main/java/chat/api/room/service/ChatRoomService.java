@@ -135,9 +135,7 @@ public class ChatRoomService {
 
     @Transactional
     public void createRoom(Long userId, CreateRoomRequest request) {
-        ChatRoom chatRoom = ChatRoom.builder()
-                .name(request.getRoomName())
-                .build();
+        ChatRoom chatRoom = ChatRoom.createChatRoom(request.getRoomName());
 
         chatRoomRepository.save(chatRoom);
 

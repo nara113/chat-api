@@ -11,9 +11,9 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import SearchIcon from "@mui/icons-material/Search";
 import SettingsIcon from "@mui/icons-material/Settings";
-import ChatRoom from "./toolbar/chat/ChatRoom";
-import ChatFriends from "./toolbar/friends/ChatFriends";
-import CreateRoomButton from "./createRoom/CreateRoomButton";
+import ChatRoom from "./bottom-toolbar/chat/ChatRoom";
+import ChatFriends from "./bottom-toolbar/friends/ChatFriends";
+import CreateRoomButton from "./toolbar/create-chat-room/CreateRoomButton";
 import CssBaseline from '@mui/material/CssBaseline';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
@@ -22,9 +22,10 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import PersonIcon from "@mui/icons-material/Person";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import Paper from '@mui/material/Paper';
-import DrawerButton from "./toolbar/chat/drawer/DrawerButton";
+import DrawerButton from "./bottom-toolbar/chat/drawer/DrawerButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {useNavigate} from "react-router-dom";
+import OpenChatButton from "./toolbar/open-chat/OpenChatButton";
 
 export default function AppContainer() {
     let navigate = useNavigate();
@@ -195,6 +196,7 @@ export default function AppContainer() {
                                         <SearchIcon/>
                                     </IconButton>
                                     <CreateRoomButton currentUserId={currentUser[0].userId}/>
+                                    <OpenChatButton />
                                     <IconButton color="inherit">
                                         <SettingsIcon/>
                                     </IconButton>

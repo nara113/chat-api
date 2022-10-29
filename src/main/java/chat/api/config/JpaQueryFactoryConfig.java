@@ -1,4 +1,4 @@
-package chat.api.common.config;
+package chat.api.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;

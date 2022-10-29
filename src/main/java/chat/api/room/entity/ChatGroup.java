@@ -33,10 +33,13 @@ public class ChatGroup extends BaseTimeEntity {
     @ColumnDefault("0")
     private Long lastReadMessageId;
 
-    @Builder
     private ChatGroup(User user, ChatRoom chatRoom) {
         this.user = user;
         this.chatRoom = chatRoom;
+    }
+
+    public static ChatGroup createChatGroup(User user, ChatRoom chatRoom) {
+        return new ChatGroup(user, chatRoom);
     }
 
     public void changeLastReadMessageId(Long lastReadMessageId) {

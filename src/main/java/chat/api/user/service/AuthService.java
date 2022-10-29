@@ -4,7 +4,7 @@ import chat.api.user.entity.User;
 import chat.api.jwt.TokenProvider;
 import chat.api.user.dto.Login;
 import chat.api.user.dto.SignupUser;
-import chat.api.model.TokenConst;
+import chat.api.common.model.TokenConst;
 import chat.api.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -54,11 +54,9 @@ public class AuthService {
             throw new IllegalStateException("email already exists.");
         });
 
-        User user = User.builder()
-                .email(signupUser.getEmail())
-                .password(passwordEncoder.encode(signupUser.getPassword()))
-                .name(signupUser.getName())
-                .build();
+        User user = User.createUser(signupUser.getEmail(),
+                passwordEncoder.encode(signupUser.getPassword()),
+                signupUser.getName());
 
         userRepository.save(user);
     }

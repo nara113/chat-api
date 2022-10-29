@@ -30,9 +30,12 @@ public class ChatFriend extends BaseTimeEntity {
     @ColumnDefault("'N'")
     private boolean isBlocked;
 
-    @Builder
     private ChatFriend(User user, User friend) {
         this.user = user;
         this.friend = friend;
+    }
+
+    public static ChatFriend createChatFriend(User user, User friend) {
+        return new ChatFriend(user, friend);
     }
 }

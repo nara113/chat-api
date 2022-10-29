@@ -1,4 +1,4 @@
-package chat.api.queue.kafka;
+package chat.api.broker.kafka;
 
 import chat.api.common.interceptor.MessageDestination;
 import chat.api.message.dto.ChatMessageDto;

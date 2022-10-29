@@ -1,4 +1,4 @@
-package chat.api.common.config;
+package chat.api.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;

@@ -2,7 +2,6 @@ package chat.api.common.interceptor;
 
 import chat.api.jwt.TokenProvider;
 import chat.api.room.repository.ChatGroupRepository;
-import chat.api.user.entity.User;
 import chat.api.user.repository.UserRepository;
 import chat.api.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +47,7 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
         String email = SecurityUtil.getCurrentUserEmail(authentication)
                 .orElseThrow(() -> new IllegalArgumentException("authentication is invalid."));
 
-        Long userId = userRepository.findByEmail(email)
-                .map(User::getId)
+        Long userId = userRepository.findByIdByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("email does not exist. email: " + email));
 
         MessageDestination messageDestination = MessageDestination.findByPrefix(topicDestination);

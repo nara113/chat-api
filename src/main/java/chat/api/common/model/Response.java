@@ -1,4 +1,4 @@
-package chat.api.model;
+package chat.api.common.model;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

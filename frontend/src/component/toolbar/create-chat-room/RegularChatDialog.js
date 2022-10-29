@@ -16,7 +16,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import {DialogContentText} from "@mui/material";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
-import ChatParticipantsDialogContent from "../commons/ChatParticipantsDialogContent";
+import ChatParticipantsDialogContent from "../../commons/ChatParticipantsDialogContent";
 
 const BootstrapDialog = styled(Dialog)(({theme}) => ({
     '& .MuiDialogContent-root': {

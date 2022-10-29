@@ -1,9 +1,9 @@
 package chat.api.room.controller;
 
 import chat.api.common.argumentresolver.User;
+import chat.api.common.model.Response;
 import chat.api.message.dto.ChatMessageDto;
 import chat.api.message.dto.ReadMessageDto;
-import chat.api.model.*;
 import chat.api.room.dto.request.CreateRoomRequest;
 import chat.api.room.dto.ChatRoomDto;
 import chat.api.room.service.ChatRoomService;

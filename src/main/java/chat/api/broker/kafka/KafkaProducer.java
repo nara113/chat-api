@@ -1,4 +1,4 @@
-package chat.api.queue.kafka;
+package chat.api.broker.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package chat.api.util;
 
-import chat.api.model.TokenConst;
+import chat.api.common.model.TokenConst;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

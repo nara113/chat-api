@@ -1,7 +1,7 @@
 package chat.api.jwt;
 
 import chat.api.user.dto.Authority;
-import chat.api.model.TokenConst;
+import chat.api.common.model.TokenConst;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

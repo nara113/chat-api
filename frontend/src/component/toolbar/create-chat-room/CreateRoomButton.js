@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import IconButton from "@mui/material/IconButton";
 import AddCommentOutlinedIcon from "@mui/icons-material/AddCommentOutlined";
 import Menu from "@mui/material/Menu";
@@ -10,26 +9,41 @@ import ListItemText from "@mui/material/ListItemText";
 import RegularChatDialog from "./RegularChatDialog";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
+import OpenGroupChatDialog from "./OpenGroupChatDialog";
 
 const CreateRoomButton = ({currentUserId}) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
-
+    const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-
     const handleClose = () => {
         setAnchorEl(null);
     };
 
-    const open = Boolean(anchorEl);
-
-    const [modalOpen, setModalOpen] = useState(false);
-    const handleModalOpen = () => setModalOpen(true);
-    const handleModalClose = (event, reason) => {
+    const [regularChatDialogOpen, setRegularChatDialogOpen] = useState(false);
+    const handleRegularChatDialogOpen = () => setRegularChatDialogOpen(true);
+    const handleRegularChatDialogClose = (event, reason) => {
         if (reason && reason === "backdropClick") return;
 
-        setModalOpen(false);
+        setRegularChatDialogOpen(false);
+    }
+
+    const [openChatAnchorEl, setOpenChatAnchorEl] = React.useState(null);
+    const openOpenChat = Boolean(openChatAnchorEl);
+    const handleOpenChatClick = (event) => {
+        setOpenChatAnchorEl(event.currentTarget);
+    };
+    const handleOpenChatClose = () => {
+        setOpenChatAnchorEl(null);
+    };
+
+    const [groupChatDialogOpen, setGroupChatDialogOpen] = useState(false);
+    const handleGroupChatDialogOpen = () => setGroupChatDialogOpen(true);
+    const handleGroupChatDialogClose = (event, reason) => {
+        if (reason && reason === "backdropClick") return;
+
+        setGroupChatDialogOpen(false);
     }
 
     return (
@@ -52,20 +66,20 @@ const CreateRoomButton = ({currentUserId}) => {
                     'aria-labelledby': 'basic-button',
                 }}
             >
-                <MenuItem onClick={handleModalOpen}>
+                <MenuItem onClick={handleRegularChatDialogOpen}>
                     <ListItemIcon>
                         <ChatBubbleOutlineOutlinedIcon fontSize="small"/>
                     </ListItemIcon>
                     <ListItemText>일반채팅</ListItemText>
                 </MenuItem>
-                {modalOpen && <RegularChatDialog
-                    open={modalOpen}
-                    handleClose={handleModalClose}
+                {regularChatDialogOpen && <RegularChatDialog
+                    open={regularChatDialogOpen}
+                    handleClose={handleRegularChatDialogClose}
                     currentUserId={currentUserId}
                 />}
                 {/*<RegularChatModal*/}
-                {/*    modalOpen={modalOpen}*/}
-                {/*    handleModalClose={handleModalClose}*/}
+                {/*    regularChatDialogOpen={regularChatDialogOpen}*/}
+                {/*    handleRegularChatDialogClose={handleRegularChatDialogClose}*/}
                 {/*    friends={friends}/>*/}
                 <MenuItem onClick={handleClose}>
                     <ListItemIcon>
@@ -73,12 +87,35 @@ const CreateRoomButton = ({currentUserId}) => {
                     </ListItemIcon>
                     <ListItemText>비밀채팅</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleOpenChatClick}>
                     <ListItemIcon>
                         <ForumOutlinedIcon fontSize="small"/>
                     </ListItemIcon>
                     <ListItemText>오픈채팅</ListItemText>
                 </MenuItem>
+                <Menu
+                    id="demo-positioned-menu"
+                    aria-labelledby="demo-positioned-button"
+                    anchorEl={openChatAnchorEl}
+                    open={openOpenChat}
+                    onClose={handleOpenChatClose}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                >
+                    <MenuItem onClick={handleOpenChatClose}>1:1 채팅방</MenuItem>
+                    <MenuItem onClick={handleGroupChatDialogOpen}>그룹 채팅방</MenuItem>
+                    {groupChatDialogOpen && <OpenGroupChatDialog
+                        open={groupChatDialogOpen}
+                        handleClose={handleGroupChatDialogClose}
+                    />}
+                    <MenuItem onClick={handleOpenChatClose}>오픈프로필</MenuItem>
+                </Menu>
             </Menu>
         </>
     )

@@ -44,13 +44,13 @@ const BootstrapDialogTitle = (props) => {
 };
 
 export default function ChatParticipantsDialogContent({
-                                             dialogTitle,
-                                             handleClose,
-                                             participantUsers,
-                                             setParticipantUsers,
-                                             handleNext,
+                                                          dialogTitle,
+                                                          handleClose,
+                                                          participantUsers,
+                                                          setParticipantUsers,
+                                                          handleNext,
                                                           participatingUserIds = []
-                                         }) {
+                                                      }) {
     const [friends, setFriends] = useState()
     const [filteredFriends, setFilteredFriends] = useState()
     const [friendsMap, setFriendsMap] = useState()

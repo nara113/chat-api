@@ -54,38 +54,28 @@ public class ApiApplication {
     @Bean
     public ApplicationRunner applicationRunner() {
         return args -> {
-            User user1 = User.builder()
-                    .email("email1")
-                    .password(passwordEncoder.encode("pass1"))
-                    .name("Lilly")
-                    .statusMessage("i'm happy")
-                    .build();
+            User user1 = User.createUser("email1",
+                    "Lilly",
+                    passwordEncoder.encode("pass1"),
+                    "hi");
 
-            User user2 = User.builder()
-                    .email("email2")
-                    .password(passwordEncoder.encode("pass2"))
-                    .name("Joe")
-                    .build();
+            User user2 = User.createUser("email2",
+                    "Joe",
+                    passwordEncoder.encode("pass2"));
 
-            User user3 = User.builder()
-                    .email("email3")
-                    .password(passwordEncoder.encode("pass2"))
-                    .name("Emily")
-                    .statusMessage("hahaha")
-                    .build();
+            User user3 = User.createUser("email3",
+                    "Emily",
+                    passwordEncoder.encode("pass2"),
+                    "hahaha");
 
-            User user4 = User.builder()
-                    .email("email4")
-                    .password(passwordEncoder.encode("pass2"))
-                    .name("Kai")
-                    .statusMessage("message 2")
-                    .build();
+            User user4 = User.createUser("email4",
+                    "Kai",
+                    passwordEncoder.encode("pass2"),
+                    "message");
 
-            User user5 = User.builder()
-                    .email("email5")
-                    .password(passwordEncoder.encode("pass2"))
-                    .name("Eliot")
-                    .build();
+            User user5 = User.createUser("email5",
+                    "Eliot",
+                    passwordEncoder.encode("pass2"));
 
             userRepository.save(user1);
             userRepository.save(user2);
@@ -93,30 +83,11 @@ public class ApiApplication {
             userRepository.save(user4);
             userRepository.save(user5);
 
-            ChatFriend chatFriend1_1 = ChatFriend.builder()
-                    .user(user1)
-                    .friend(user2)
-                    .build();
-
-            ChatFriend chatFriend1_2 = ChatFriend.builder()
-                    .user(user1)
-                    .friend(user3)
-                    .build();
-
-            ChatFriend chatFriend1_3 = ChatFriend.builder()
-                    .user(user1)
-                    .friend(user4)
-                    .build();
-
-            ChatFriend chatFriend1_4 = ChatFriend.builder()
-                    .user(user1)
-                    .friend(user5)
-                    .build();
-
-            ChatFriend chatFriend2_1 = ChatFriend.builder()
-                    .user(user2)
-                    .friend(user1)
-                    .build();
+            ChatFriend chatFriend1_1 = ChatFriend.createChatFriend(user1, user2);
+            ChatFriend chatFriend1_2 = ChatFriend.createChatFriend(user1, user3);
+            ChatFriend chatFriend1_3 = ChatFriend.createChatFriend(user1, user4);
+            ChatFriend chatFriend1_4 = ChatFriend.createChatFriend(user1, user5);
+            ChatFriend chatFriend2_1 = ChatFriend.createChatFriend(user2, user1);
 
             chatFriendRepository.save(chatFriend1_1);
             chatFriendRepository.save(chatFriend1_2);
@@ -124,21 +95,10 @@ public class ApiApplication {
             chatFriendRepository.save(chatFriend1_4);
             chatFriendRepository.save(chatFriend2_1);
 
-            ChatRoom room1 = ChatRoom.builder()
-                    .name("room 1")
-                    .build();
-
-            ChatRoom room2 = ChatRoom.builder()
-                    .name("room 2")
-                    .build();
-
-            ChatRoom room3 = ChatRoom.builder()
-                    .name("room 3")
-                    .build();
-
-            ChatRoom room4 = ChatRoom.builder()
-                    .name("room 4")
-                    .build();
+            ChatRoom room1 = ChatRoom.createChatRoom("room 1");
+            ChatRoom room2 = ChatRoom.createChatRoom("room 2");
+            ChatRoom room3 = ChatRoom.createChatRoom("room 3");
+            ChatRoom room4 = ChatRoom.createChatRoom("room 4");
 
             chatRoomRepository.save(room1);
             chatRoomRepository.save(room2);
@@ -194,56 +154,16 @@ public class ApiApplication {
 //                        messageRepository.save(chatMessage);
 //                    });
 
-            ChatGroup chatGroup = ChatGroup.builder()
-                    .chatRoom(room1)
-                    .user(user1)
-                    .build();
-
-            ChatGroup chatGroup2 = ChatGroup.builder()
-                    .chatRoom(room1)
-                    .user(user2)
-                    .build();
-
-            ChatGroup chatGroup3 = ChatGroup.builder()
-                    .chatRoom(room1)
-                    .user(user3)
-                    .build();
-
-            ChatGroup chatGroup4 = ChatGroup.builder()
-                    .chatRoom(room2)
-                    .user(user1)
-                    .build();
-
-            ChatGroup chatGroup5 = ChatGroup.builder()
-                    .chatRoom(room2)
-                    .user(user4)
-                    .build();
-
-            ChatGroup chatGroup6 = ChatGroup.builder()
-                    .chatRoom(room3)
-                    .user(user1)
-                    .build();
-
-            ChatGroup chatGroup7 = ChatGroup.builder()
-                    .chatRoom(room3)
-                    .user(user5)
-                    .build();
-
-
-            ChatGroup chatGroup8 = ChatGroup.builder()
-                    .chatRoom(room4)
-                    .user(user1)
-                    .build();
-
-            ChatGroup chatGroup9 = ChatGroup.builder()
-                    .chatRoom(room4)
-                    .user(user5)
-                    .build();
-
-            ChatGroup chatGroup10 = ChatGroup.builder()
-                    .chatRoom(room4)
-                    .user(user2)
-                    .build();
+            ChatGroup chatGroup = ChatGroup.createChatGroup(user1, room1);
+            ChatGroup chatGroup2 = ChatGroup.createChatGroup(user2, room1);
+            ChatGroup chatGroup3 = ChatGroup.createChatGroup(user3, room1);
+            ChatGroup chatGroup4 = ChatGroup.createChatGroup(user1, room2);
+            ChatGroup chatGroup5 = ChatGroup.createChatGroup(user4, room2);
+            ChatGroup chatGroup6 = ChatGroup.createChatGroup(user1, room3);
+            ChatGroup chatGroup7 = ChatGroup.createChatGroup(user5, room3);
+            ChatGroup chatGroup8 = ChatGroup.createChatGroup(user1, room4);
+            ChatGroup chatGroup9 = ChatGroup.createChatGroup(user5, room4);
+            ChatGroup chatGroup10 = ChatGroup.createChatGroup(user2, room4);
 
             chatGroupRepository.save(chatGroup);
             chatGroupRepository.save(chatGroup2);

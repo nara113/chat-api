@@ -18,26 +18,28 @@ public class Message {
     @MongoId(targetType = FieldType.OBJECT_ID)
     private String id;
 
-    private Long senderId;
+    private final Long senderId;
 
-    private Long roomId;
+    private final Long roomId;
 
-    private String message;
+    private final String message;
 
-    private ChatType chatType;
+    private final ChatType chatType;
 
     @CreatedDate
     private LocalDateTime timestamp;
 
-    public static Message createMessage(String messageContent,
+    private Message(Long senderId, Long roomId, String message, ChatType chatType) {
+        this.senderId = senderId;
+        this.roomId = roomId;
+        this.message = message;
+        this.chatType = chatType;
+    }
+
+    public static Message createMessage(String message,
                                         Long senderId,
                                         Long roomId,
                                         ChatType chatType) {
-        Message message = new Message();
-        message.message = messageContent;
-        message.senderId = senderId;
-        message.roomId = roomId;
-        message.chatType = chatType;
-        return message;
+        return new Message(senderId, roomId, message, chatType);
     }
 }
