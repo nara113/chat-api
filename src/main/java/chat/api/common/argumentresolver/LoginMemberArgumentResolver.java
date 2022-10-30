@@ -1,6 +1,5 @@
 package chat.api.common.argumentresolver;
 
-import chat.api.user.dto.UserDto;
 import chat.api.user.service.UserService;
 import chat.api.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +19,8 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        boolean hasParameterAnnotation = parameter.hasParameterAnnotation(User.class);
-        boolean hasMemberType = UserDto.class.isAssignableFrom(parameter.getParameterType());
+        boolean hasParameterAnnotation = parameter.hasParameterAnnotation(RequestUser.class);
+        boolean hasMemberType = chat.api.user.entity.User.class.isAssignableFrom(parameter.getParameterType());
 
         return hasParameterAnnotation && hasMemberType;
     }
@@ -32,6 +31,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
         String currentUserEmail = SecurityUtil.getCurrentUserEmail()
                 .orElseThrow(() -> new IllegalStateException("current user id does not exist."));
 
-        return new UserDto(userService.getUserByEmail(currentUserEmail));
+        return userService.getUserByEmail(currentUserEmail);
     }
 }

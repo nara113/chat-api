@@ -1,9 +1,9 @@
 package chat.api.profile.controller;
 
-import chat.api.common.argumentresolver.User;
+import chat.api.common.argumentresolver.RequestUser;
 import chat.api.common.model.Response;
-import chat.api.user.dto.UserDto;
 import chat.api.profile.service.ProfileService;
+import chat.api.user.entity.User;
 import chat.api.validator.ValidImage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,12 +27,12 @@ public class ProfileController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/upload/profile-image")
     public Response<String> uploadFile(
-            @Parameter(hidden = true) @User UserDto user,
+            @Parameter(hidden = true) @RequestUser User user,
             @ValidImage @RequestParam("image") MultipartFile multipartFile) throws IOException {
         return Response.of(
                 HttpStatus.CREATED.value(),
                 profileService.upload(
-                        user.getUserId(),
+                        user.getId(),
                         multipartFile.getInputStream(),
                         multipartFile.getOriginalFilename(),
                         multipartFile.getSize(),

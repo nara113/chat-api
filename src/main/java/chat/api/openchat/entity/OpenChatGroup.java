@@ -19,9 +19,18 @@ public class OpenChatGroup {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "open_room_id")
-    private OpenChatRoom chatRoom;
+    private OpenChatRoom openChatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    private OpenChatGroup(OpenChatRoom openChatRoom, User user) {
+        this.openChatRoom = openChatRoom;
+        this.user = user;
+    }
+
+    public static OpenChatGroup createOpenChatGroup(OpenChatRoom chatRoom, User user) {
+        return new OpenChatGroup(chatRoom, user);
+    }
 }

@@ -1,13 +1,13 @@
 package chat.api.room.controller;
 
-import chat.api.common.argumentresolver.User;
+import chat.api.common.argumentresolver.RequestUser;
 import chat.api.common.model.Response;
 import chat.api.message.dto.ChatMessageDto;
 import chat.api.message.dto.ReadMessageDto;
 import chat.api.room.dto.request.CreateRoomRequest;
 import chat.api.room.dto.ChatRoomDto;
 import chat.api.room.service.ChatRoomService;
-import chat.api.user.dto.UserDto;
+import chat.api.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -29,24 +29,25 @@ public class RoomController {
 
     @Operation(summary = "채팅방 목록")
     @GetMapping
-    public Response<List<ChatRoomDto>> getRooms(@Parameter(hidden = true) @User UserDto user) {
-        return Response.of(chatRoomService.getAllRoom(user.getUserId()));
+    public Response<List<ChatRoomDto>> getRooms(@Parameter(hidden = true) @RequestUser User user) {
+        return Response.of(chatRoomService.getAllRoom(user.getId()));
     }
 
     @Operation(summary = "채팅방 정보")
     @GetMapping("/{roomId}")
-    public Response<ChatRoomDto> getRoom(@Parameter(hidden = true) @User UserDto user,
+    public Response<ChatRoomDto> getRoom(@Parameter(hidden = true) @RequestUser User user,
                                          @PathVariable Long roomId) {
-        return Response.of(chatRoomService.getRoom(user.getUserId(), roomId));
+        return Response.of(chatRoomService.getRoom(user.getId(), roomId));
     }
 
     @Operation(summary = "채팅방 생성")
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public Response<String> createRoom(
-            @Parameter(hidden = true) @User UserDto user,
+            @Parameter(hidden = true) @RequestUser User user,
             @Valid @RequestBody CreateRoomRequest createRoomRequest) {
-        chatRoomService.createRoom(user.getUserId(), createRoomRequest);
-        return Response.of("ok");
+        chatRoomService.createRoom(user, createRoomRequest);
+        return Response.of(HttpStatus.CREATED.value(), "ok");
     }
 
     @Operation(summary = "채팅방 메시지 목록")
@@ -64,16 +65,16 @@ public class RoomController {
 
     @Operation(summary = "채팅방 대화상대 추가")
     @PostMapping("/{roomId}/users")
-    public Response<String> addUsers(@Parameter(hidden = true) @User UserDto user,
+    public Response<String> addUsers(@Parameter(hidden = true) @RequestUser User user,
                                      @PathVariable Long roomId,
                                      @RequestBody List<Long> invitedUserIds) {
-        chatRoomService.join(roomId, user.getUserId(), invitedUserIds);
+        chatRoomService.join(roomId, user, invitedUserIds);
         return Response.of("ok");
     }
 
     @Operation(summary = "채팅방 퇴장")
     @DeleteMapping("/{roomId}/user")
-    public Response deleteUser(@Parameter(hidden = true) @User UserDto user,
+    public Response deleteUser(@Parameter(hidden = true) @RequestUser User user,
                                @PathVariable String roomId) {
 
         return null;

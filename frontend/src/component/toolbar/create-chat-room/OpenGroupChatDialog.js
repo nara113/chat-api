@@ -11,7 +11,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Switch from '@mui/material/Switch';
 import {yellow} from "@mui/material/colors";
-import { alpha, styled } from '@mui/material/styles';
+import {alpha, styled} from '@mui/material/styles';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -25,7 +25,7 @@ const BootstrapDialog = styled(Dialog)(({theme}) => ({
     },
 }));
 
-const YellowSwitch = styled(Switch)(({ theme }) => ({
+const YellowSwitch = styled(Switch)(({theme}) => ({
     '& .MuiSwitch-switchBase.Mui-checked': {
         color: yellow[600],
         '&:hover': {
@@ -79,7 +79,7 @@ const SwitchListSecondary = () => {
 
     return (
         <List
-            sx={{ width: '100%', bgcolor: 'background.paper' }}
+            sx={{width: '100%', bgcolor: 'background.paper'}}
         >
             <ListItem sx={{px: 0}}>
                 <ListItemText id="switch-list-label-only-default-profile"
@@ -170,7 +170,7 @@ const OpenGroupChatDialog = ({open, handleClose}) => {
                     onChange={handleChange}
                     variant="standard"
                 />
-                <SwitchListSecondary />
+                <SwitchListSecondary/>
             </DialogContent>
             <DialogActions>
                 <Button autoFocus onClick={createOpenGroupChatRoom} disabled={!openGroupChatRoomName}>

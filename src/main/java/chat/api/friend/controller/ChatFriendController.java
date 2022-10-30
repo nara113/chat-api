@@ -1,9 +1,10 @@
 package chat.api.friend.controller;
 
-import chat.api.common.argumentresolver.User;
+import chat.api.common.argumentresolver.RequestUser;
 import chat.api.common.model.Response;
 import chat.api.user.dto.UserDto;
 import chat.api.friend.service.ChatFriendService;
+import chat.api.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class ChatFriendController {
 
     @Operation(summary = "친구 목록")
     @GetMapping
-    public Response<List<UserDto>> getFriends(@Parameter(hidden = true) @User UserDto user) {
-        return Response.of(chatFriendService.getFriends(user.getUserId()));
+    public Response<List<UserDto>> getFriends(@Parameter(hidden = true) @RequestUser User user) {
+        return Response.of(chatFriendService.getFriends(user.getId()));
     }
 }

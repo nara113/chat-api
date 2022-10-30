@@ -114,13 +114,13 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void join(Long roomId, Long userId, List<Long> invitedUserIds) {
+    public void join(Long roomId, User inviter, List<Long> invitedUserIds) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("room does not exist. room id: " + roomId));
 
-        chatGroupRepository.findByChatRoomIdAndUserId(roomId, userId)
+        chatGroupRepository.findByChatRoomIdAndUserId(roomId, inviter.getId())
                 .orElseThrow(() -> new IllegalArgumentException("The inviter doesn't exist in the chat room." +
-                        " room id : " + roomId + " user id : " + userId));
+                        " room id : " + roomId + " inviter id : " + inviter.getId()));
 
         List<User> users = userRepository.findByIdIn(invitedUserIds);
 
@@ -128,13 +128,14 @@ public class ChatRoomService {
             throw new IllegalArgumentException("There are users who do not exist.");
         }
 
-        chatRoom.addUsers(users);
+        List<Long> participantIds = users.stream().map(User::getId).toList();
+        chatGroupMapper.insertChatGroups(chatRoom.getId(), participantIds);
 
-        sendMessageToUsers(userId, chatRoom, users);
+        sendMessageToUsers(inviter, chatRoom, users);
     }
 
     @Transactional
-    public void createRoom(Long userId, CreateRoomRequest request) {
+    public void createRoom(User creator, CreateRoomRequest request) {
         ChatRoom chatRoom = ChatRoom.createChatRoom(request.getRoomName());
 
         chatRoomRepository.save(chatRoom);
@@ -147,13 +148,10 @@ public class ChatRoomService {
 
         chatGroupMapper.insertChatGroups(chatRoom.getId(), request.getParticipantUserIds());
 
-        sendMessageToUsers(userId, chatRoom, users);
+        sendMessageToUsers(creator, chatRoom, users);
     }
 
-    private void sendMessageToUsers(Long userId, ChatRoom chatRoom, List<User> users) {
-        User inviter = users.stream().filter(user -> user.getId().equals(userId)).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Room creator must always be included as a participant."));
-
+    private void sendMessageToUsers(User inviter, ChatRoom chatRoom, List<User> users) {
         ChatMessage chatMessage = ChatMessage.createMessage(
                 createInvitationMessage(inviter.getName(), users.stream().map(User::getName).toList()),
                 inviter,

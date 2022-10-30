@@ -13,6 +13,10 @@ import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemButton from "@mui/material/ListItemButton";
 
 const BootstrapDialog = styled(Dialog)(({theme}) => ({
     '& .MuiDialogContent-root': {
@@ -54,6 +58,7 @@ BootstrapDialogTitle.propTypes = {
 
 const OpenChatDialog = ({open, handleClose}) => {
     const [searchText, setSearchText] = useState('')
+    const [openChatRooms, setOpenChatRooms] = useState();
 
     const handleChange = (event) => {
         const value = event.target.value;
@@ -66,7 +71,7 @@ const OpenChatDialog = ({open, handleClose}) => {
     const searchOpenChat = () => {
         axios.get(`/api/open-chat?searchText=${searchText}`)
             .then(r => {
-                console.log(r.data);
+                setOpenChatRooms(r.data.data)
             }).catch(e => {
         })
     }
@@ -96,6 +101,28 @@ const OpenChatDialog = ({open, handleClose}) => {
                     }}
                     variant="standard"
                 />
+                <List>
+                    {
+                        openChatRooms &&
+                        openChatRooms.map((_openChatRoom) => {
+                            return (
+                                <ListItem
+                                    // secondaryAction={
+                                    //     <IconButton edge="end" aria-label="delete">
+                                    //         <DeleteIcon/>
+                                    //     </IconButton>
+                                    // }
+                                >
+                                    <ListItemButton sx={{p: 0}}>
+                                        <ListItemText
+                                            primary={_openChatRoom.name}
+                                            secondary="Secondary text"
+                                        />
+                                    </ListItemButton>
+                                </ListItem>)
+                        })
+                    }
+                </List>
             </DialogContent>
             <DialogActions>
                 <Button autoFocus onClick={searchOpenChat} disabled={!searchText}>
