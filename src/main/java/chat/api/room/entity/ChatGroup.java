@@ -23,23 +23,23 @@ public class ChatGroup extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private ChatRoom chatRoom;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ColumnDefault("0")
     private Long lastReadMessageId;
 
-    private ChatGroup(User user, ChatRoom chatRoom) {
-        this.user = user;
+    public ChatGroup(ChatRoom chatRoom, User user) {
         this.chatRoom = chatRoom;
+        this.user = user;
     }
 
-    public static ChatGroup createChatGroup(User user, ChatRoom chatRoom) {
-        return new ChatGroup(user, chatRoom);
+    public static ChatGroup createChatGroup(ChatRoom chatRoom, User user) {
+        return new ChatGroup(chatRoom, user);
     }
 
     public void changeLastReadMessageId(Long lastReadMessageId) {

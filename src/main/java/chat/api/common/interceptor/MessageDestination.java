@@ -14,7 +14,6 @@ public enum MessageDestination {
     ROOM("/topic/room/");
 
     private final String prefix;
-
     private final Pattern pattern;
 
     MessageDestination(String prefix) {

@@ -19,6 +19,8 @@ public class ChatRoomDto {
     private Long roomId;
     private String roomName;
     private List<UserDto> users;
+    private boolean isOpenChatRoom;
+    private int numberOfParticipants;
     private Long unreadMessagesCount;
     private String lastMessage;
     private LocalDateTime lastMessageTime;

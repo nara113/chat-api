@@ -5,6 +5,8 @@
     <resultMap id="chatRoomMap" type="chatRoomDto">
         <id column="roomId" property="roomId"/>
         <result column="roomName" property="roomName"/>
+        <result column="isOpenChatRoom" property="isOpenChatRoom"/>
+        <result column="numberOfParticipants" property="numberOfParticipants"/>
         <result column="lastMessage" property="lastMessage"/>
         <collection property="users" column="{roomId=roomId,userId=userId}" select="selectUsers" />
     </resultMap>
@@ -12,6 +14,8 @@
     <select id="selectAllRoomsByUserId" parameterType="Long" resultMap="chatRoomMap">
         SELECT room.room_id AS roomId
                , room.room_name AS roomName
+               , room.is_open_chat_room AS isOpenChatRoom
+               , room.number_of_participants AS numberOfParticipants
                , g.user_id AS userId
                , msg.message AS lastMessage
                , msg.created_date AS lastMessageTime

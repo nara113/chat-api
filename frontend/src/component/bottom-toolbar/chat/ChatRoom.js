@@ -11,6 +11,7 @@ import 'dayjs/locale/ko';
 import React from "react";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import MyChatContainer from "./ChatContainer";
+import QuestionAnswerRoundedIcon from '@mui/icons-material/QuestionAnswerRounded';
 
 dayjs.locale('ko');
 
@@ -92,9 +93,11 @@ export default function ChatRoom({
                                         </Grid>
                                         <Grid item xs={12} sm container zeroMinWidth>
                                             <Grid item xs zeroMinWidth>
-                                                <Typography
-                                                    noWrap>{_room.roomName}</Typography>
-                                                <Typography variant="body2" color="text.secondary">
+                                                <Typography noWrap>
+                                                    {_room.openChatRoom && <QuestionAnswerRoundedIcon sx={{ mr: 0.5 }} fontSize="inherit" />}
+                                                    {_room.roomName} <span style={{color: "gray"}}>{(_room.numberOfParticipants > 2 || _room.openChatRoom) && _room.numberOfParticipants}</span>
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary" sx={{}}>
                                                     {_room.lastMessage}
                                                 </Typography>
                                             </Grid>

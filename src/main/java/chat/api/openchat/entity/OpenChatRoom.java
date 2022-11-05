@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class OpenChatRoom {
-    private static final int INITIAL_NUMBER_OF_PARTICIPANTS = 0;
     private static final int DEFAULT_MAX_NUMBER_OF_PARTICIPANTS = 100;
 
     @Id
@@ -26,28 +25,28 @@ public class OpenChatRoom {
     @Column(name = "open_room_name", nullable = false)
     private String name;
 
-    private Integer numberOfParticipants;
+    private int numberOfParticipants;
 
-    private Integer maxNumberOfParticipants;
+    private int maxNumberOfParticipants;
 
     @OneToMany(mappedBy = "openChatRoom", cascade = CascadeType.ALL)
-    private List<OpenChatGroup> openChatGroups = new ArrayList<>();
+    private final List<OpenChatGroup> openChatGroups = new ArrayList<>();
 
     @Version
     private long version;
 
-    public OpenChatRoom(String name, Integer numberOfParticipants, Integer maxNumberOfParticipants) {
+    public OpenChatRoom(String name, int maxNumberOfParticipants) {
         this.name = name;
-        this.numberOfParticipants = numberOfParticipants;
+        this.numberOfParticipants = 0;
         this.maxNumberOfParticipants = maxNumberOfParticipants;
     }
 
     public static OpenChatRoom createOpenChatRoom(String name) {
-        return new OpenChatRoom(name, INITIAL_NUMBER_OF_PARTICIPANTS, DEFAULT_MAX_NUMBER_OF_PARTICIPANTS);
+        return new OpenChatRoom(name, DEFAULT_MAX_NUMBER_OF_PARTICIPANTS);
     }
 
     public static OpenChatRoom createOpenChatRoom(String name, Integer maxNumberOfParticipants) {
-        return new OpenChatRoom(name, INITIAL_NUMBER_OF_PARTICIPANTS, maxNumberOfParticipants);
+        return new OpenChatRoom(name, maxNumberOfParticipants);
     }
 
     public void joinOpenChatRoom(User user) {

@@ -1,6 +1,5 @@
 package chat.api.room.service;
 
-import chat.api.message.dto.ChatType;
 import chat.api.room.entity.ChatGroup;
 import chat.api.room.repository.ChatGroupRepository;
 import chat.api.room.repository.mapper.ChatGroupMapper;
@@ -55,11 +54,10 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.getReferenceById(messageDto.getRoomId());
         User user = userRepository.getReferenceById(messageDto.getSenderId());
 
-        ChatMessage chatMessage = ChatMessage.createMessage(
+        ChatMessage chatMessage = ChatMessage.createTalkMessage(
                 messageDto.getMessage(),
                 user,
-                chatRoom,
-                ChatType.TALK
+                chatRoom
         );
 
         chatMessageRepository.save(chatMessage);
@@ -131,12 +129,27 @@ public class ChatRoomService {
         List<Long> participantIds = users.stream().map(User::getId).toList();
         chatGroupMapper.insertChatGroups(chatRoom.getId(), participantIds);
 
-        sendMessageToUsers(inviter, chatRoom, users);
+        final String invitationMessage = createInvitationMessage(
+                inviter.getName(),
+                users.stream().map(User::getName).toList());
+
+        ChatMessage chatMessage = ChatMessage.createJoinMessage(
+                invitationMessage,
+                inviter,
+                chatRoom
+        );
+
+        final List<Long> userIds = getGroupsByRoomId(chatRoom.getId())
+                .stream().map(ChatGroup::getUser).map(User::getId).toList();
+
+        chatMessageRepository.save(chatMessage);
+
+        sendMessageToUsers(userIds, chatMessage);
     }
 
     @Transactional
     public void createRoom(User creator, CreateRoomRequest request) {
-        ChatRoom chatRoom = ChatRoom.createChatRoom(request.getRoomName());
+        ChatRoom chatRoom = ChatRoom.createChatRoom(request.getRoomName(), request.getParticipantUserIds().size());
 
         chatRoomRepository.save(chatRoom);
 
@@ -148,23 +161,26 @@ public class ChatRoomService {
 
         chatGroupMapper.insertChatGroups(chatRoom.getId(), request.getParticipantUserIds());
 
-        sendMessageToUsers(creator, chatRoom, users);
-    }
+        final String invitationMessage = createInvitationMessage(
+                creator.getName(),
+                users.stream()
+                        .filter(user -> !user.getId().equals(creator.getId()))
+                        .map(User::getName)
+                        .toList());
 
-    private void sendMessageToUsers(User inviter, ChatRoom chatRoom, List<User> users) {
-        ChatMessage chatMessage = ChatMessage.createMessage(
-                createInvitationMessage(inviter.getName(), users.stream().map(User::getName).toList()),
-                inviter,
-                chatRoom,
-                ChatType.JOIN
+        ChatMessage chatMessage = ChatMessage.createJoinMessage(
+                invitationMessage,
+                creator,
+                chatRoom
         );
 
         chatMessageRepository.save(chatMessage);
+    }
 
-        getGroupsByRoomId(chatRoom.getId())
-                .forEach(group ->
-                        template.convertAndSend("/queue/user/" + group.getUser().getId(),
-                                new ChatMessageDto(chatMessage)));
+    private void sendMessageToUsers(List<Long> userIds, ChatMessage chatMessage) {
+        userIds.forEach(userId ->
+                template.convertAndSend("/queue/user/" + userId,
+                        new ChatMessageDto(chatMessage)));
     }
 
     private String createInvitationMessage(String inviterName, List<String> inviteeNames) {

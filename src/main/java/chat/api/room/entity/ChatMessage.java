@@ -45,10 +45,15 @@ public class ChatMessage {
         this.chatType = chatType;
     }
 
-    public static ChatMessage createMessage(String message,
-                                            User user,
-                                            ChatRoom chatRoom,
-                                            ChatType chatType) {
-        return new ChatMessage(message, user, chatRoom, chatType);
+    public static ChatMessage createJoinMessage(String message,
+                                                User user,
+                                                ChatRoom chatRoom) {
+        return new ChatMessage(message, user, chatRoom, ChatType.JOIN);
+    }
+
+    public static ChatMessage createTalkMessage(String message,
+                                                User user,
+                                                ChatRoom chatRoom) {
+        return new ChatMessage(message, user, chatRoom, ChatType.TALK);
     }
 }

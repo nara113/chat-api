@@ -2,8 +2,10 @@ package chat.api.openchat.service;
 
 import chat.api.openchat.dto.OpenChatRoomDto;
 import chat.api.openchat.dto.request.CreateOpenChatRequest;
-import chat.api.openchat.entity.OpenChatRoom;
-import chat.api.openchat.repository.OpenChatRoomRepository;
+import chat.api.room.entity.ChatMessage;
+import chat.api.room.entity.ChatRoom;
+import chat.api.room.repository.ChatMessageRepository;
+import chat.api.room.repository.ChatRoomRepository;
 import chat.api.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -18,20 +20,35 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OpenChatService {
-    private final OpenChatRoomRepository openChatRoomRepository;
+    private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     @Transactional
     public Long createOpenChatRoom(CreateOpenChatRequest openChatRequest, User user) {
-        OpenChatRoom openChatRoom = OpenChatRoom.createOpenChatRoom(openChatRequest.getRoomName());
-        openChatRoom.joinOpenChatRoom(user);
+        final ChatRoom openChatRoom = ChatRoom.createOpenChatRoom(openChatRequest.getRoomName());
+        openChatRoom.joinChatRoom(user);
 
-        openChatRoomRepository.save(openChatRoom);
+        chatRoomRepository.save(openChatRoom);
+
+        final String invitationMessage = createMessage(user.getName());
+
+        ChatMessage chatMessage = ChatMessage.createJoinMessage(
+                invitationMessage,
+                user,
+                openChatRoom
+        );
+
+        chatMessageRepository.save(chatMessage);
 
         return openChatRoom.getId();
     }
 
+    private String createMessage(String creator) {
+        return creator + "님이 들어왔습니다.";
+    }
+
     public List<OpenChatRoomDto> searchOpenChatRooms(String searchText) {
-        return openChatRoomRepository.findByNameContainsIgnoreCase(searchText)
+        return chatRoomRepository.findOpenChatRoomByName(searchText)
                 .stream()
                 .map(OpenChatRoomDto::new)
                 .toList();
@@ -40,9 +57,8 @@ public class OpenChatService {
     @Retryable(value = ObjectOptimisticLockingFailureException.class, backoff = @Backoff(delay = 200))
     @Transactional
     public void joinOpenChatRoom(Long roomId, User user) {
-        OpenChatRoom openChatRoom = openChatRoomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("open chat room does not exist. room id: " + roomId));
-
-        openChatRoom.joinOpenChatRoom(user);
+        chatRoomRepository.findOpenChatRoomById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("open chat room does not exist. room id: " + roomId))
+                .joinChatRoom(user);
     }
 }

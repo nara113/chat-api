@@ -1,6 +1,6 @@
 package chat.api.openchat.dto;
 
-import chat.api.openchat.entity.OpenChatRoom;
+import chat.api.room.entity.ChatRoom;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -11,7 +11,7 @@ public class OpenChatRoomDto {
     private final Integer numberOfParticipants;
     private final Integer maxNumberOfParticipants;
 
-    public OpenChatRoomDto(OpenChatRoom openChatRoom) {
+    public OpenChatRoomDto(ChatRoom openChatRoom) {
         this.name = openChatRoom.getName();
         this.numberOfParticipants = openChatRoom.getNumberOfParticipants();
         this.maxNumberOfParticipants = openChatRoom.getMaxNumberOfParticipants();

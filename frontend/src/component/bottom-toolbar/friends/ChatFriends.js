@@ -1,4 +1,3 @@
-import Toolbar from "@mui/material/Toolbar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";

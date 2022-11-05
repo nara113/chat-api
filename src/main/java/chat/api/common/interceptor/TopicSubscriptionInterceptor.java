@@ -31,7 +31,7 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
             String jwt = headerAccessor.getFirstNativeHeader("auth-token");
             Authentication authentication = tokenProvider.getAuthentication(jwt);
 
-            if (!validateSubscription(authentication, headerAccessor.getDestination())) {
+            if (!isSubscriptionValid(authentication, headerAccessor.getDestination())) {
                 throw new IllegalArgumentException("No permission for this topic");
             }
         }
@@ -39,7 +39,7 @@ public class TopicSubscriptionInterceptor implements ChannelInterceptor {
         return message;
     }
 
-    private boolean validateSubscription(Authentication authentication, String topicDestination) {
+    private boolean isSubscriptionValid(Authentication authentication, String topicDestination) {
         if (authentication == null) {
             return false;
         }
