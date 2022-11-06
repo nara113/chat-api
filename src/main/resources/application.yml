@@ -18,6 +18,7 @@ spring:
         format_sql: true
         use_sql_comments: true
         default_batch_fetch_size: 100
+    open-in-view: false
 
   redis:
     host: localhost
@@ -33,6 +34,8 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+      fetch-min-size: 1MB
+      max-poll-records: 1000
     producer:
       bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer

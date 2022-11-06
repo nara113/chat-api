@@ -1,4 +1,4 @@
-package chat.api.broker.kafka;
+package chat.api.messagebroker.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class KafkaProducer {
-
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void produce(String topic, Object data) {

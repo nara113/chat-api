@@ -15,6 +15,7 @@ import chat.api.room.repository.ChatRoomRepository;
 import chat.api.user.entity.User;
 import chat.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,10 +140,10 @@ public class ChatRoomService {
                 chatRoom
         );
 
+        chatMessageRepository.save(chatMessage);
+
         final List<Long> userIds = getGroupsByRoomId(chatRoom.getId())
                 .stream().map(ChatGroup::getUser).map(User::getId).toList();
-
-        chatMessageRepository.save(chatMessage);
 
         sendMessageToUsers(userIds, chatMessage);
     }
@@ -175,15 +176,16 @@ public class ChatRoomService {
         );
 
         chatMessageRepository.save(chatMessage);
+
+        sendMessageToUsers(request.getParticipantUserIds(), chatMessage);
     }
 
     private void sendMessageToUsers(List<Long> userIds, ChatMessage chatMessage) {
         userIds.forEach(userId ->
-                template.convertAndSend("/queue/user/" + userId,
-                        new ChatMessageDto(chatMessage)));
+                template.convertAndSend("/queue/user/" + userId, new ChatMessageDto(chatMessage)));
     }
 
     private String createInvitationMessage(String inviterName, List<String> inviteeNames) {
-        return inviterName + "님이 " + String.join(", ", inviteeNames) + "님을 초대했습니다.";
+        return inviterName + "님이 " + StringUtils.join(inviteeNames, ", ") + "님을 초대했습니다.";
     }
 }

@@ -2,7 +2,7 @@ package chat.api.message.controller;
 
 import chat.api.message.dto.ChatMessageDto;
 import chat.api.message.dto.ReadMessageDto;
-import chat.api.broker.kafka.KafkaProducer;
+import chat.api.messagebroker.kafka.KafkaProducer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
