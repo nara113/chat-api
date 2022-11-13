@@ -20,53 +20,66 @@ public class KafkaConsumer {
     private final SimpMessagingTemplate template;
 
     @KafkaListener(
-            topics = "${spring.kafka.topic.message-topic}",
-            containerFactory = "kafkaListenerFactory",
-            errorHandler = "kafkaErrorHandler"
+            topics = "${topic.message-topic}",
+            containerFactory = "kafkaListenerFactory"
     )
     public void sendMessage(List<ChatMessageDto> chatMessages) {
         chatMessages.forEach(chatMessage -> {
-            log.info("sendMessage : {}", chatMessage);
+            try {
+                log.info("sendMessage : {}", chatMessage);
 
-            Long messageId = chatRoomService.saveChatMessage(chatMessage);
-            chatMessage.setMessageId(messageId);
+                Long messageId = chatRoomService.saveChatMessage(chatMessage);
+                chatMessage.setMessageId(messageId);
 
-            chatRoomService.getGroupsByRoomId(chatMessage.getRoomId()).forEach(group ->
-                    template.convertAndSend(MessageDestination.USER.getPrefix() + group.getUser().getId(), chatMessage));
+                chatRoomService.getGroupsByRoomId(chatMessage.getRoomId()).forEach(group ->
+                        template.convertAndSend(MessageDestination.USER.getPrefix() + group.getUser().getId(), chatMessage));
+
+            } catch (Exception e) {
+                log.error("kafka consumer enter error. chatMessage: {}", chatMessage);
+            }
         });
     }
 
     @KafkaListener(
-            topics = "${spring.kafka.topic.read-topic}",
+            topics = "${topic.read-topic}",
             containerFactory = "kafkaListenerFactory"
     )
     public void read(List<ReadMessageDto> readMessages) {
         readMessages.forEach(readMessage -> {
-            log.info("read : {}", readMessage);
+            try {
+                log.info("read : {}", readMessage);
 
-            chatRoomService.markAsRead(readMessage);
+                chatRoomService.markAsRead(readMessage);
 
-            template.convertAndSend(MessageDestination.ROOM.getPrefix() + readMessage.getRoomId(), readMessage);
+                template.convertAndSend(MessageDestination.ROOM.getPrefix() + readMessage.getRoomId(), readMessage);
+            } catch (Exception e) {
+                log.error("kafka consumer read error. readMessage: {}", readMessage);
+            }
         });
     }
 
     @KafkaListener(
-            topics = "${spring.kafka.topic.enter-topic}",
+            topics = "${topic.enter-topic}",
             containerFactory = "kafkaListenerFactory"
     )
     public void enter(List<ChatMessageDto> chatMessages) {
         chatMessages.forEach(chatMessage -> {
-            log.info("enter : {}", chatMessage);
+            try {
+                log.info("enter : {}", chatMessage);
 
-            Long lastMessageId = chatRoomService.updateToLastMessage(chatMessage.getRoomId(), chatMessage.getSenderId());
+                Long lastMessageId = chatRoomService.updateToLastMessage(chatMessage.getRoomId(), chatMessage.getSenderId());
 
-            ReadMessageDto readMessageDto = ReadMessageDto.builder()
-                    .lastReadMessageId(lastMessageId)
-                    .roomId(chatMessage.getRoomId())
-                    .userId(chatMessage.getSenderId())
-                    .build();
+                ReadMessageDto readMessageDto = ReadMessageDto.builder()
+                        .lastReadMessageId(lastMessageId)
+                        .roomId(chatMessage.getRoomId())
+                        .userId(chatMessage.getSenderId())
+                        .build();
 
-            template.convertAndSend(MessageDestination.ROOM.getPrefix() + chatMessage.getRoomId(), readMessageDto);
+                template.convertAndSend(MessageDestination.ROOM.getPrefix() + chatMessage.getRoomId(), readMessageDto);
+
+            } catch (Exception e) {
+                log.error("kafka consumer enter error. chatMessage: {}", chatMessage);
+            }
         });
     }
 }

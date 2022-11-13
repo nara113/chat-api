@@ -38,10 +38,10 @@ public class User extends BaseTimeEntity {
     private String statusMessage;
 
     @OneToMany(mappedBy = "user")
-    private List<ChatGroup> groups = new ArrayList<>();
+    private final List<ChatGroup> groups = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<ChatMessage> message = new ArrayList<>();
+    private final List<ChatMessage> message = new ArrayList<>();
 
     private User(String email, String name, String password, String statusMessage) {
         this.email = email;

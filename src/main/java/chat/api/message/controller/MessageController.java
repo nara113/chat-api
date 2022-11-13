@@ -20,9 +20,9 @@ public class MessageController {
 
     private final KafkaProducer kafkaProducer;
 
-    public MessageController(@Value("${spring.kafka.topic.message-topic}") String messageTopic,
-                             @Value("${spring.kafka.topic.read-topic}") String readTopic,
-                             @Value("${spring.kafka.topic.enter-topic}") String enterTopic,
+    public MessageController(@Value("${topic.message-topic}") String messageTopic,
+                             @Value("${topic.read-topic}") String readTopic,
+                             @Value("${topic.enter-topic}") String enterTopic,
                              KafkaProducer kafkaProducer) {
         this.messageTopic = messageTopic;
         this.readTopic = readTopic;

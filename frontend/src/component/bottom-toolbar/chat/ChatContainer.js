@@ -22,26 +22,26 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     const [loadingMore, setLoadingMore] = useState(false);
     const [last, setLast] = useState(false)
     const [roomUserMap, setRoomUserMap] = useState();
-    const isUsersFirstRender = useRef(true);;
+    const isUsersFirstRender = useRef(true);
     const isNewMessageFirstRender = useRef(true);
 
     useEffect(() => {
         const subscription = client.current.subscribe(`/topic/room/${currentRoom.roomId}`
             , ({body}) => {
-            const message = JSON.parse(body);
-            setUsers(prevState => {
-                return prevState.map(user => {
-                    if (user.userId === message.userId) {
-                        return {
-                            ...user,
-                            lastReadMessageId: message.lastReadMessageId
+                const message = JSON.parse(body);
+                setUsers(prevState => {
+                    return prevState.map(user => {
+                        if (user.userId === message.userId) {
+                            return {
+                                ...user,
+                                lastReadMessageId: message.lastReadMessageId
+                            }
                         }
-                    }
 
-                    return user;
+                        return user;
+                    })
                 })
-            })
-        }, {"auth-token": localStorage.getItem('jwt')})
+            }, {"auth-token": localStorage.getItem('jwt')})
 
         setRoomUserMap(new Map(
             roomUsers.map(user => {
@@ -125,30 +125,30 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
         return _chatMessage.chatType === 'JOIN'
             ? <MessageSeparator>{_chatMessage.message}</MessageSeparator>
             : (_chatMessage.senderId === currentUser.userId
-            ? <Message key={_chatMessage.messageId}
-                       model={{
-                           message: _chatMessage.message,
-                           sentTime: "15 mins ago",
-                           sender: roomUserMap.get(_chatMessage.senderId).name,
-                           direction: "outgoing",
-                           position: "last"
-                       }}>
-                <Message.Footer sentTime={getUnreadCount(_chatMessage).toString()}/>
-            </Message>
-            : <Message key={_chatMessage.messageId}
-                       model={{
-                           message: _chatMessage.message,
-                           sentTime: "15 mins ago",
-                           sender: roomUserMap.get(_chatMessage.senderId).name,
-                           direction: "incoming",
-                           position: "first"
-                       }}>
-                <Message.Header sender={roomUserMap.get(_chatMessage.senderId).name}/>
-                <Avatar src={img} name={roomUserMap.get(_chatMessage.senderId).name}/>
-                <Message.Footer
-                    sender={getUnreadCount(_chatMessage)}
-                    sentTime={dayjs(_chatMessage.timestamp).format("A hh:mm")}/>
-            </Message>)
+                ? <Message key={_chatMessage.messageId}
+                           model={{
+                               message: _chatMessage.message,
+                               sentTime: "15 mins ago",
+                               sender: roomUserMap.get(_chatMessage.senderId).name,
+                               direction: "outgoing",
+                               position: "last"
+                           }}>
+                    <Message.Footer sentTime={getUnreadCount(_chatMessage).toString()}/>
+                </Message>
+                : <Message key={_chatMessage.messageId}
+                           model={{
+                               message: _chatMessage.message,
+                               sentTime: "15 mins ago",
+                               sender: roomUserMap.get(_chatMessage.senderId).name,
+                               direction: "incoming",
+                               position: "first"
+                           }}>
+                    <Message.Header sender={roomUserMap.get(_chatMessage.senderId).name}/>
+                    <Avatar src={img} name={roomUserMap.get(_chatMessage.senderId).name}/>
+                    <Message.Footer
+                        sender={getUnreadCount(_chatMessage)}
+                        sentTime={dayjs(_chatMessage.timestamp).format("A hh:mm")}/>
+                </Message>)
     }
 
     const getUnreadCount = (_chatMessage) => {
@@ -183,32 +183,30 @@ const MyChatContainer = ({client, currentRoom, roomUsers, currentUser, newMessag
     };
 
     return (
-        <>
-            <div style={{
-                width: "600px",
-                height: "400px",
-                position: "relative"
-            }}>
-                <MainContainer responsive>
-                    <ChatContainer>
-                        <ConversationHeader>
-                            <ConversationHeader.Back/>
-                            <Avatar src={img} name="Zoe"/>
-                            <ConversationHeader.Content userName={roomUsers.map(_user => _user.name).join(', ')}/>
-                        </ConversationHeader>
-                        <MessageList loadingMore={loadingMore} onYReachStart={onYReachStart}>
-                            {chatMessages &&
-                                chatMessages.map((_chatMessage) => makeMessage(_chatMessage))
-                            }
-                        </MessageList>
-                        <MessageInput placeholder="Type message here"
-                                      value={message}
-                                      onSend={() => publish(message)}
-                                      onChange={val => setMessage(val)}/>
-                    </ChatContainer>
-                </MainContainer>
-            </div>
-        </>
+        <div style={{
+            width: "600px",
+            height: "400px",
+            position: "relative"
+        }}>
+            <MainContainer responsive>
+                <ChatContainer>
+                    <ConversationHeader>
+                        <ConversationHeader.Back/>
+                        <Avatar src={img} name="Zoe"/>
+                        <ConversationHeader.Content userName={roomUsers.map(_user => _user.name).join(', ')}/>
+                    </ConversationHeader>
+                    <MessageList loadingMore={loadingMore} onYReachStart={onYReachStart}>
+                        {chatMessages &&
+                            chatMessages.map((_chatMessage) => makeMessage(_chatMessage))
+                        }
+                    </MessageList>
+                    <MessageInput placeholder="Type message here"
+                                  value={message}
+                                  onSend={() => publish(message)}
+                                  onChange={val => setMessage(val)}/>
+                </ChatContainer>
+            </MainContainer>
+        </div>
     )
 }
 

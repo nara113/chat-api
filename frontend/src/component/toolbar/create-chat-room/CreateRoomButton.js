@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import IconButton from "@mui/material/IconButton";
 import AddCommentOutlinedIcon from "@mui/icons-material/AddCommentOutlined";
 import Menu from "@mui/material/Menu";
@@ -7,7 +7,6 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import ListItemText from "@mui/material/ListItemText";
 import RegularChatDialog from "./RegularChatDialog";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
 import OpenGroupChatDialog from "./OpenGroupChatDialog";
 
@@ -81,12 +80,6 @@ const CreateRoomButton = ({currentUserId}) => {
                 {/*    regularChatDialogOpen={regularChatDialogOpen}*/}
                 {/*    handleRegularChatDialogClose={handleRegularChatDialogClose}*/}
                 {/*    friends={friends}/>*/}
-                <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                        <LockOutlinedIcon fontSize="small"/>
-                    </ListItemIcon>
-                    <ListItemText>비밀채팅</ListItemText>
-                </MenuItem>
                 <MenuItem onClick={handleOpenChatClick}>
                     <ListItemIcon>
                         <ForumOutlinedIcon fontSize="small"/>

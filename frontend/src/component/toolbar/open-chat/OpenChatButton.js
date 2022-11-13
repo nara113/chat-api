@@ -134,8 +134,6 @@ const OpenChatDialog = ({open, handleClose}) => {
 }
 
 export default function OpenChatButton({}) {
-    const currentUser = useState(JSON.parse(localStorage.getItem('user')));
-
     const [openChatDialogOpen, setOpenChatDialogOpen] = useState(false);
     const handleOpenChatDialogOpen = () => setOpenChatDialogOpen(true);
     const handleOpenChatDialogClose = (event, reason) => {
