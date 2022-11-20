@@ -97,7 +97,7 @@ export default function ChatRoom({
                                                     {_room.openChatRoom && <QuestionAnswerRoundedIcon sx={{ mr: 0.5 }} fontSize="inherit" />}
                                                     {_room.roomName} <span style={{color: "gray"}}>{(_room.numberOfParticipants > 2 || _room.openChatRoom) && _room.numberOfParticipants}</span>
                                                 </Typography>
-                                                <Typography variant="body2" color="text.secondary" sx={{}}>
+                                                <Typography variant="body2" color="text.secondary">
                                                     {_room.lastMessage}
                                                 </Typography>
                                             </Grid>

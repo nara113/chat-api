@@ -2,14 +2,11 @@ package chat.api;
 
 import chat.api.friend.entity.ChatFriend;
 import chat.api.friend.repository.ChatFriendRepository;
-import chat.api.message.dto.ChatType;
-import chat.api.room.entity.ChatGroup;
-import chat.api.room.repository.ChatGroupRepository;
 import chat.api.room.entity.ChatMessage;
 import chat.api.room.repository.ChatMessageRepository;
-import chat.api.room.repository.MessageRepository;
 import chat.api.room.entity.ChatRoom;
 import chat.api.room.repository.ChatRoomRepository;
+import chat.api.user.entity.Gender;
 import chat.api.user.entity.User;
 import chat.api.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +19,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.stream.IntStream;
 
 @EnableRetry
@@ -34,16 +32,10 @@ public class ApiApplication {
     ChatRoomRepository chatRoomRepository;
 
     @Autowired
-    ChatGroupRepository chatGroupRepository;
-
-    @Autowired
     ChatFriendRepository chatFriendRepository;
 
     @Autowired
     ChatMessageRepository chatMessageRepository;
-
-    @Autowired
-    MessageRepository messageRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -61,25 +53,37 @@ public class ApiApplication {
                 User user1 = User.createUser("email1",
                         "Lilly",
                         passwordEncoder.encode("pass1"),
+                        Gender.FEMALE,
+                        LocalDate.of(1990,7,10),
                         "hi");
 
                 User user2 = User.createUser("email2",
                         "Joe",
-                        passwordEncoder.encode("pass2"));
+                        passwordEncoder.encode("pass2"),
+                        Gender.MALE,
+                        LocalDate.of(1994,10,10),
+                        null);
 
                 User user3 = User.createUser("email3",
                         "Emily",
                         passwordEncoder.encode("pass2"),
+                        Gender.FEMALE,
+                        LocalDate.of(1995,1,10),
                         "hahaha");
 
                 User user4 = User.createUser("email4",
                         "Kai",
                         passwordEncoder.encode("pass2"),
+                        Gender.FEMALE,
+                        LocalDate.of(1996,1,10),
                         "message");
 
                 User user5 = User.createUser("email5",
                         "Eliot",
-                        passwordEncoder.encode("pass2"));
+                        passwordEncoder.encode("pass2"),
+                        Gender.FEMALE,
+                        LocalDate.of(2000,1,10),
+                        null);
 
                 userRepository.save(user1);
                 userRepository.save(user2);

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
@@ -15,6 +15,18 @@ import {alpha, styled} from '@mui/material/styles';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import Divider from "@mui/material/Divider";
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import Typography from "@mui/material/Typography";
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import dayjs from "dayjs";
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 const BootstrapDialog = styled(Dialog)(({theme}) => ({
     '& .MuiDialogContent-root': {
@@ -77,6 +89,81 @@ const SwitchListSecondary = () => {
         setChecked(newChecked);
     };
 
+    const isEntryConditionsChecked = () => {
+        return checked.indexOf('entry-condition-settings') !== -1;
+    }
+
+    const [entryConditionsChecked, setEntryConditionsChecked] = React.useState(['gender', 'yearOfBirth']);
+
+    const handleEntryConditionsToggle = (value) => () => {
+        const currentIndex = entryConditionsChecked.indexOf(value);
+        const newChecked = [...entryConditionsChecked];
+
+        if (currentIndex === -1) {
+            newChecked.push(value);
+        } else {
+            newChecked.splice(currentIndex, 1);
+        }
+
+        setEntryConditionsChecked(newChecked);
+    };
+
+    const [startBirthYear, setStartBirthYear] = React.useState('');
+    const [endBirthYear, setEndBirthYear] = React.useState('');
+
+    const handleStartBirthYearChange = (event) => {
+        setStartBirthYear(event.target.value);
+    };
+
+    const handleEndBirthYearChange = (event) => {
+        setEndBirthYear(event.target.value);
+    };
+
+    const [dateOfBirthToggle, setDateOfBirthToggle] = React.useState(false);
+
+    const handleDateOfBirthToggle = () => {
+        setDateOfBirthToggle(!dateOfBirthToggle);
+    }
+
+    const rangeClosed = (start, end) => {
+        return new Array(end - start + 1).fill().map((d, i) => i + start);
+    }
+
+    const getBirthYearRange = () => {
+        if (startBirthYear === endBirthYear) return `${startBirthYear}년생`;
+        else if (endBirthYear === '') return `${startBirthYear}년생~`;
+        else if (startBirthYear === '') return `~${endBirthYear}년생`;
+        else return `${startBirthYear}~${endBirthYear}년생`
+    }
+
+    const [currentUser, setCurrentUser] = useState({
+        userId: '',
+        name: '',
+        gender: '',
+        dateOfBirth: '',
+        statusMessage: '',
+        profileUrl: ''
+    });
+
+    const [currentUserBirthYear, setCurrentUserBirtYear] = useState('');
+
+    const getCurrentUser = () => {
+        axios.get(`/api/users/current`)
+            .then(res => {
+                const currentUser = res.data.data;
+                setCurrentUser(currentUser);
+
+                const currentUserBirthYear = dayjs(currentUser.dateOfBirth).year();
+                setCurrentUserBirtYear(currentUserBirthYear);
+                setStartBirthYear(currentUserBirthYear);
+                setEndBirthYear(currentUserBirthYear);
+            })
+    }
+
+    useEffect(() => {
+        getCurrentUser();
+    }, []);
+
     return (
         <List
             sx={{width: '100%', bgcolor: 'background.paper'}}
@@ -115,13 +202,127 @@ const SwitchListSecondary = () => {
                 />
                 <YellowSwitch
                     edge="end"
-                    onChange={handleToggle('entry-conditions')}
-                    checked={checked.indexOf('entry-conditions') !== -1}
+                    onChange={handleToggle('entry-condition-settings')}
+                    checked={checked.indexOf('entry-condition-settings') !== -1}
                     inputProps={{
                         'aria-labelledby': 'switch-list-label-entry-conditions',
                     }}
                 />
             </ListItem>
+            {
+                isEntryConditionsChecked() &&
+                <>
+                    <Divider sx={{py: 1}}/>
+                    <ListItem
+                        secondaryAction={
+                            <Typography variant="body2" color="text.secondary">
+                                {currentUser.gender === 'MALE' ? '남자' : '여자'}
+                            </Typography>
+                        }
+                        disablePadding
+                    >
+                        <ListItemButton role={undefined} onClick={handleEntryConditionsToggle('gender')} dense>
+                            <ListItemIcon>
+                                <Checkbox
+                                    defaultChecked
+                                    sx={{
+                                        px: 0,
+                                        color: yellow[800],
+                                        '&.Mui-checked': {
+                                            color: yellow[600],
+                                        },
+                                    }}
+                                    edge="start"
+                                    checked={entryConditionsChecked.indexOf('gender') !== -1}
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{ 'aria-labelledby': 1 }}
+                                    icon={<CheckCircleOutlineIcon />} checkedIcon={<CheckCircleIcon />}
+                                />
+                            </ListItemIcon>
+                            <ListItemText primary='성별' />
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItem
+                        secondaryAction={
+                            <IconButton edge="end" aria-label="comments" size={"small"} sx={{p:0}} onClick={handleDateOfBirthToggle}>
+                                {getBirthYearRange()}<ArrowForwardIosIcon fontSize={"small"} />
+                            </IconButton>
+                        }
+                        disablePadding
+                    >
+                        <ListItemButton role={undefined} onClick={handleEntryConditionsToggle('yearOfBirth')} dense>
+                            <ListItemIcon>
+                                <Checkbox
+                                    defaultChecked
+                                    sx={{
+                                        px: 0,
+                                        color: yellow[800],
+                                        '&.Mui-checked': {
+                                            color: yellow[600],
+                                        },
+                                    }}
+                                    edge="start"
+                                    checked={entryConditionsChecked.indexOf('yearOfBirth') !== -1}
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{ 'aria-labelledby': 1 }}
+                                    icon={<CheckCircleOutlineIcon />} checkedIcon={<CheckCircleIcon />}
+                                />
+                            </ListItemIcon>
+                            <ListItemText primary='출생연도'/>
+                        </ListItemButton>
+                    </ListItem>
+                    <ListItemText secondary='입장할 수 있는 출생 연도 범위를 설정합니다.'/>
+                    {
+                        dateOfBirthToggle &&
+                        <div>
+                            <FormControl variant="standard" sx={{ m: 1, minWidth: 150 }}>
+                                <Select
+                                    labelId="demo-simple-select-standard-label"
+                                    id="demo-simple-select-standard"
+                                    value={startBirthYear}
+                                    onChange={handleStartBirthYearChange}
+                                    label="startBirthOfDate"
+                                >
+                                    {
+                                        rangeClosed(1943, currentUserBirthYear)
+                                            .map(year => <MenuItem value={year}>{year}</MenuItem>)
+                                    }
+                                    <MenuItem value="">
+                                        <em>제한없음</em>
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                            <Typography
+                                component="span"
+                                variant="body2"
+                                color="text.primary"
+                            >
+                                ~
+                            </Typography>
+                            <FormControl variant="standard" sx={{ m: 1, minWidth: 150 }}>
+                                <Select
+                                    labelId="demo-simple-select-standard-label"
+                                    id="demo-simple-select-standard"
+                                    value={endBirthYear}
+                                    onChange={handleEndBirthYearChange}
+                                    label="endBirthOfDate"
+                                >
+                                    <MenuItem value="">
+                                        <em>제한없음</em>
+                                    </MenuItem>
+                                    {
+                                        rangeClosed(currentUserBirthYear, dayjs().year())
+                                            .map(year => <MenuItem value={year}>{year}</MenuItem>)
+                                    }
+                                </Select>
+                            </FormControl>
+                            <ListItemText secondary='내 출생연도를 포함한 범위로만 지정이 가능합니다.'/>
+                        </div>
+                    }
+                </>
+            }
         </List>
     );
 }

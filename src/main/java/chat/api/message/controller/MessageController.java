@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 public class MessageController {
-    private static final int MAX_MESSAGE_LENGTH = 1_000;
-
     private final String messageTopic;
 
     private final String readTopic;
@@ -31,11 +31,7 @@ public class MessageController {
     }
 
     @MessageMapping("/chat/message/users")
-    public void sendToUsers(ChatMessageDto chatMessage) {
-        if (StringUtils.length(chatMessage.getMessage()) > MAX_MESSAGE_LENGTH) {
-            throw new IllegalArgumentException("The message length exceeded 1000 characters.");
-        }
-
+    public void sendToUsers(@Valid ChatMessageDto chatMessage) {
         kafkaProducer.produce(messageTopic, chatMessage);
     }
 

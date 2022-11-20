@@ -7,6 +7,7 @@ import chat.api.room.entity.ChatMessage;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,13 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Column(nullable = false)
+    private LocalDate dateOfBirth;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_image_id")
     private UploadFile profileImage;
@@ -43,19 +51,17 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user")
     private final List<ChatMessage> message = new ArrayList<>();
 
-    private User(String email, String name, String password, String statusMessage) {
+    public User(String email, String name, String password, Gender gender, LocalDate dateOfBirth, String statusMessage) {
         this.email = email;
         this.name = name;
         this.password = password;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
         this.statusMessage = statusMessage;
     }
 
-    public static User createUser(String email, String name, String password, String statusMessage) {
-        return new User(email, name, password, statusMessage);
-    }
-
-    public static User createUser(String email, String name, String password) {
-        return new User(email, name, password, null);
+    public static User createUser(String email, String name, String password, Gender gender, LocalDate dateOfBirth, String statusMessage) {
+        return new User(email, name, password, gender, dateOfBirth, statusMessage);
     }
 
     public void changeProfileImage(UploadFile uploadFile) {

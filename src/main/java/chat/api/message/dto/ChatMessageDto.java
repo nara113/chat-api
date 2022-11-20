@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +18,7 @@ public class ChatMessageDto {
     private long roomId;
     private long senderId;
     private long messageId;
+    @Length(max = 1000)
     private String message;
     private LocalDateTime timestamp = LocalDateTime.now();
 

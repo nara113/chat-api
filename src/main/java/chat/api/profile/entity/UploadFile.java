@@ -16,9 +16,9 @@ import javax.persistence.*;
 @DynamicInsert
 @Entity
 public class UploadFile extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long fileId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "file_id")
+    private Long id;
 
     private String url;
 
